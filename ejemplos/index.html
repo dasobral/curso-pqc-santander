@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplos Prácticos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="index.html" class="active">Ejemplos Prácticos</a></li>
+                <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; Ejemplos Prácticos
+    </div>
+
+    <main>
+        <h1>Ejemplos Prácticos</h1>
+        
+        <p class="intro-text">
+            Esta sección contiene ejemplos prácticos que ilustran los conceptos clave de la criptografía post-cuántica. 
+            Cada ejemplo incluye código interactivo que permite experimentar con los algoritmos y comprender mejor su funcionamiento.
+        </p>
+
+        <div class="ejemplos-grid">
+            <div class="ejemplo-card">
+                <div class="ejemplo-icon">🔢</div>
+                <h2>Algoritmo de Shor</h2>
+                <p>Simulación del algoritmo cuántico que amenaza la criptografía RSA, demostrando cómo un ordenador cuántico puede factorizar números grandes eficientemente.</p>
+                <div class="ejemplo-actions">
+                    <a href="algoritmo_shor.html" class="btn">Ver ejemplo</a>
+                    <a href="../guias/algoritmo_shor.html" class="btn btn-outline">Ver guía</a>
+                </div>
+            </div>
+
+            <div class="ejemplo-card">
+                <div class="ejemplo-icon">🔐</div>
+                <h2>ML-KEM</h2>
+                <p>Implementación del algoritmo de encapsulamiento de claves basado en retículos (FIPS 203), mostrando generación de claves, encapsulamiento y desencapsulamiento.</p>
+                <div class="ejemplo-actions">
+                    <a href="ml_kem.html" class="btn">Ver ejemplo</a>
+                    <a href="../guias/ml_kem.html" class="btn btn-outline">Ver guía</a>
+                </div>
+            </div>
+
+            <div class="ejemplo-card">
+                <div class="ejemplo-icon">✍️</div>
+                <h2>ML-DSA</h2>
+                <p>Demostración del algoritmo de firma digital basado en retículos (FIPS 204), ilustrando la generación de claves, firma y verificación de mensajes.</p>
+                <div class="ejemplo-actions">
+                    <a href="ml_dsa.html" class="btn">Ver ejemplo</a>
+                    <a href="../guias/ml_dsa.html" class="btn btn-outline">Ver guía</a>
+                </div>
+            </div>
+
+            <div class="ejemplo-card">
+                <div class="ejemplo-icon">🔄</div>
+                <h2>Criptografía Híbrida</h2>
+                <p>Ejemplo de implementación de criptografía híbrida que combina algoritmos clásicos y post-cuánticos para una seguridad robusta durante la transición.</p>
+                <div class="ejemplo-actions">
+                    <a href="criptografia_hibrida.html" class="btn">Ver ejemplo</a>
+                    <a href="../guias/criptografia_hibrida.html" class="btn btn-outline">Ver guía</a>
+                </div>
+            </div>
+
+            <div class="ejemplo-card">
+                <div class="ejemplo-icon">📡</div>
+                <h2>QKD (BB84)</h2>
+                <p>Simulación del protocolo BB84 para distribución cuántica de claves, mostrando cómo las leyes de la física cuántica garantizan la seguridad.</p>
+                <div class="ejemplo-actions">
+                    <a href="qkd_bb84.html" class="btn">Ver ejemplo</a>
+                    <a href="../guias/qkd.html" class="btn btn-outline">Ver guía</a>
+                </div>
+            </div>
+        </div>
+
+        <section class="ejemplos-info">
+            <h2>Sobre los Ejemplos</h2>
+            <p>
+                Estos ejemplos han sido diseñados con fines educativos para ilustrar los conceptos fundamentales de la criptografía post-cuántica. 
+                Las implementaciones son simplificadas y no deben utilizarse en entornos de producción. Para aplicaciones reales, 
+                se recomienda utilizar bibliotecas criptográficas bien establecidas y auditadas.
+            </p>
+            <p>
+                Cada ejemplo incluye:
+            </p>
+            <ul>
+                <li>Explicación teórica del algoritmo o protocolo</li>
+                <li>Implementación interactiva que permite experimentar con diferentes parámetros</li>
+                <li>Visualizaciones que ayudan a comprender los conceptos subyacentes</li>
+                <li>Código fuente comentado para referencia</li>
+            </ul>
+            <p>
+                Para un estudio más profundo, consulte las <a href="../guias/index.html">Guías de Laboratorio</a> asociadas a cada ejemplo, 
+                que incluyen ejercicios prácticos y preguntas de reflexión.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/prism.js"></script>
+</body>
+</html>

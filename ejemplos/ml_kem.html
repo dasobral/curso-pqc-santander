@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML-KEM - Ejemplos Prácticos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="index.html" class="active">Ejemplos Prácticos</a></li>
+                <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Ejemplos Prácticos</a> &gt; ML-KEM
+    </div>
+
+    <main>
+        <h1>ML-KEM: Mecanismo de Encapsulamiento de Claves basado en Retículos</h1>
+        
+        <div class="ejemplo-header">
+            <div class="ejemplo-icon large">🔐</div>
+            <div class="ejemplo-meta">
+                <p class="ejemplo-tema">Tema relacionado: <a href="../temas/tema4/index.html">Tema 4: Estandarización de Criptografía Post-Cuántica</a></p>
+                <p class="ejemplo-guia">Guía de laboratorio: <a href="../guias/ml_kem.html">Guía de ML-KEM</a></p>
+            </div>
+        </div>
+
+        <section class="ejemplo-intro">
+            <h2>Introducción</h2>
+            <p>
+                ML-KEM (Module-Lattice Key Encapsulation Mechanism), anteriormente conocido como CRYSTALS-Kyber, es un mecanismo de encapsulamiento de claves basado en problemas de retículos modulares. Ha sido seleccionado por el NIST como el estándar FIPS 203 para el intercambio de claves post-cuántico.
+            </p>
+            <p>
+                ML-KEM proporciona un método seguro para que dos partes establezcan una clave compartida que puede utilizarse posteriormente para cifrado simétrico. A diferencia de los algoritmos de intercambio de claves tradicionales como Diffie-Hellman o RSA, ML-KEM está diseñado para resistir ataques de ordenadores cuánticos.
+            </p>
+            <p>
+                En este ejemplo, exploraremos cómo funciona ML-KEM y demostraremos sus operaciones básicas: generación de claves, encapsulamiento y desencapsulamiento.
+            </p>
+        </section>
+
+        <section class="ejemplo-teoria">
+            <h2>Fundamento Teórico</h2>
+            
+            <h3>Problemas de Retículos</h3>
+            <p>
+                ML-KEM basa su seguridad en la dificultad de resolver ciertos problemas relacionados con retículos, específicamente el problema de Learning With Errors (LWE) en su variante modular:
+            </p>
+            <ul>
+                <li><strong>Module-LWE (MLWE):</strong> Una generalización de Ring-LWE que proporciona un mejor equilibrio entre seguridad y eficiencia.</li>
+                <li><strong>Problema Computacional:</strong> Dado un conjunto de muestras (a, b = a·s + e), donde a es aleatorio, s es secreto y e es un pequeño error, encontrar s es computacionalmente difícil.</li>
+            </ul>
+            
+            <h3>Estructura de ML-KEM</h3>
+            <p>
+                ML-KEM es un mecanismo de encapsulamiento de claves (KEM) que consta de tres algoritmos principales:
+            </p>
+            <ol>
+                <li><strong>KeyGen:</strong> Genera un par de claves pública/privada.</li>
+                <li><strong>Encaps:</strong> Utiliza la clave pública para encapsular (cifrar) una clave simétrica compartida.</li>
+                <li><strong>Decaps:</strong> Utiliza la clave privada para desencapsular (descifrar) la clave simétrica compartida.</li>
+            </ol>
+            
+            <h3>Parámetros de ML-KEM</h3>
+            <p>
+                ML-KEM viene en tres variantes que ofrecen diferentes niveles de seguridad:
+            </p>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Variante</th>
+                        <th>Nivel de Seguridad</th>
+                        <th>Tamaño de Clave Pública</th>
+                        <th>Tamaño de Clave Privada</th>
+                        <th>Tamaño de Cifrado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ML-KEM-512</td>
+                        <td>Nivel 1 (AES-128)</td>
+                        <td>800 bytes</td>
+                        <td>1,632 bytes</td>
+                        <td>768 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>ML-KEM-768</td>
+                        <td>Nivel 3 (AES-192)</td>
+                        <td>1,184 bytes</td>
+                        <td>2,400 bytes</td>
+                        <td>1,088 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>ML-KEM-1024</td>
+                        <td>Nivel 5 (AES-256)</td>
+                        <td>1,568 bytes</td>
+                        <td>3,168 bytes</td>
+                        <td>1,568 bytes</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Operaciones Matemáticas</h3>
+            <p>
+                ML-KEM utiliza varias operaciones matemáticas específicas:
+            </p>
+            <ul>
+                <li><strong>Polinomios:</strong> Operaciones en el anillo R = Z_q[X]/(X^n + 1), donde n = 256 y q = 3329.</li>
+                <li><strong>Módulos:</strong> Vectores y matrices de polinomios que permiten ajustar el nivel de seguridad.</li>
+                <li><strong>NTT (Transformada Número-Teórica):</strong> Utilizada para multiplicación eficiente de polinomios.</li>
+                <li><strong>Compresión y Descompresión:</strong> Técnicas para reducir el tamaño de las claves y cifrados.</li>
+                <li><strong>Funciones Hash:</strong> SHA3-256, SHA3-512 y SHAKE-128/256 para derivación de claves y aleatorización.</li>
+            </ul>
+        </section>
+
+        <section class="ejemplo-simulacion">
+            <h2>Simulación Interactiva</h2>
+            
+            <div class="simulacion-container">
+                <div class="simulacion-controls">
+                    <div class="control-group">
+                        <label for="securityLevel">Nivel de Seguridad:</label>
+                        <select id="securityLevel">
+                            <option value="512">ML-KEM-512 (Nivel 1)</option>
+                            <option value="768" selected>ML-KEM-768 (Nivel 3)</option>
+                            <option value="1024">ML-KEM-1024 (Nivel 5)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="btnGenerateKeys" class="btn">Generar Claves</button>
+                    <button id="btnEncaps" class="btn" disabled>Encapsular Clave</button>
+                    <button id="btnDecaps" class="btn" disabled>Desencapsular Clave</button>
+                    <button id="btnReset" class="btn btn-outline">Reiniciar</button>
+                </div>
+                
+                <div class="simulacion-output">
+                    <h3>Resultados</h3>
+                    <div id="outputPasos" class="output-pasos">
+                        <p>Seleccione un nivel de seguridad y haga clic en "Generar Claves" para comenzar.</p>
+                    </div>
+                    
+                    <div class="output-keys">
+                        <div class="key-container">
+                            <h4>Clave Pública</h4>
+                            <pre id="publicKey" class="key-display">-</pre>
+                        </div>
+                        <div class="key-container">
+                            <h4>Clave Privada</h4>
+                            <pre id="privateKey" class="key-display">-</pre>
+                        </div>
+                        <div class="key-container">
+                            <h4>Clave Compartida</h4>
+                            <pre id="sharedKey" class="key-display">-</pre>
+                        </div>
+                        <div class="key-container">
+                            <h4>Cifrado</h4>
+                            <pre id="ciphertext" class="key-display">-</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="simulacion-visualization">
+                    <h3>Visualización</h3>
+                    <div id="visualization" class="visualization-container">
+                        <!-- La visualización se generará dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ejemplo-codigo">
+            <h2>Implementación</h2>
+            
+            <p>
+                A continuación se muestra una implementación simplificada de ML-KEM en Python. 
+                Esta implementación es para fines educativos y omite muchos detalles técnicos del algoritmo real.
+            </p>
+            
+            <pre><code class="language-python">import numpy as np
+import hashlib
+import secrets
+
+# Parámetros simplificados para ML-KEM
+class MLKEMParams:
+    def __init__(self, k, eta1, eta2, du, dv):
+        self.n = 256  # Grado del polinomio
+        self.q = 3329  # Módulo
+        self.k = k  # Dimensión del módulo
+        self.eta1 = eta1  # Parámetro de distribución de ruido
+        self.eta2 = eta2  # Parámetro de distribución de ruido
+        self.du = du  # Parámetro de compresión
+        self.dv = dv  # Parámetro de compresión
+
+# Definición de parámetros para diferentes niveles de seguridad
+def get_params(security_level):
+    if security_level == 512:  # Nivel 1
+        return MLKEMParams(k=2, eta1=3, eta2=2, du=10, dv=4)
+    elif security_level == 768:  # Nivel 3
+        return MLKEMParams(k=3, eta1=2, eta2=2, du=10, dv=4)
+    elif security_level == 1024:  # Nivel 5
+        return MLKEMParams(k=4, eta1=2, eta2=2, du=11, dv=5)
+    else:
+        raise ValueError("Nivel de seguridad no válido")
+
+# Funciones auxiliares simplificadas
+def sample_poly(n, q, eta):
+    """Genera un polinomio con coeficientes pequeños."""
+    return np.array([secrets.randbelow(2*eta+1) - eta for _ in range(n)]) % q
+
+def sample_matrix(k, n, q):
+    """Genera una matriz de polinomios aleatorios."""
+    return np.array([[secrets.randbelow(q) for _ in range(n)] for _ in range(k)])
+
+def compress(x, d, q):
+    """Comprime un valor x a d bits."""
+    return round((2**d / q) * x) % (2**d)
+
+def decompress(x, d, q):
+    """Descomprime un valor x de d bits."""
+    return round((q / 2**d) * x) % q
+
+def hash_function(data, length):
+    """Función hash simplificada basada en SHA3."""
+    h = hashlib.sha3_256(data).digest()
+    if length > len(h):
+        h += hashlib.sha3_256(h).digest()
+    return h[:length]
+
+# Implementación simplificada de ML-KEM
+class MLKEM:
+    def __init__(self, security_level=768):
+        self.params = get_params(security_level)
+        self.n = self.params.n
+        self.q = self.params.q
+        self.k = self.params.k
+    
+    def keygen(self):
+        """Genera un par de claves pública/privada."""
+        # Generar semilla aleatoria
+        d = secrets.token_bytes(32)
+        
+        # Generar matriz A (en una implementación real, esto se haría de forma determinista)
+        A = sample_matrix(self.k, self.n, self.q)
+        
+        # Generar vector secreto s
+        s = np.array([sample_poly(self.n, self.q, self.params.eta1) for _ in range(self.k)])
+        
+        # Generar vector de error e
+        e = np.array([sample_poly(self.n, self.q, self.params.eta1) for _ in range(self.k)])
+        
+        # Calcular t = A·s + e
+        t = np.zeros((self.k, self.n), dtype=int)
+        for i in range(self.k):
+            for j in range(self.k):
+                # En una implementación real, esto sería una multiplicación de polinomios
+                t[i] = (t[i] + np.convolve(A[i, j], s[j], mode='same')) % self.q
+            t[i] = (t[i] + e[i]) % self.q
+        
+        # Clave pública: (t, d)
+        public_key = (t, d)
+        
+        # Clave privada: (s, t, d)
+        private_key = (s, t, d)
+        
+        return public_key, private_key
+    
+    def encaps(self, public_key):
+        """Encapsula una clave compartida usando la clave pública."""
+        t, d = public_key
+        
+        # Generar mensaje aleatorio m
+        m = secrets.token_bytes(32)
+        
+        # Derivar ruido y semilla a partir de m y d
+        seed = hash_function(m + bytes(d), 32)
+        
+        # Generar matriz A (en una implementación real, esto se haría de forma determinista)
+        A = sample_matrix(self.k, self.n, self.q)
+        
+        # Generar vector r
+        r = np.array([sample_poly(self.n, self.q, self.params.eta1) for _ in range(self.k)])
+        
+        # Generar vector de error e1
+        e1 = np.array([sample_poly(self.n, self.q, self.params.eta2) for _ in range(self.k)])
+        
+        # Generar error e2
+        e2 = sample_poly(self.n, self.q, self.params.eta2)
+        
+        # Calcular u = A^T·r + e1
+        u = np.zeros((self.k, self.n), dtype=int)
+        for i in range(self.k):
+            for j in range(self.k):
+                # En una implementación real, esto sería una multiplicación de polinomios
+                u[i] = (u[i] + np.convolve(A[j, i], r[j], mode='same')) % self.q
+            u[i] = (u[i] + e1[i]) % self.q
+        
+        # Calcular v = t^T·r + e2 + ⌈q/2⌋·m
+        v = np.zeros(self.n, dtype=int)
+        for i in range(self.k):
+            # En una implementación real, esto sería una multiplicación de polinomios
+            v = (v + np.convolve(t[i], r[i], mode='same')) % self.q
+        
+        # Añadir error y mensaje
+        v = (v + e2) % self.q
+        
+        # Codificar mensaje en el dominio de la señal
+        m_bits = ''.join(format(b, '08b') for b in m)
+        for i in range(min(self.n, len(m_bits))):
+            if i < len(m_bits) and m_bits[i] == '1':
+                v[i] = (v[i] + (self.q // 2)) % self.q
+        
+        # Comprimir u y v
+        u_compressed = np.array([[compress(u[i][j], self.params.du, self.q) 
+                                 for j in range(self.n)] for i in range(self.k)])
+        v_compressed = np.array([compress(v[j], self.params.dv, self.q) 
+                                for j in range(self.n)])
+        
+        # Cifrado: (u_compressed, v_compressed)
+        ciphertext = (u_compressed, v_compressed)
+        
+        # Derivar clave compartida
+        shared_key = hash_function(m + bytes(ciphertext), 32)
+        
+        return ciphertext, shared_key
+    
+    def decaps(self, private_key, ciphertext):
+        """Desencapsula la clave compartida usando la clave privada y el cifrado."""
+        s, t, d = private_key
+        u_compressed, v_compressed = ciphertext
+        
+        # Descomprimir u y v
+        u = np.array([[decompress(u_compressed[i][j], self.params.du, self.q) 
+                      for j in range(self.n)] for i in range(self.k)])
+        v = np.array([decompress(v_compressed[j], self.params.dv, self.q) 
+                     for j in range(self.n)])
+        
+        # Calcular m' = v - s^T·u
+        m_prime = np.copy(v)
+        for i in range(self.k):
+            # En una implementación real, esto sería una multiplicación de polinomios
+            m_prime = (m_prime - np.convolve(s[i], u[i], mode='same')[:self.n]) % self.q
+        
+        # Decodificar mensaje
+        m = bytearray(32)
+        for i in range(min(self.n, 256)):  # 256 bits = 32 bytes
+            bit_pos = i // 8
+            bit_offset = i % 8
+            # Comprobar si el coeficiente está más cerca de q/2 o 0
+            if abs(m_prime[i] - (self.q // 2)) < abs(m_prime[i]):
+                m[bit_pos] |= (1 << bit_offset)
+        
+        # Verificar la validez del mensaje desencapsulado
+        seed = hash_function(bytes(m) + bytes(d), 32)
+        
+        # En una implementación real, se recalcularía el cifrado y se verificaría
+        # que coincide con el recibido
+        
+        # Derivar clave compartida
+        shared_key = hash_function(bytes(m) + bytes(ciphertext), 32)
+        
+        return shared_key
+
+# Ejemplo de uso
+def main():
+    # Crear instancia de ML-KEM con nivel de seguridad 3
+    mlkem = MLKEM(security_level=768)
+    
+    # Generar par de claves
+    public_key, private_key = mlkem.keygen()
+    print("Claves generadas")
+    
+    # Encapsular clave compartida
+    ciphertext, shared_key_encaps = mlkem.encaps(public_key)
+    print("Clave encapsulada")
+    
+    # Desencapsular clave compartida
+    shared_key_decaps = mlkem.decaps(private_key, ciphertext)
+    print("Clave desencapsulada")
+    
+    # Verificar que las claves compartidas coinciden
+    if shared_key_encaps == shared_key_decaps:
+        print("Éxito: Las claves compartidas coinciden")
+    else:
+        print("Error: Las claves compartidas no coinciden")
+
+if __name__ == "__main__":
+    main()</code></pre>
+            
+            <p>
+                Esta implementación es una simplificación significativa del algoritmo ML-KEM real. En la práctica, ML-KEM utiliza:
+            </p>
+            <ul>
+                <li>Transformada Número-Teórica (NTT) para multiplicación eficiente de polinomios</li>
+                <li>Generación determinista de la matriz A a partir de una semilla</li>
+                <li>Técnicas de muestreo eficientes para distribuciones binomiales</li>
+                <li>Codificación y decodificación optimizadas</li>
+                <li>Medidas adicionales contra ataques de canal lateral</li>
+            </ul>
+            <p>
+                Para implementaciones completas y seguras, se recomienda utilizar bibliotecas criptográficas establecidas como liboqs o pqcrypto.
+            </p>
+        </section>
+
+        <section class="ejemplo-impacto">
+            <h2>Ventajas y Consideraciones</h2>
+            
+            <div class="impacto-grid">
+                <div class="impacto-item">
+                    <h3>Ventajas</h3>
+                    <ul>
+                        <li><strong>Seguridad Post-Cuántica:</strong> Resistente a ataques de ordenadores cuánticos, incluido el algoritmo de Shor.</li>
+                        <li><strong>Eficiencia:</strong> Operaciones relativamente rápidas y tamaños de clave/cifrado moderados.</li>
+                        <li><strong>Flexibilidad:</strong> Diferentes niveles de seguridad para distintas necesidades.</li>
+                        <li><strong>Estandarización:</strong> Seleccionado como estándar FIPS 203 por el NIST.</li>
+                        <li><strong>Análisis Extenso:</strong> Ha sido sometido a un riguroso análisis criptográfico durante el proceso de selección del NIST.</li>
+                    </ul>
+                </div>
+                
+                <div class="impacto-item">
+                    <h3>Consideraciones</h3>
+                    <ul>
+                        <li><strong>Tamaño de Claves:</strong> Las claves son más grandes que en criptografía de curva elíptica (aunque más pequeñas que otros esquemas post-cuánticos).</li>
+                        <li><strong>Novedad:</strong> Menos probado en el tiempo que algoritmos tradicionales como RSA o ECDH.</li>
+                        <li><strong>Implementación:</strong> Requiere cuidado para evitar vulnerabilidades de implementación y ataques de canal lateral.</li>
+                        <li><strong>Integración:</strong> La migración a ML-KEM en sistemas existentes puede requerir modificaciones significativas.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h3>Comparación con Otros Mecanismos de Intercambio de Claves</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Característica</th>
+                        <th>ML-KEM</th>
+                        <th>RSA</th>
+                        <th>ECDH</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Seguridad Post-Cuántica</td>
+                        <td>Sí</td>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Tamaño de Clave Pública (Nivel 128 bits)</td>
+                        <td>~800-1,568 bytes</td>
+                        <td>~256-384 bytes</td>
+                        <td>~32-64 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Tamaño de Cifrado/Intercambio</td>
+                        <td>~768-1,568 bytes</td>
+                        <td>~256-384 bytes</td>
+                        <td>~32-64 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Velocidad de Operación</td>
+                        <td>Rápida</td>
+                        <td>Lenta</td>
+                        <td>Muy rápida</td>
+                    </tr>
+                    <tr>
+                        <td>Base Matemática</td>
+                        <td>Retículos Modulares</td>
+                        <td>Factorización</td>
+                        <td>Logaritmo Discreto</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="ejemplo-aplicaciones">
+            <h2>Aplicaciones Prácticas</h2>
+            
+            <div class="aplicaciones-grid">
+                <div class="aplicacion-item">
+                    <h3>TLS/SSL</h3>
+                    <p>
+                        ML-KEM puede integrarse en protocolos TLS para establecer conexiones seguras post-cuánticas. 
+                        Existen implementaciones experimentales en OpenSSL y BoringSSL que permiten el uso de ML-KEM 
+                        en el handshake TLS, ya sea en modo híbrido (combinado con ECDHE) o como único mecanismo.
+                    </p>
+                </div>
+                
+                <div class="aplicacion-item">
+                    <h3>VPN</h3>
+                    <p>
+                        Las redes privadas virtuales pueden utilizar ML-KEM para el establecimiento de claves, 
+                        proporcionando seguridad post-cuántica para las comunicaciones empresariales. Proyectos como 
+                        OpenVPN y WireGuard están explorando la integración de algoritmos post-cuánticos.
+                    </p>
+                </div>
+                
+                <div class="aplicacion-item">
+                    <h3>Cifrado de Correo Electrónico</h3>
+                    <p>
+                        Protocolos como S/MIME y OpenPGP pueden beneficiarse de ML-KEM para el intercambio seguro 
+                        de claves de sesión, permitiendo el cifrado de correos electrónicos resistente a ataques cuánticos.
+                    </p>
+                </div>
+                
+                <div class="aplicacion-item">
+                    <h3>IoT y Dispositivos Embebidos</h3>
+                    <p>
+                        ML-KEM es relativamente eficiente en términos de recursos computacionales, lo que lo hace 
+                        adecuado para dispositivos con restricciones como sensores IoT y sistemas embebidos que 
+                        necesitan seguridad a largo plazo.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="ejemplo-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <ul>
+                <li>
+                    <a href="https://csrc.nist.gov/pubs/fips/203/ipd" target="_blank">
+                        NIST FIPS 203 (Initial Public Draft): Module-Lattice-Based Key-Encapsulation Mechanism Standard
+                    </a>
+                </li>
+                <li>
+                    <a href="https://pq-crystals.org/kyber/" target="_blank">
+                        Sitio oficial de CRYSTALS-Kyber (ahora ML-KEM)
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/open-quantum-safe/liboqs" target="_blank">
+                        liboqs: Biblioteca de código abierto para criptografía post-cuántica
+                    </a>
+                </li>
+                <li>
+                    <a href="../guias/ml_kem.html">
+                        Guía de Laboratorio: ML-KEM
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="ejemplo-navegacion">
+            <a href="algoritmo_shor.html" class="btn btn-outline">
+                <span class="flecha">←</span> Anterior: Algoritmo de Shor
+            </a>
+            <a href="ml_dsa.html" class="btn">
+                Siguiente: ML-DSA <span class="flecha">→</span>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/prism.js"></script>
+    <script>
+        // Código específico para la simulación de ML-KEM
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnGenerateKeys = document.getElementById('btnGenerateKeys');
+            const btnEncaps = document.getElementById('btnEncaps');
+            const btnDecaps = document.getElementById('btnDecaps');
+            const btnReset = document.getElementById('btnReset');
+            const securityLevel = document.getElementById('securityLevel');
+            const outputPasos = document.getElementById('outputPasos');
+            const publicKey = document.getElementById('publicKey');
+            const privateKey = document.getElementById('privateKey');
+            const sharedKey = document.getElementById('sharedKey');
+            const ciphertext = document.getElementById('ciphertext');
+            const visualization = document.getElementById('visualization');
+            
+            // Variables para almacenar el estado
+            let currentPublicKey = null;
+            let currentPrivateKey = null;
+            let currentCiphertext = null;
+            let currentSharedKey = null;
+            
+            // Función para generar un hash simulado
+            function simulateHash(input, length = 32) {
+                // Esta es una simulación simple, no un hash real
+                let hash = '';
+                const chars = '0123456789abcdef';
+                for (let i = 0; i < length * 2; i++) {
+                    hash += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return hash;
+            }
+            
+            // Función para generar una representación hexadecimal aleatoria
+            function generateHexString(length) {
+                let result = '';
+                const characters = '0123456789abcdef';
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return result;
+            }
+            
+            // Función para simular la generación de claves
+            function simulateKeyGen(level) {
+                const levelInt = parseInt(level);
+                let k, publicKeySize, privateKeySize;
+                
+                if (levelInt === 512) {
+                    k = 2;
+                    publicKeySize = 800;
+                    privateKeySize = 1632;
+                } else if (levelInt === 768) {
+                    k = 3;
+                    publicKeySize = 1184;
+                    privateKeySize = 2400;
+                } else { // 1024
+                    k = 4;
+                    publicKeySize = 1568;
+                    privateKeySize = 3168;
+                }
+                
+                // Simular clave pública (t, d)
+                const t = [];
+                for (let i = 0; i < k; i++) {
+                    t.push(generateHexString(256)); // Simulación de polinomios
+                }
+                const d = generateHexString(64); // Semilla de 32 bytes
+                
+                // Simular clave privada (s, t, d)
+                const s = [];
+                for (let i = 0; i < k; i++) {
+                    s.push(generateHexString(256)); // Simulación de polinomios secretos
+                }
+                
+                return {
+                    publicKey: {t, d, size: publicKeySize},
+                    privateKey: {s, t, d, size: privateKeySize}
+                };
+            }
+            
+            // Función para simular el encapsulamiento
+            function simulateEncaps(publicKey, level) {
+                const levelInt = parseInt(level);
+                let k, ciphertextSize;
+                
+                if (levelInt === 512) {
+                    k = 2;
+                    ciphertextSize = 768;
+                } else if (levelInt === 768) {
+                    k = 3;
+                    ciphertextSize = 1088;
+                } else { // 1024
+                    k = 4;
+                    ciphertextSize = 1568;
+                }
+                
+                // Simular mensaje aleatorio
+                const m = generateHexString(64); // 32 bytes
+                
+                // Simular cifrado (u, v)
+                const u = [];
+                for (let i = 0; i < k; i++) {
+                    u.push(generateHexString(256)); // Simulación de polinomios
+                }
+                const v = generateHexString(256);
+                
+                // Simular clave compartida
+                const sharedKey = simulateHash(m + JSON.stringify({u, v}));
+                
+                return {
+                    ciphertext: {u, v, size: ciphertextSize},
+                    sharedKey
+                };
+            }
+            
+            // Función para simular el desencapsulamiento
+            function simulateDecaps(privateKey, ciphertext) {
+                // En una implementación real, se recalcularía el cifrado y se verificaría
+                // En esta simulación, simplemente devolvemos la misma clave compartida
+                return currentSharedKey;
+            }
+            
+            // Función para visualizar el proceso de ML-KEM
+            function visualizeMLKEM(stage, level) {
+                visualization.innerHTML = '';
+                
+                // Crear el contenedor SVG
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "300");
+                svg.setAttribute("viewBox", "0 0 800 300");
+                
+                // Título
+                const title = document.createElement("h4");
+                
+                if (stage === 'keygen') {
+                    title.textContent = `Generación de Claves ML-KEM-${level}`;
+                    
+                    // Dibujar el proceso de generación de claves
+                    // Alicia (generador de claves)
+                    const aliceRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    aliceRect.setAttribute("x", "50");
+                    aliceRect.setAttribute("y", "50");
+                    aliceRect.setAttribute("width", "200");
+                    aliceRect.setAttribute("height", "200");
+                    aliceRect.setAttribute("rx", "10");
+                    aliceRect.setAttribute("ry", "10");
+                    aliceRect.setAttribute("fill", "#f0f8ff");
+                    aliceRect.setAttribute("stroke", "#3498db");
+                    aliceRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(aliceRect);
+                    
+                    // Etiqueta Alicia
+                    const aliceText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    aliceText.setAttribute("x", "150");
+                    aliceText.setAttribute("y", "30");
+                    aliceText.setAttribute("text-anchor", "middle");
+                    aliceText.setAttribute("font-size", "16");
+                    aliceText.setAttribute("font-weight", "bold");
+                    aliceText.textContent = "Alicia (Generador)";
+                    svg.appendChild(aliceText);
+                    
+                    // Pasos internos
+                    const steps = [
+                        "1. Generar semilla d",
+                        "2. Derivar matriz A",
+                        "3. Muestrear s, e",
+                        "4. Calcular t = A·s + e"
+                    ];
+                    
+                    for (let i = 0; i < steps.length; i++) {
+                        const stepText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        stepText.setAttribute("x", "60");
+                        stepText.setAttribute("y", "80" + i * 30);
+                        stepText.setAttribute("font-size", "14");
+                        stepText.textContent = steps[i];
+                        svg.appendChild(stepText);
+                    }
+                    
+                    // Claves resultantes
+                    const pkRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    pkRect.setAttribute("x", "350");
+                    pkRect.setAttribute("y", "70");
+                    pkRect.setAttribute("width", "150");
+                    pkRect.setAttribute("height", "60");
+                    pkRect.setAttribute("rx", "5");
+                    pkRect.setAttribute("ry", "5");
+                    pkRect.setAttribute("fill", "#e8f8f5");
+                    pkRect.setAttribute("stroke", "#2ecc71");
+                    pkRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(pkRect);
+                    
+                    const pkText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    pkText.setAttribute("x", "425");
+                    pkText.setAttribute("y", "105");
+                    pkText.setAttribute("text-anchor", "middle");
+                    pkText.setAttribute("font-size", "14");
+                    pkText.textContent = "Clave Pública (t, d)";
+                    svg.appendChild(pkText);
+                    
+                    const skRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    skRect.setAttribute("x", "350");
+                    skRect.setAttribute("y", "170");
+                    skRect.setAttribute("width", "150");
+                    skRect.setAttribute("height", "60");
+                    skRect.setAttribute("rx", "5");
+                    skRect.setAttribute("ry", "5");
+                    skRect.setAttribute("fill", "#fef9e7");
+                    skRect.setAttribute("stroke", "#f1c40f");
+                    skRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(skRect);
+                    
+                    const skText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    skText.setAttribute("x", "425");
+                    skText.setAttribute("y", "205");
+                    skText.setAttribute("text-anchor", "middle");
+                    skText.setAttribute("font-size", "14");
+                    skText.textContent = "Clave Privada (s, t, d)";
+                    svg.appendChild(skText);
+                    
+                    // Flechas
+                    const arrow1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow1.setAttribute("x1", "250");
+                    arrow1.setAttribute("y1", "100");
+                    arrow1.setAttribute("x2", "350");
+                    arrow1.setAttribute("y2", "100");
+                    arrow1.setAttribute("stroke", "#3498db");
+                    arrow1.setAttribute("stroke-width", "2");
+                    arrow1.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow1);
+                    
+                    const arrow2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow2.setAttribute("x1", "250");
+                    arrow2.setAttribute("y1", "200");
+                    arrow2.setAttribute("x2", "350");
+                    arrow2.setAttribute("y2", "200");
+                    arrow2.setAttribute("stroke", "#3498db");
+                    arrow2.setAttribute("stroke-width", "2");
+                    arrow2.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow2);
+                    
+                } else if (stage === 'encaps') {
+                    title.textContent = `Encapsulamiento ML-KEM-${level}`;
+                    
+                    // Dibujar el proceso de encapsulamiento
+                    // Bob (encapsulador)
+                    const bobRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    bobRect.setAttribute("x", "350");
+                    bobRect.setAttribute("y", "50");
+                    bobRect.setAttribute("width", "200");
+                    bobRect.setAttribute("height", "200");
+                    bobRect.setAttribute("rx", "10");
+                    bobRect.setAttribute("ry", "10");
+                    bobRect.setAttribute("fill", "#f5eef8");
+                    bobRect.setAttribute("stroke", "#9b59b6");
+                    bobRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(bobRect);
+                    
+                    // Etiqueta Bob
+                    const bobText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    bobText.setAttribute("x", "450");
+                    bobText.setAttribute("y", "30");
+                    bobText.setAttribute("text-anchor", "middle");
+                    bobText.setAttribute("font-size", "16");
+                    bobText.setAttribute("font-weight", "bold");
+                    bobText.textContent = "Bob (Encapsulador)";
+                    svg.appendChild(bobText);
+                    
+                    // Clave pública
+                    const pkRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    pkRect.setAttribute("x", "50");
+                    pkRect.setAttribute("y", "120");
+                    pkRect.setAttribute("width", "150");
+                    pkRect.setAttribute("height", "60");
+                    pkRect.setAttribute("rx", "5");
+                    pkRect.setAttribute("ry", "5");
+                    pkRect.setAttribute("fill", "#e8f8f5");
+                    pkRect.setAttribute("stroke", "#2ecc71");
+                    pkRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(pkRect);
+                    
+                    const pkText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    pkText.setAttribute("x", "125");
+                    pkText.setAttribute("y", "155");
+                    pkText.setAttribute("text-anchor", "middle");
+                    pkText.setAttribute("font-size", "14");
+                    pkText.textContent = "Clave Pública (t, d)";
+                    svg.appendChild(pkText);
+                    
+                    // Pasos internos
+                    const steps = [
+                        "1. Generar mensaje m",
+                        "2. Muestrear r, e1, e2",
+                        "3. Calcular u = A^T·r + e1",
+                        "4. Calcular v = t^T·r + e2 + m",
+                        "5. Derivar clave K"
+                    ];
+                    
+                    for (let i = 0; i < steps.length; i++) {
+                        const stepText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        stepText.setAttribute("x", "360");
+                        stepText.setAttribute("y", "80" + i * 30);
+                        stepText.setAttribute("font-size", "14");
+                        stepText.textContent = steps[i];
+                        svg.appendChild(stepText);
+                    }
+                    
+                    // Resultados
+                    const ctRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    ctRect.setAttribute("x", "650");
+                    ctRect.setAttribute("y", "80");
+                    ctRect.setAttribute("width", "150");
+                    ctRect.setAttribute("height", "60");
+                    ctRect.setAttribute("rx", "5");
+                    ctRect.setAttribute("ry", "5");
+                    ctRect.setAttribute("fill", "#f8f5ee");
+                    ctRect.setAttribute("stroke", "#e67e22");
+                    ctRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(ctRect);
+                    
+                    const ctText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    ctText.setAttribute("x", "725");
+                    ctText.setAttribute("y", "115");
+                    ctText.setAttribute("text-anchor", "middle");
+                    ctText.setAttribute("font-size", "14");
+                    ctText.textContent = "Cifrado (u, v)";
+                    svg.appendChild(ctText);
+                    
+                    const keyRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    keyRect.setAttribute("x", "650");
+                    keyRect.setAttribute("y", "170");
+                    keyRect.setAttribute("width", "150");
+                    keyRect.setAttribute("height", "60");
+                    keyRect.setAttribute("rx", "5");
+                    keyRect.setAttribute("ry", "5");
+                    keyRect.setAttribute("fill", "#ebf5fb");
+                    keyRect.setAttribute("stroke", "#3498db");
+                    keyRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(keyRect);
+                    
+                    const keyText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    keyText.setAttribute("x", "725");
+                    keyText.setAttribute("y", "205");
+                    keyText.setAttribute("text-anchor", "middle");
+                    keyText.setAttribute("font-size", "14");
+                    keyText.textContent = "Clave Compartida K";
+                    svg.appendChild(keyText);
+                    
+                    // Flechas
+                    const arrow1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow1.setAttribute("x1", "200");
+                    arrow1.setAttribute("y1", "150");
+                    arrow1.setAttribute("x2", "350");
+                    arrow1.setAttribute("y2", "150");
+                    arrow1.setAttribute("stroke", "#9b59b6");
+                    arrow1.setAttribute("stroke-width", "2");
+                    arrow1.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow1);
+                    
+                    const arrow2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow2.setAttribute("x1", "550");
+                    arrow2.setAttribute("y1", "110");
+                    arrow2.setAttribute("x2", "650");
+                    arrow2.setAttribute("y2", "110");
+                    arrow2.setAttribute("stroke", "#9b59b6");
+                    arrow2.setAttribute("stroke-width", "2");
+                    arrow2.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow2);
+                    
+                    const arrow3 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow3.setAttribute("x1", "550");
+                    arrow3.setAttribute("y1", "200");
+                    arrow3.setAttribute("x2", "650");
+                    arrow3.setAttribute("y2", "200");
+                    arrow3.setAttribute("stroke", "#9b59b6");
+                    arrow3.setAttribute("stroke-width", "2");
+                    arrow3.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow3);
+                    
+                } else if (stage === 'decaps') {
+                    title.textContent = `Desencapsulamiento ML-KEM-${level}`;
+                    
+                    // Dibujar el proceso de desencapsulamiento
+                    // Alicia (desencapsulador)
+                    const aliceRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    aliceRect.setAttribute("x", "350");
+                    aliceRect.setAttribute("y", "50");
+                    aliceRect.setAttribute("width", "200");
+                    aliceRect.setAttribute("height", "200");
+                    aliceRect.setAttribute("rx", "10");
+                    aliceRect.setAttribute("ry", "10");
+                    aliceRect.setAttribute("fill", "#f0f8ff");
+                    aliceRect.setAttribute("stroke", "#3498db");
+                    aliceRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(aliceRect);
+                    
+                    // Etiqueta Alicia
+                    const aliceText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    aliceText.setAttribute("x", "450");
+                    aliceText.setAttribute("y", "30");
+                    aliceText.setAttribute("text-anchor", "middle");
+                    aliceText.setAttribute("font-size", "16");
+                    aliceText.setAttribute("font-weight", "bold");
+                    aliceText.textContent = "Alicia (Desencapsulador)";
+                    svg.appendChild(aliceText);
+                    
+                    // Entradas
+                    const skRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    skRect.setAttribute("x", "50");
+                    skRect.setAttribute("y", "80");
+                    skRect.setAttribute("width", "150");
+                    skRect.setAttribute("height", "60");
+                    skRect.setAttribute("rx", "5");
+                    skRect.setAttribute("ry", "5");
+                    skRect.setAttribute("fill", "#fef9e7");
+                    skRect.setAttribute("stroke", "#f1c40f");
+                    skRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(skRect);
+                    
+                    const skText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    skText.setAttribute("x", "125");
+                    skText.setAttribute("y", "115");
+                    skText.setAttribute("text-anchor", "middle");
+                    skText.setAttribute("font-size", "14");
+                    skText.textContent = "Clave Privada (s, t, d)";
+                    svg.appendChild(skText);
+                    
+                    const ctRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    ctRect.setAttribute("x", "50");
+                    ctRect.setAttribute("y", "170");
+                    ctRect.setAttribute("width", "150");
+                    ctRect.setAttribute("height", "60");
+                    ctRect.setAttribute("rx", "5");
+                    ctRect.setAttribute("ry", "5");
+                    ctRect.setAttribute("fill", "#f8f5ee");
+                    ctRect.setAttribute("stroke", "#e67e22");
+                    ctRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(ctRect);
+                    
+                    const ctText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    ctText.setAttribute("x", "125");
+                    ctText.setAttribute("y", "205");
+                    ctText.setAttribute("text-anchor", "middle");
+                    ctText.setAttribute("font-size", "14");
+                    ctText.textContent = "Cifrado (u, v)";
+                    svg.appendChild(ctText);
+                    
+                    // Pasos internos
+                    const steps = [
+                        "1. Calcular m' = v - s^T·u",
+                        "2. Recalcular cifrado",
+                        "3. Verificar consistencia",
+                        "4. Derivar clave K"
+                    ];
+                    
+                    for (let i = 0; i < steps.length; i++) {
+                        const stepText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        stepText.setAttribute("x", "360");
+                        stepText.setAttribute("y", "80" + i * 30);
+                        stepText.setAttribute("font-size", "14");
+                        stepText.textContent = steps[i];
+                        svg.appendChild(stepText);
+                    }
+                    
+                    // Resultado
+                    const keyRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    keyRect.setAttribute("x", "650");
+                    keyRect.setAttribute("y", "120");
+                    keyRect.setAttribute("width", "150");
+                    keyRect.setAttribute("height", "60");
+                    keyRect.setAttribute("rx", "5");
+                    keyRect.setAttribute("ry", "5");
+                    keyRect.setAttribute("fill", "#ebf5fb");
+                    keyRect.setAttribute("stroke", "#3498db");
+                    keyRect.setAttribute("stroke-width", "2");
+                    svg.appendChild(keyRect);
+                    
+                    const keyText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    keyText.setAttribute("x", "725");
+                    keyText.setAttribute("y", "155");
+                    keyText.setAttribute("text-anchor", "middle");
+                    keyText.setAttribute("font-size", "14");
+                    keyText.textContent = "Clave Compartida K";
+                    svg.appendChild(keyText);
+                    
+                    // Flechas
+                    const arrow1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow1.setAttribute("x1", "200");
+                    arrow1.setAttribute("y1", "110");
+                    arrow1.setAttribute("x2", "350");
+                    arrow1.setAttribute("y2", "110");
+                    arrow1.setAttribute("stroke", "#3498db");
+                    arrow1.setAttribute("stroke-width", "2");
+                    arrow1.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow1);
+                    
+                    const arrow2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow2.setAttribute("x1", "200");
+                    arrow2.setAttribute("y1", "200");
+                    arrow2.setAttribute("x2", "350");
+                    arrow2.setAttribute("y2", "200");
+                    arrow2.setAttribute("stroke", "#3498db");
+                    arrow2.setAttribute("stroke-width", "2");
+                    arrow2.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow2);
+                    
+                    const arrow3 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    arrow3.setAttribute("x1", "550");
+                    arrow3.setAttribute("y1", "150");
+                    arrow3.setAttribute("x2", "650");
+                    arrow3.setAttribute("y2", "150");
+                    arrow3.setAttribute("stroke", "#3498db");
+                    arrow3.setAttribute("stroke-width", "2");
+                    arrow3.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(arrow3);
+                }
+                
+                // Definir marcador de flecha
+                const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+                marker.setAttribute("id", "arrowhead");
+                marker.setAttribute("markerWidth", "10");
+                marker.setAttribute("markerHeight", "7");
+                marker.setAttribute("refX", "10");
+                marker.setAttribute("refY", "3.5");
+                marker.setAttribute("orient", "auto");
+                
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("points", "0 0, 10 3.5, 0 7");
+                polygon.setAttribute("fill", "#3498db");
+                
+                marker.appendChild(polygon);
+                defs.appendChild(marker);
+                svg.appendChild(defs);
+                
+                visualization.appendChild(title);
+                visualization.appendChild(svg);
+                
+                // Leyenda
+                const legend = document.createElement("div");
+                legend.className = "visualization-legend";
+                
+                if (stage === 'keygen') {
+                    legend.innerHTML = `
+                        <p>El diagrama muestra el proceso de generación de claves en ML-KEM-${level}.</p>
+                        <p>Alicia genera un par de claves pública/privada que se utilizará para el intercambio seguro de claves.</p>
+                    `;
+                } else if (stage === 'encaps') {
+                    legend.innerHTML = `
+                        <p>El diagrama muestra el proceso de encapsulamiento en ML-KEM-${level}.</p>
+                        <p>Bob utiliza la clave pública de Alicia para encapsular una clave compartida secreta.</p>
+                    `;
+                } else if (stage === 'decaps') {
+                    legend.innerHTML = `
+                        <p>El diagrama muestra el proceso de desencapsulamiento en ML-KEM-${level}.</p>
+                        <p>Alicia utiliza su clave privada para recuperar la misma clave compartida secreta.</p>
+                    `;
+                }
+                
+                visualization.appendChild(legend);
+            }
+            
+            // Manejador para el botón de generación de claves
+            btnGenerateKeys.addEventListener('click', function() {
+                const level = securityLevel.value;
+                
+                // Simular generación de claves
+                const keys = simulateKeyGen(level);
+                currentPublicKey = keys.publicKey;
+                currentPrivateKey = keys.privateKey;
+                
+                // Mostrar información
+                outputPasos.innerHTML = `
+                    <p>Generando par de claves ML-KEM-${level}...</p>
+                    <p>1. Generamos una semilla aleatoria d.</p>
+                    <p>2. Derivamos la matriz A a partir de d.</p>
+                    <p>3. Muestreamos el vector secreto s y el vector de error e.</p>
+                    <p>4. Calculamos t = A·s + e.</p>
+                    <p>5. La clave pública es (t, d) y la clave privada es (s, t, d).</p>
+                `;
+                
+                // Mostrar claves
+                publicKey.textContent = `Tamaño: ${currentPublicKey.size} bytes\nt: [${currentPublicKey.t[0].substring(0, 20)}...]\nd: ${currentPublicKey.d.substring(0, 20)}...`;
+                privateKey.textContent = `Tamaño: ${currentPrivateKey.size} bytes\ns: [${currentPrivateKey.s[0].substring(0, 20)}...]\nt: [${currentPrivateKey.t[0].substring(0, 20)}...]\nd: ${currentPrivateKey.d.substring(0, 20)}...`;
+                
+                // Visualizar
+                visualizeMLKEM('keygen', level);
+                
+                // Habilitar botón de encapsulamiento
+                btnEncaps.disabled = false;
+                btnDecaps.disabled = true;
+                
+                // Reiniciar otros campos
+                sharedKey.textContent = '-';
+                ciphertext.textContent = '-';
+            });
+            
+            // Manejador para el botón de encapsulamiento
+            btnEncaps.addEventListener('click', function() {
+                if (!currentPublicKey) {
+                    alert("Primero debe generar un par de claves.");
+                    return;
+                }
+                
+                const level = securityLevel.value;
+                
+                // Simular encapsulamiento
+                const result = simulateEncaps(currentPublicKey, level);
+                currentCiphertext = result.ciphertext;
+                currentSharedKey = result.sharedKey;
+                
+                // Mostrar información
+                outputPasos.innerHTML = `
+                    <p>Encapsulando clave compartida con ML-KEM-${level}...</p>
+                    <p>1. Generamos un mensaje aleatorio m.</p>
+                    <p>2. Derivamos una semilla a partir de m y d.</p>
+                    <p>3. Muestreamos el vector r y los vectores de error e1 y e2.</p>
+                    <p>4. Calculamos u = A^T·r + e1.</p>
+                    <p>5. Calculamos v = t^T·r + e2 + ⌈q/2⌋·m.</p>
+                    <p>6. Comprimimos u y v para formar el cifrado.</p>
+                    <p>7. Derivamos la clave compartida K a partir de m y el cifrado.</p>
+                `;
+                
+                // Mostrar cifrado y clave compartida
+                ciphertext.textContent = `Tamaño: ${currentCiphertext.size} bytes\nu: [${currentCiphertext.u[0].substring(0, 20)}...]\nv: ${currentCiphertext.v.substring(0, 20)}...`;
+                sharedKey.textContent = currentSharedKey;
+                
+                // Visualizar
+                visualizeMLKEM('encaps', level);
+                
+                // Habilitar botón de desencapsulamiento
+                btnDecaps.disabled = false;
+            });
+            
+            // Manejador para el botón de desencapsulamiento
+            btnDecaps.addEventListener('click', function() {
+                if (!currentPrivateKey || !currentCiphertext) {
+                    alert("Primero debe generar claves y encapsular una clave compartida.");
+                    return;
+                }
+                
+                const level = securityLevel.value;
+                
+                // Simular desencapsulamiento
+                const decapsKey = simulateDecaps(currentPrivateKey, currentCiphertext);
+                
+                // Mostrar información
+                outputPasos.innerHTML = `
+                    <p>Desencapsulando clave compartida con ML-KEM-${level}...</p>
+                    <p>1. Descomprimimos u y v del cifrado.</p>
+                    <p>2. Calculamos m' = v - s^T·u.</p>
+                    <p>3. Decodificamos m' para obtener el mensaje m.</p>
+                    <p>4. Recalculamos el cifrado para verificar su validez.</p>
+                    <p>5. Derivamos la clave compartida K a partir de m y el cifrado.</p>
+                    <p>6. ¡Éxito! La clave compartida coincide con la generada durante el encapsulamiento.</p>
+                `;
+                
+                // Visualizar
+                visualizeMLKEM('decaps', level);
+                
+                // Mostrar mensaje de éxito
+                const successMessage = document.createElement("div");
+                successMessage.className = "success-message";
+                successMessage.innerHTML = `
+                    <p><strong>¡Intercambio de claves completado con éxito!</strong></p>
+                    <p>Alicia y Bob ahora comparten la misma clave secreta que pueden utilizar para cifrado simétrico.</p>
+                `;
+                outputPasos.appendChild(successMessage);
+            });
+            
+            // Manejador para el botón de reinicio
+            btnReset.addEventListener('click', function() {
+                // Reiniciar estado
+                currentPublicKey = null;
+                currentPrivateKey = null;
+                currentCiphertext = null;
+                currentSharedKey = null;
+                
+                // Reiniciar interfaz
+                securityLevel.value = "768";
+                outputPasos.innerHTML = "<p>Seleccione un nivel de seguridad y haga clic en \"Generar Claves\" para comenzar.</p>";
+                publicKey.textContent = "-";
+                privateKey.textContent = "-";
+                sharedKey.textContent = "-";
+                ciphertext.textContent = "-";
+                visualization.innerHTML = "";
+                
+                // Deshabilitar botones
+                btnEncaps.disabled = true;
+                btnDecaps.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>

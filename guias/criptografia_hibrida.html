@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptografía Híbrida - Guía de Laboratorio</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Guías de Laboratorio</a> &gt; Criptografía Híbrida
+    </div>
+
+    <main>
+        <h1>Guía de Laboratorio: Configuración de Criptografía Híbrida</h1>
+
+        <section class="lab-section">
+            <h2>Objetivos de Aprendizaje</h2>
+            <ul>
+                <li>Comprender el concepto y la importancia de la criptografía híbrida en la transición post-cuántica</li>
+                <li>Implementar un sistema de criptografía híbrida que combine algoritmos clásicos y post-cuánticos</li>
+                <li>Analizar las ventajas y desventajas de diferentes combinaciones híbridas</li>
+                <li>Evaluar el impacto en rendimiento, seguridad y compatibilidad de los sistemas híbridos</li>
+            </ul>
+        </section>
+
+        <section class="lab-section">
+            <h2>Requisitos Previos</h2>
+            <ul>
+                <li>Conocimientos básicos de criptografía de clave pública y simétrica</li>
+                <li>Familiaridad con los algoritmos post-cuánticos ML-KEM y ML-DSA</li>
+                <li>Python 3.8 o superior instalado</li>
+                <li>Bibliotecas requeridas: numpy, cryptography, pycryptodome</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <p><strong>Nota:</strong> Esta práctica implementa sistemas criptográficos híbridos con fines educativos. No debe utilizarse en entornos de producción sin una revisión adecuada.</p>
+            </div>
+        </section>
+
+        <section class="lab-section">
+            <h2>Introducción Teórica</h2>
+            <p>La criptografía híbrida es un enfoque de transición que combina algoritmos criptográficos clásicos (vulnerables a ataques cuánticos) con algoritmos post-cuánticos (resistentes a ataques cuánticos). Este enfoque proporciona:</p>
+            
+            <ol>
+                <li><strong>Seguridad a prueba de futuro:</strong> Protección contra ataques cuánticos futuros.</li>
+                <li><strong>Compatibilidad hacia atrás:</strong> Funcionamiento con sistemas existentes.</li>
+                <li><strong>Confianza gradual:</strong> Permite ganar confianza en los nuevos algoritmos mientras se mantiene la seguridad de los algoritmos probados.</li>
+            </ol>
+
+            <p>Existen diferentes enfoques para implementar criptografía híbrida:</p>
+            
+            <ul>
+                <li><strong>Composición en serie:</strong> Aplicar un algoritmo después de otro (por ejemplo, cifrar primero con RSA y luego con ML-KEM).</li>
+                <li><strong>Composición en paralelo:</strong> Aplicar ambos algoritmos de forma independiente y combinar los resultados.</li>
+                <li><strong>Composición integrada:</strong> Diseñar un nuevo protocolo que utilice componentes de ambos tipos de algoritmos.</li>
+            </ul>
+
+            <p>En esta práctica, implementaremos y analizaremos diferentes enfoques de criptografía híbrida para intercambio de claves y firmas digitales.</p>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 1: Implementación de Intercambio de Claves Híbrido</h2>
+            
+            <h3>1.1 Configuración del Entorno</h3>
+            <p>Crea un nuevo archivo Python llamado <code>hybrid_key_exchange.py</code> e importa las bibliotecas necesarias:</p>
+            <pre><code class="language-python">import os
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+# Importar implementaciones simplificadas de ML-KEM
+# Nota: Asegúrate de tener el archivo ml_kem_simplified.py de la práctica anterior
+from ml_kem_simplified import keygen as ml_kem_keygen
+from ml_kem_simplified import encaps as ml_kem_encaps
+from ml_kem_simplified import decaps as ml_kem_decaps
+</code></pre>
+
+            <h3>1.2 Implementación de Algoritmos Clásicos</h3>
+            <p>Primero, implementaremos funciones para los algoritmos clásicos:</p>
+            <pre><code class="language-python"># RSA Key Exchange
+def rsa_keygen(key_size=2048):
+    """
+    Genera un par de claves RSA.
+    """
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=key_size
+    )
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def rsa_encrypt(shared_key, public_key):
+    """
+    Cifra una clave compartida usando RSA.
+    """
+    ciphertext = public_key.encrypt(
+        shared_key,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return ciphertext
+
+def rsa_decrypt(ciphertext, private_key):
+    """
+    Descifra una clave compartida usando RSA.
+    """
+    shared_key = private_key.decrypt(
+        ciphertext,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return shared_key
+
+# ECDH Key Exchange
+def ecdh_keygen():
+    """
+    Genera un par de claves ECDH.
+    """
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def ecdh_derive_shared_key(private_key, peer_public_key):
+    """
+    Deriva una clave compartida usando ECDH.
+    """
+    shared_key = private_key.exchange(ec.ECDH(), peer_public_key)
+    # Derivar una clave simétrica usando HKDF
+    derived_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b'handshake data',
+    ).derive(shared_key)
+    return derived_key
+</code></pre>
+
+            <h3>1.3 Implementación de Esquemas Híbridos</h3>
+            <p>Ahora implementaremos diferentes esquemas de criptografía híbrida:</p>
+            <pre><code class="language-python"># Esquema 1: Composición en Serie (RSA + ML-KEM)
+def serial_hybrid_keygen():
+    """
+    Genera claves para el esquema híbrido en serie.
+    """
+    # Generar claves RSA
+    rsa_private, rsa_public = rsa_keygen()
+    
+    # Generar claves ML-KEM
+    ml_kem_keys = ml_kem_keygen()
+    
+    return {
+        'rsa': {'private': rsa_private, 'public': rsa_public},
+        'ml_kem': ml_kem_keys
+    }
+
+def serial_hybrid_encaps(public_keys):
+    """
+    Encapsula una clave compartida usando el esquema híbrido en serie.
+    """
+    # Generar clave compartida aleatoria
+    shared_key = os.urandom(32)
+    
+    # Encapsular con ML-KEM
+    ml_kem_ct, _ = ml_kem_encaps(public_keys['ml_kem']['public'])
+    
+    # Cifrar con RSA
+    rsa_ct = rsa_encrypt(shared_key, public_keys['rsa']['public'])
+    
+    return {'rsa': rsa_ct, 'ml_kem': ml_kem_ct}, shared_key
+
+def serial_hybrid_decaps(ciphertext, private_keys):
+    """
+    Desencapsula una clave compartida usando el esquema híbrido en serie.
+    """
+    # Descifrar con RSA
+    shared_key = rsa_decrypt(ciphertext['rsa'], private_keys['rsa']['private'])
+    
+    # Desencapsular con ML-KEM (para verificación)
+    _ = ml_kem_decaps(ciphertext['ml_kem'], private_keys['ml_kem']['private'], private_keys['ml_kem']['public'])
+    
+    return shared_key
+
+# Esquema 2: Composición en Paralelo (ECDH + ML-KEM)
+def parallel_hybrid_keygen():
+    """
+    Genera claves para el esquema híbrido en paralelo.
+    """
+    # Generar claves ECDH
+    ecdh_private, ecdh_public = ecdh_keygen()
+    
+    # Generar claves ML-KEM
+    ml_kem_keys = ml_kem_keygen()
+    
+    return {
+        'ecdh': {'private': ecdh_private, 'public': ecdh_public},
+        'ml_kem': ml_kem_keys
+    }
+
+def parallel_hybrid_encaps(public_keys, peer_private_key):
+    """
+    Encapsula una clave compartida usando el esquema híbrido en paralelo.
+    """
+    # Encapsular con ML-KEM
+    ml_kem_ct, ml_kem_shared = ml_kem_encaps(public_keys['ml_kem']['public'])
+    
+    # Derivar clave con ECDH
+    ecdh_shared = ecdh_derive_shared_key(peer_private_key, public_keys['ecdh']['public'])
+    
+    # Combinar ambas claves usando XOR
+    combined_key = bytes(a ^ b for a, b in zip(ml_kem_shared, ecdh_shared))
+    
+    return {'ml_kem': ml_kem_ct}, combined_key
+
+def parallel_hybrid_decaps(ciphertext, private_keys, peer_public_key):
+    """
+    Desencapsula una clave compartida usando el esquema híbrido en paralelo.
+    """
+    # Desencapsular con ML-KEM
+    ml_kem_shared = ml_kem_decaps(ciphertext['ml_kem'], private_keys['ml_kem']['private'], private_keys['ml_kem']['public'])
+    
+    # Derivar clave con ECDH
+    ecdh_shared = ecdh_derive_shared_key(private_keys['ecdh']['private'], peer_public_key)
+    
+    # Combinar ambas claves usando XOR
+    combined_key = bytes(a ^ b for a, b in zip(ml_kem_shared, ecdh_shared))
+    
+    return combined_key
+
+# Esquema 3: Composición Integrada (ECDH + ML-KEM con KDF)
+def integrated_hybrid_keygen():
+    """
+    Genera claves para el esquema híbrido integrado.
+    """
+    # Generar claves ECDH
+    ecdh_private, ecdh_public = ecdh_keygen()
+    
+    # Generar claves ML-KEM
+    ml_kem_keys = ml_kem_keygen()
+    
+    return {
+        'ecdh': {'private': ecdh_private, 'public': ecdh_public},
+        'ml_kem': ml_kem_keys
+    }
+
+def integrated_hybrid_encaps(public_keys, peer_private_key):
+    """
+    Encapsula una clave compartida usando el esquema híbrido integrado.
+    """
+    # Encapsular con ML-KEM
+    ml_kem_ct, ml_kem_shared = ml_kem_encaps(public_keys['ml_kem']['public'])
+    
+    # Derivar clave con ECDH
+    ecdh_shared = ecdh_derive_shared_key(peer_private_key, public_keys['ecdh']['public'])
+    
+    # Combinar ambas claves usando KDF
+    combined_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=os.urandom(16),
+        info=b'hybrid key exchange',
+    ).derive(ml_kem_shared + ecdh_shared)
+    
+    return {'ml_kem': ml_kem_ct}, combined_key
+
+def integrated_hybrid_decaps(ciphertext, private_keys, peer_public_key):
+    """
+    Desencapsula una clave compartida usando el esquema híbrido integrado.
+    """
+    # Desencapsular con ML-KEM
+    ml_kem_shared = ml_kem_decaps(ciphertext['ml_kem'], private_keys['ml_kem']['private'], private_keys['ml_kem']['public'])
+    
+    # Derivar clave con ECDH
+    ecdh_shared = ecdh_derive_shared_key(private_keys['ecdh']['private'], peer_public_key)
+    
+    # Combinar ambas claves usando KDF
+    combined_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=os.urandom(16),
+        info=b'hybrid key exchange',
+    ).derive(ml_kem_shared + ecdh_shared)
+    
+    return combined_key
+</code></pre>
+
+            <h3>1.4 Función Principal y Evaluación</h3>
+            <p>Finalmente, implementaremos la función principal para evaluar los diferentes esquemas:</p>
+            <pre><code class="language-python">def evaluate_key_exchange_schemes(num_trials=10):
+    """
+    Evalúa el rendimiento de diferentes esquemas de intercambio de claves.
+    """
+    # Tiempos para RSA
+    rsa_keygen_times = []
+    rsa_encaps_times = []
+    rsa_decaps_times = []
+    
+    # Tiempos para ML-KEM
+    ml_kem_keygen_times = []
+    ml_kem_encaps_times = []
+    ml_kem_decaps_times = []
+    
+    # Tiempos para el esquema híbrido en serie
+    serial_keygen_times = []
+    serial_encaps_times = []
+    serial_decaps_times = []
+    
+    # Tiempos para el esquema híbrido en paralelo
+    parallel_keygen_times = []
+    parallel_encaps_times = []
+    parallel_decaps_times = []
+    
+    # Tiempos para el esquema híbrido integrado
+    integrated_keygen_times = []
+    integrated_encaps_times = []
+    integrated_decaps_times = []
+    
+    for _ in range(num_trials):
+        # RSA
+        start_time = time.time()
+        rsa_private, rsa_public = rsa_keygen()
+        rsa_keygen_times.append(time.time() - start_time)
+        
+        shared_key = os.urandom(32)
+        
+        start_time = time.time()
+        rsa_ct = rsa_encrypt(shared_key, rsa_public)
+        rsa_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        rsa_decrypt(rsa_ct, rsa_private)
+        rsa_decaps_times.append(time.time() - start_time)
+        
+        # ML-KEM
+        start_time = time.time()
+        ml_kem_keys = ml_kem_keygen()
+        ml_kem_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ml_kem_ct, ml_kem_shared_sender = ml_kem_encaps(ml_kem_keys['public'])
+        ml_kem_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ml_kem_shared_receiver = ml_kem_decaps(ml_kem_ct, ml_kem_keys['private'], ml_kem_keys['public'])
+        ml_kem_decaps_times.append(time.time() - start_time)
+        
+        # Esquema híbrido en serie
+        start_time = time.time()
+        serial_keys = serial_hybrid_keygen()
+        serial_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        serial_ct, serial_shared_sender = serial_hybrid_encaps({
+            'rsa': {'public': serial_keys['rsa']['public']},
+            'ml_kem': {'public': serial_keys['ml_kem']['public']}
+        })
+        serial_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        serial_shared_receiver = serial_hybrid_decaps(serial_ct, serial_keys)
+        serial_decaps_times.append(time.time() - start_time)
+        
+        # Esquema híbrido en paralelo
+        start_time = time.time()
+        alice_keys = parallel_hybrid_keygen()
+        bob_keys = parallel_hybrid_keygen()
+        parallel_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        parallel_ct, parallel_shared_sender = parallel_hybrid_encaps({
+            'ecdh': {'public': bob_keys['ecdh']['public']},
+            'ml_kem': {'public': bob_keys['ml_kem']['public']}
+        }, alice_keys['ecdh']['private'])
+        parallel_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        parallel_shared_receiver = parallel_hybrid_decaps(parallel_ct, bob_keys, alice_keys['ecdh']['public'])
+        parallel_decaps_times.append(time.time() - start_time)
+        
+        # Esquema híbrido integrado
+        start_time = time.time()
+        alice_keys_int = integrated_hybrid_keygen()
+        bob_keys_int = integrated_hybrid_keygen()
+        integrated_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        integrated_ct, integrated_shared_sender = integrated_hybrid_encaps({
+            'ecdh': {'public': bob_keys_int['ecdh']['public']},
+            'ml_kem': {'public': bob_keys_int['ml_kem']['public']}
+        }, alice_keys_int['ecdh']['private'])
+        integrated_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        integrated_shared_receiver = integrated_hybrid_decaps(integrated_ct, bob_keys_int, alice_keys_int['ecdh']['public'])
+        integrated_decaps_times.append(time.time() - start_time)
+    
+    # Calcular promedios
+    rsa_keygen_avg = np.mean(rsa_keygen_times)
+    rsa_encaps_avg = np.mean(rsa_encaps_times)
+    rsa_decaps_avg = np.mean(rsa_decaps_times)
+    
+    ml_kem_keygen_avg = np.mean(ml_kem_keygen_times)
+    ml_kem_encaps_avg = np.mean(ml_kem_encaps_times)
+    ml_kem_decaps_avg = np.mean(ml_kem_decaps_times)
+    
+    serial_keygen_avg = np.mean(serial_keygen_times)
+    serial_encaps_avg = np.mean(serial_encaps_times)
+    serial_decaps_avg = np.mean(serial_decaps_times)
+    
+    parallel_keygen_avg = np.mean(parallel_keygen_times)
+    parallel_encaps_avg = np.mean(parallel_encaps_times)
+    parallel_decaps_avg = np.mean(parallel_decaps_times)
+    
+    integrated_keygen_avg = np.mean(integrated_keygen_times)
+    integrated_encaps_avg = np.mean(integrated_encaps_times)
+    integrated_decaps_avg = np.mean(integrated_decaps_times)
+    
+    # Visualizar resultados
+    plt.figure(figsize=(15, 10))
+    
+    # Tiempos de generación de claves
+    plt.subplot(1, 3, 1)
+    plt.bar(['RSA', 'ML-KEM', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_keygen_avg, ml_kem_keygen_avg, serial_keygen_avg, parallel_keygen_avg, integrated_keygen_avg])
+    plt.title('Tiempo de Generación de Claves')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de encapsulamiento
+    plt.subplot(1, 3, 2)
+    plt.bar(['RSA', 'ML-KEM', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_encaps_avg, ml_kem_encaps_avg, serial_encaps_avg, parallel_encaps_avg, integrated_encaps_avg])
+    plt.title('Tiempo de Encapsulamiento')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de desencapsulamiento
+    plt.subplot(1, 3, 3)
+    plt.bar(['RSA', 'ML-KEM', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_decaps_avg, ml_kem_decaps_avg, serial_decaps_avg, parallel_decaps_avg, integrated_decaps_avg])
+    plt.title('Tiempo de Desencapsulamiento')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('hybrid_key_exchange_performance.png')
+    plt.show()
+    
+    # Imprimir resultados
+    print("\nComparación de Rendimiento (promedio de", num_trials, "pruebas):")
+    
+    print("\nRSA:")
+    print("  Generación de claves:", rsa_keygen_avg, "segundos")
+    print("  Encapsulamiento:", rsa_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", rsa_decaps_avg, "segundos")
+    print("  Total:", rsa_keygen_avg + rsa_encaps_avg + rsa_decaps_avg, "segundos")
+    
+    print("\nML-KEM:")
+    print("  Generación de claves:", ml_kem_keygen_avg, "segundos")
+    print("  Encapsulamiento:", ml_kem_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", ml_kem_decaps_avg, "segundos")
+    print("  Total:", ml_kem_keygen_avg + ml_kem_encaps_avg + ml_kem_decaps_avg, "segundos")
+    
+    print("\nEsquema Híbrido en Serie:")
+    print("  Generación de claves:", serial_keygen_avg, "segundos")
+    print("  Encapsulamiento:", serial_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", serial_decaps_avg, "segundos")
+    print("  Total:", serial_keygen_avg + serial_encaps_avg + serial_decaps_avg, "segundos")
+    
+    print("\nEsquema Híbrido en Paralelo:")
+    print("  Generación de claves:", parallel_keygen_avg, "segundos")
+    print("  Encapsulamiento:", parallel_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", parallel_decaps_avg, "segundos")
+    print("  Total:", parallel_keygen_avg + parallel_encaps_avg + parallel_decaps_avg, "segundos")
+    
+    print("\nEsquema Híbrido Integrado:")
+    print("  Generación de claves:", integrated_keygen_avg, "segundos")
+    print("  Encapsulamiento:", integrated_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", integrated_decaps_avg, "segundos")
+    print("  Total:", integrated_keygen_avg + integrated_encaps_avg + integrated_decaps_avg, "segundos")
+
+def main():
+    print("Evaluación de Esquemas de Intercambio de Claves Híbridos")
+    evaluate_key_exchange_schemes()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 2: Implementación de Firmas Digitales Híbridas</h2>
+            
+            <h3>2.1 Configuración del Entorno</h3>
+            <p>Crea un nuevo archivo Python llamado <code>hybrid_signatures.py</code> e importa las bibliotecas necesarias:</p>
+            <pre><code class="language-python">import os
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding, utils
+from cryptography.hazmat.primitives import hashes, serialization
+
+# Importar implementaciones simplificadas de ML-DSA
+# Nota: Asegúrate de tener el archivo ml_dsa_simplified.py de la práctica anterior
+from ml_dsa_simplified import keygen as ml_dsa_keygen
+from ml_dsa_simplified import sign as ml_dsa_sign
+from ml_dsa_simplified import verify as ml_dsa_verify
+</code></pre>
+
+            <h3>2.2 Implementación de Algoritmos Clásicos</h3>
+            <p>Primero, implementaremos funciones para los algoritmos clásicos:</p>
+            <pre><code class="language-python"># RSA Signatures
+def rsa_sig_keygen(key_size=2048):
+    """
+    Genera un par de claves RSA para firmas.
+    """
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=key_size
+    )
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def rsa_sign(message, private_key):
+    """
+    Firma un mensaje usando RSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    signature = private_key.sign(
+        message,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
+        hashes.SHA256()
+    )
+    return signature
+
+def rsa_verify(message, signature, public_key):
+    """
+    Verifica una firma RSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    try:
+        public_key.verify(
+            signature,
+            message,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        return True
+    except Exception:
+        return False
+
+# ECDSA Signatures
+def ecdsa_keygen():
+    """
+    Genera un par de claves ECDSA.
+    """
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def ecdsa_sign(message, private_key):
+    """
+    Firma un mensaje usando ECDSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    signature = private_key.sign(
+        message,
+        ec.ECDSA(hashes.SHA256())
+    )
+    return signature
+
+def ecdsa_verify(message, signature, public_key):
+    """
+    Verifica una firma ECDSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    try:
+        public_key.verify(
+            signature,
+            message,
+            ec.ECDSA(hashes.SHA256())
+        )
+        return True
+    except Exception:
+        return False
+</code></pre>
+
+            <h3>2.3 Implementación de Esquemas Híbridos</h3>
+            <p>Ahora implementaremos diferentes esquemas de firmas híbridas:</p>
+            <pre><code class="language-python"># Esquema 1: Composición en Serie (RSA + ML-DSA)
+def serial_hybrid_sig_keygen():
+    """
+    Genera claves para el esquema híbrido de firmas en serie.
+    """
+    # Generar claves RSA
+    rsa_private, rsa_public = rsa_sig_keygen()
+    
+    # Generar claves ML-DSA
+    ml_dsa_keys = ml_dsa_keygen()
+    
+    return {
+        'rsa': {'private': rsa_private, 'public': rsa_public},
+        'ml_dsa': ml_dsa_keys
+    }
+
+def serial_hybrid_sign(message, private_keys):
+    """
+    Firma un mensaje usando el esquema híbrido en serie.
+    """
+    # Firmar con RSA
+    rsa_signature = rsa_sign(message, private_keys['rsa']['private'])
+    
+    # Firmar con ML-DSA
+    ml_dsa_signature = ml_dsa_sign(message, private_keys['ml_dsa']['private'])
+    
+    return {'rsa': rsa_signature, 'ml_dsa': ml_dsa_signature}
+
+def serial_hybrid_verify(message, signature, public_keys):
+    """
+    Verifica una firma usando el esquema híbrido en serie.
+    """
+    # Verificar con RSA
+    rsa_valid = rsa_verify(message, signature['rsa'], public_keys['rsa']['public'])
+    
+    # Verificar con ML-DSA
+    ml_dsa_valid = ml_dsa_verify(message, signature['ml_dsa'], public_keys['ml_dsa']['public'])
+    
+    # Ambas firmas deben ser válidas
+    return rsa_valid and ml_dsa_valid
+
+# Esquema 2: Composición en Paralelo (ECDSA + ML-DSA)
+def parallel_hybrid_sig_keygen():
+    """
+    Genera claves para el esquema híbrido de firmas en paralelo.
+    """
+    # Generar claves ECDSA
+    ecdsa_private, ecdsa_public = ecdsa_keygen()
+    
+    # Generar claves ML-DSA
+    ml_dsa_keys = ml_dsa_keygen()
+    
+    return {
+        'ecdsa': {'private': ecdsa_private, 'public': ecdsa_public},
+        'ml_dsa': ml_dsa_keys
+    }
+
+def parallel_hybrid_sign(message, private_keys):
+    """
+    Firma un mensaje usando el esquema híbrido en paralelo.
+    """
+    # Firmar con ECDSA
+    ecdsa_signature = ecdsa_sign(message, private_keys['ecdsa']['private'])
+    
+    # Firmar con ML-DSA
+    ml_dsa_signature = ml_dsa_sign(message, private_keys['ml_dsa']['private'])
+    
+    return {'ecdsa': ecdsa_signature, 'ml_dsa': ml_dsa_signature}
+
+def parallel_hybrid_verify(message, signature, public_keys):
+    """
+    Verifica una firma usando el esquema híbrido en paralelo.
+    """
+    # Verificar con ECDSA
+    ecdsa_valid = ecdsa_verify(message, signature['ecdsa'], public_keys['ecdsa']['public'])
+    
+    # Verificar con ML-DSA
+    ml_dsa_valid = ml_dsa_verify(message, signature['ml_dsa'], public_keys['ml_dsa']['public'])
+    
+    # Al menos una firma debe ser válida
+    return ecdsa_valid or ml_dsa_valid
+
+# Esquema 3: Composición Integrada (ECDSA + ML-DSA con hash combinado)
+def integrated_hybrid_sig_keygen():
+    """
+    Genera claves para el esquema híbrido de firmas integrado.
+    """
+    # Generar claves ECDSA
+    ecdsa_private, ecdsa_public = ecdsa_keygen()
+    
+    # Generar claves ML-DSA
+    ml_dsa_keys = ml_dsa_keygen()
+    
+    return {
+        'ecdsa': {'private': ecdsa_private, 'public': ecdsa_public},
+        'ml_dsa': ml_dsa_keys
+    }
+
+def integrated_hybrid_sign(message, private_keys):
+    """
+    Firma un mensaje usando el esquema híbrido integrado.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Calcular hash del mensaje
+    digest = hashes.Hash(hashes.SHA256())
+    digest.update(message)
+    message_hash = digest.finalize()
+    
+    # Firmar hash con ECDSA
+    ecdsa_signature = ecdsa_sign(message_hash, private_keys['ecdsa']['private'])
+    
+    # Firmar hash con ML-DSA
+    ml_dsa_signature = ml_dsa_sign(message_hash, private_keys['ml_dsa']['private'])
+    
+    return {'ecdsa': ecdsa_signature, 'ml_dsa': ml_dsa_signature, 'hash': message_hash}
+
+def integrated_hybrid_verify(message, signature, public_keys):
+    """
+    Verifica una firma usando el esquema híbrido integrado.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Calcular hash del mensaje
+    digest = hashes.Hash(hashes.SHA256())
+    digest.update(message)
+    message_hash = digest.finalize()
+    
+    # Verificar que el hash coincide
+    if message_hash != signature['hash']:
+        return False
+    
+    # Verificar con ECDSA
+    ecdsa_valid = ecdsa_verify(message_hash, signature['ecdsa'], public_keys['ecdsa']['public'])
+    
+    # Verificar con ML-DSA
+    ml_dsa_valid = ml_dsa_verify(message_hash, signature['ml_dsa'], public_keys['ml_dsa']['public'])
+    
+    # Ambas firmas deben ser válidas
+    return ecdsa_valid and ml_dsa_valid
+</code></pre>
+
+            <h3>2.4 Función Principal y Evaluación</h3>
+            <p>Finalmente, implementaremos la función principal para evaluar los diferentes esquemas:</p>
+            <pre><code class="language-python">def evaluate_signature_schemes(num_trials=10):
+    """
+    Evalúa el rendimiento de diferentes esquemas de firmas digitales.
+    """
+    # Mensaje de prueba
+    message = "Este es un mensaje de prueba para evaluar esquemas de firmas híbridas."
+    
+    # Tiempos para RSA
+    rsa_keygen_times = []
+    rsa_sign_times = []
+    rsa_verify_times = []
+    
+    # Tiempos para ECDSA
+    ecdsa_keygen_times = []
+    ecdsa_sign_times = []
+    ecdsa_verify_times = []
+    
+    # Tiempos para ML-DSA
+    ml_dsa_keygen_times = []
+    ml_dsa_sign_times = []
+    ml_dsa_verify_times = []
+    
+    # Tiempos para el esquema híbrido en serie
+    serial_keygen_times = []
+    serial_sign_times = []
+    serial_verify_times = []
+    
+    # Tiempos para el esquema híbrido en paralelo
+    parallel_keygen_times = []
+    parallel_sign_times = []
+    parallel_verify_times = []
+    
+    # Tiempos para el esquema híbrido integrado
+    integrated_keygen_times = []
+    integrated_sign_times = []
+    integrated_verify_times = []
+    
+    # Tamaños de firma
+    rsa_signature_sizes = []
+    ecdsa_signature_sizes = []
+    ml_dsa_signature_sizes = []
+    serial_signature_sizes = []
+    parallel_signature_sizes = []
+    integrated_signature_sizes = []
+    
+    for _ in range(num_trials):
+        # RSA
+        start_time = time.time()
+        rsa_private, rsa_public = rsa_sig_keygen()
+        rsa_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        rsa_signature = rsa_sign(message, rsa_private)
+        rsa_sign_times.append(time.time() - start_time)
+        
+        rsa_signature_sizes.append(len(rsa_signature))
+        
+        start_time = time.time()
+        rsa_verify(message, rsa_signature, rsa_public)
+        rsa_verify_times.append(time.time() - start_time)
+        
+        # ECDSA
+        start_time = time.time()
+        ecdsa_private, ecdsa_public = ecdsa_keygen()
+        ecdsa_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ecdsa_signature = ecdsa_sign(message, ecdsa_private)
+        ecdsa_sign_times.append(time.time() - start_time)
+        
+        ecdsa_signature_sizes.append(len(ecdsa_signature))
+        
+        start_time = time.time()
+        ecdsa_verify(message, ecdsa_signature, ecdsa_public)
+        ecdsa_verify_times.append(time.time() - start_time)
+        
+        # ML-DSA
+        start_time = time.time()
+        ml_dsa_keys = ml_dsa_keygen()
+        ml_dsa_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ml_dsa_signature = ml_dsa_sign(message, ml_dsa_keys['private'])
+        ml_dsa_sign_times.append(time.time() - start_time)
+        
+        # Estimación aproximada del tamaño de la firma ML-DSA
+        z, hints, c = ml_dsa_signature
+        ml_dsa_signature_size = z.nbytes + len(hints) * 8 + c.nbytes
+        ml_dsa_signature_sizes.append(ml_dsa_signature_size)
+        
+        start_time = time.time()
+        ml_dsa_verify(message, ml_dsa_signature, ml_dsa_keys['public'])
+        ml_dsa_verify_times.append(time.time() - start_time)
+        
+        # Esquema híbrido en serie
+        start_time = time.time()
+        serial_keys = serial_hybrid_sig_keygen()
+        serial_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        serial_signature = serial_hybrid_sign(message, serial_keys)
+        serial_sign_times.append(time.time() - start_time)
+        
+        serial_signature_size = len(serial_signature['rsa']) + ml_dsa_signature_size
+        serial_signature_sizes.append(serial_signature_size)
+        
+        start_time = time.time()
+        serial_hybrid_verify(message, serial_signature, {
+            'rsa': {'public': serial_keys['rsa']['public']},
+            'ml_dsa': {'public': serial_keys['ml_dsa']['public']}
+        })
+        serial_verify_times.append(time.time() - start_time)
+        
+        # Esquema híbrido en paralelo
+        start_time = time.time()
+        parallel_keys = parallel_hybrid_sig_keygen()
+        parallel_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        parallel_signature = parallel_hybrid_sign(message, parallel_keys)
+        parallel_sign_times.append(time.time() - start_time)
+        
+        parallel_signature_size = len(parallel_signature['ecdsa']) + ml_dsa_signature_size
+        parallel_signature_sizes.append(parallel_signature_size)
+        
+        start_time = time.time()
+        parallel_hybrid_verify(message, parallel_signature, {
+            'ecdsa': {'public': parallel_keys['ecdsa']['public']},
+            'ml_dsa': {'public': parallel_keys['ml_dsa']['public']}
+        })
+        parallel_verify_times.append(time.time() - start_time)
+        
+        # Esquema híbrido integrado
+        start_time = time.time()
+        integrated_keys = integrated_hybrid_sig_keygen()
+        integrated_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        integrated_signature = integrated_hybrid_sign(message, integrated_keys)
+        integrated_sign_times.append(time.time() - start_time)
+        
+        integrated_signature_size = len(integrated_signature['ecdsa']) + ml_dsa_signature_size + 32  # 32 bytes para el hash
+        integrated_signature_sizes.append(integrated_signature_size)
+        
+        start_time = time.time()
+        integrated_hybrid_verify(message, integrated_signature, {
+            'ecdsa': {'public': integrated_keys['ecdsa']['public']},
+            'ml_dsa': {'public': integrated_keys['ml_dsa']['public']}
+        })
+        integrated_verify_times.append(time.time() - start_time)
+    
+    # Calcular promedios
+    rsa_keygen_avg = np.mean(rsa_keygen_times)
+    rsa_sign_avg = np.mean(rsa_sign_times)
+    rsa_verify_avg = np.mean(rsa_verify_times)
+    rsa_signature_avg = np.mean(rsa_signature_sizes)
+    
+    ecdsa_keygen_avg = np.mean(ecdsa_keygen_times)
+    ecdsa_sign_avg = np.mean(ecdsa_sign_times)
+    ecdsa_verify_avg = np.mean(ecdsa_verify_times)
+    ecdsa_signature_avg = np.mean(ecdsa_signature_sizes)
+    
+    ml_dsa_keygen_avg = np.mean(ml_dsa_keygen_times)
+    ml_dsa_sign_avg = np.mean(ml_dsa_sign_times)
+    ml_dsa_verify_avg = np.mean(ml_dsa_verify_times)
+    ml_dsa_signature_avg = np.mean(ml_dsa_signature_sizes)
+    
+    serial_keygen_avg = np.mean(serial_keygen_times)
+    serial_sign_avg = np.mean(serial_sign_times)
+    serial_verify_avg = np.mean(serial_verify_times)
+    serial_signature_avg = np.mean(serial_signature_sizes)
+    
+    parallel_keygen_avg = np.mean(parallel_keygen_times)
+    parallel_sign_avg = np.mean(parallel_sign_times)
+    parallel_verify_avg = np.mean(parallel_verify_times)
+    parallel_signature_avg = np.mean(parallel_signature_sizes)
+    
+    integrated_keygen_avg = np.mean(integrated_keygen_times)
+    integrated_sign_avg = np.mean(integrated_sign_times)
+    integrated_verify_avg = np.mean(integrated_verify_times)
+    integrated_signature_avg = np.mean(integrated_signature_sizes)
+    
+    # Visualizar resultados
+    plt.figure(figsize=(15, 10))
+    
+    # Tiempos de generación de claves
+    plt.subplot(2, 2, 1)
+    plt.bar(['RSA', 'ECDSA', 'ML-DSA', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_keygen_avg, ecdsa_keygen_avg, ml_dsa_keygen_avg, serial_keygen_avg, parallel_keygen_avg, integrated_keygen_avg])
+    plt.title('Tiempo de Generación de Claves')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de firma
+    plt.subplot(2, 2, 2)
+    plt.bar(['RSA', 'ECDSA', 'ML-DSA', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_sign_avg, ecdsa_sign_avg, ml_dsa_sign_avg, serial_sign_avg, parallel_sign_avg, integrated_sign_avg])
+    plt.title('Tiempo de Firma')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de verificación
+    plt.subplot(2, 2, 3)
+    plt.bar(['RSA', 'ECDSA', 'ML-DSA', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_verify_avg, ecdsa_verify_avg, ml_dsa_verify_avg, serial_verify_avg, parallel_verify_avg, integrated_verify_avg])
+    plt.title('Tiempo de Verificación')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tamaños de firma
+    plt.subplot(2, 2, 4)
+    plt.bar(['RSA', 'ECDSA', 'ML-DSA', 'Serie', 'Paralelo', 'Integrado'], 
+            [rsa_signature_avg, ecdsa_signature_avg, ml_dsa_signature_avg, serial_signature_avg, parallel_signature_avg, integrated_signature_avg])
+    plt.title('Tamaño de Firma')
+    plt.ylabel('Tamaño (bytes)')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('hybrid_signatures_performance.png')
+    plt.show()
+    
+    # Imprimir resultados
+    print("\nComparación de Rendimiento (promedio de", num_trials, "pruebas):")
+    
+    print("\nRSA:")
+    print("  Generación de claves:", rsa_keygen_avg, "segundos")
+    print("  Firma:", rsa_sign_avg, "segundos")
+    print("  Verificación:", rsa_verify_avg, "segundos")
+    print("  Tamaño de firma:", rsa_signature_avg, "bytes")
+    
+    print("\nECDSA:")
+    print("  Generación de claves:", ecdsa_keygen_avg, "segundos")
+    print("  Firma:", ecdsa_sign_avg, "segundos")
+    print("  Verificación:", ecdsa_verify_avg, "segundos")
+    print("  Tamaño de firma:", ecdsa_signature_avg, "bytes")
+    
+    print("\nML-DSA:")
+    print("  Generación de claves:", ml_dsa_keygen_avg, "segundos")
+    print("  Firma:", ml_dsa_sign_avg, "segundos")
+    print("  Verificación:", ml_dsa_verify_avg, "segundos")
+    print("  Tamaño de firma:", ml_dsa_signature_avg, "bytes")
+    
+    print("\nEsquema Híbrido en Serie:")
+    print("  Generación de claves:", serial_keygen_avg, "segundos")
+    print("  Firma:", serial_sign_avg, "segundos")
+    print("  Verificación:", serial_verify_avg, "segundos")
+    print("  Tamaño de firma:", serial_signature_avg, "bytes")
+    
+    print("\nEsquema Híbrido en Paralelo:")
+    print("  Generación de claves:", parallel_keygen_avg, "segundos")
+    print("  Firma:", parallel_sign_avg, "segundos")
+    print("  Verificación:", parallel_verify_avg, "segundos")
+    print("  Tamaño de firma:", parallel_signature_avg, "bytes")
+    
+    print("\nEsquema Híbrido Integrado:")
+    print("  Generación de claves:", integrated_keygen_avg, "segundos")
+    print("  Firma:", integrated_sign_avg, "segundos")
+    print("  Verificación:", integrated_verify_avg, "segundos")
+    print("  Tamaño de firma:", integrated_signature_avg, "bytes")
+
+def main():
+    print("Evaluación de Esquemas de Firmas Digitales Híbridos")
+    evaluate_signature_schemes()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 3: Ejercicios y Preguntas de Reflexión</h2>
+            
+            <h3>3.1 Ejercicios</h3>
+            <ol>
+                <li>Implementa un esquema híbrido que combine RSA y ML-KEM para cifrado de mensajes (no solo intercambio de claves).</li>
+                <li>Modifica el código para simular un escenario de ataque cuántico donde los algoritmos clásicos son comprometidos pero los post-cuánticos siguen siendo seguros.</li>
+                <li>Implementa un protocolo TLS simplificado que utilice criptografía híbrida para el establecimiento de la conexión.</li>
+                <li>Diseña un esquema híbrido que optimice el tamaño de las firmas o el rendimiento, según tus resultados de evaluación.</li>
+            </ol>
+            
+            <h3>3.2 Preguntas de Reflexión</h3>
+            <ol>
+                <li>¿Cuál de los esquemas híbridos implementados ofrece el mejor equilibrio entre seguridad, rendimiento y tamaño?</li>
+                <li>¿Qué ventajas y desventajas tiene cada enfoque de composición (serie, paralelo, integrado)?</li>
+                <li>¿Cómo afectaría la implementación de criptografía híbrida a sistemas existentes en términos de compatibilidad y rendimiento?</li>
+                <li>¿Qué estrategias recomendarías para la migración gradual de sistemas criptográficos actuales a soluciones post-cuánticas?</li>
+                <li>¿Cuáles son los desafíos prácticos para la implementación de criptografía híbrida en entornos con recursos limitados (IoT, dispositivos móviles, etc.)?</li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 4: Extensión (Opcional) - Caso de Estudio Práctico</h2>
+            <p>Implementa un sistema de comunicación segura que utilice criptografía híbrida para proteger mensajes:</p>
+            <pre><code class="language-python"># Crear un nuevo archivo secure_messaging.py
+import os
+import time
+import json
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+
+# Importar nuestras implementaciones híbridas
+from hybrid_key_exchange import parallel_hybrid_keygen, parallel_hybrid_encaps, parallel_hybrid_decaps
+from hybrid_signatures import parallel_hybrid_sig_keygen, parallel_hybrid_sign, parallel_hybrid_verify
+
+class SecureMessagingSystem:
+    def __init__(self):
+        # Generar claves para intercambio de claves
+        self.key_exchange_keys = parallel_hybrid_keygen()
+        
+        # Generar claves para firmas
+        self.signature_keys = parallel_hybrid_sig_keygen()
+    
+    def encrypt_message(self, message, recipient_public_keys):
+        """
+        Cifra un mensaje para un destinatario específico.
+        """
+        if isinstance(message, str):
+            message = message.encode()
+        
+        # Encapsular una clave compartida
+        ciphertext, shared_key = parallel_hybrid_encaps(
+            recipient_public_keys['key_exchange'],
+            self.key_exchange_keys['ecdh']['private']
+        )
+        
+        # Usar la clave compartida para cifrar el mensaje con AES-GCM
+        iv = os.urandom(12)
+        encryptor = Cipher(
+            algorithms.AES(shared_key[:32]),
+            modes.GCM(iv)
+        ).encryptor()
+        
+        # Añadir datos autenticados (AAD)
+        encryptor.authenticate_additional_data(b"secure-messaging")
+        
+        # Cifrar el mensaje
+        ciphertext_message = encryptor.update(message) + encryptor.finalize()
+        
+        # Obtener el tag de autenticación
+        tag = encryptor.tag
+        
+        # Firmar el mensaje cifrado
+        signature = parallel_hybrid_sign(ciphertext_message + iv + tag, self.signature_keys)
+        
+        # Crear el mensaje completo
+        encrypted_message = {
+            'key_exchange': {
+                'ml_kem': ciphertext['ml_kem'].tolist() if hasattr(ciphertext['ml_kem'], 'tolist') else ciphertext['ml_kem']
+            },
+            'iv': iv.hex(),
+            'ciphertext': ciphertext_message.hex(),
+            'tag': tag.hex(),
+            'signature': {
+                'ecdsa': signature['ecdsa'].hex(),
+                'ml_dsa': {
+                    'z': signature['ml_dsa'][0].tolist() if hasattr(signature['ml_dsa'][0], 'tolist') else signature['ml_dsa'][0],
+                    'hints': signature['ml_dsa'][1],
+                    'c': signature['ml_dsa'][2].tolist() if hasattr(signature['ml_dsa'][2], 'tolist') else signature['ml_dsa'][2]
+                }
+            }
+        }
+        
+        return json.dumps(encrypted_message)
+    
+    def decrypt_message(self, encrypted_message_json, sender_public_keys):
+        """
+        Descifra un mensaje de un remitente específico.
+        """
+        # Parsear el mensaje
+        encrypted_message = json.loads(encrypted_message_json)
+        
+        # Convertir datos hexadecimales a bytes
+        iv = bytes.fromhex(encrypted_message['iv'])
+        ciphertext_message = bytes.fromhex(encrypted_message['ciphertext'])
+        tag = bytes.fromhex(encrypted_message['tag'])
+        
+        # Reconstruir la firma
+        signature = {
+            'ecdsa': bytes.fromhex(encrypted_message['signature']['ecdsa']),
+            'ml_dsa': (
+                np.array(encrypted_message['signature']['ml_dsa']['z']),
+                encrypted_message['signature']['ml_dsa']['hints'],
+                np.array(encrypted_message['signature']['ml_dsa']['c'])
+            )
+        }
+        
+        # Verificar la firma
+        is_valid = parallel_hybrid_verify(
+            ciphertext_message + iv + tag,
+            signature,
+            sender_public_keys['signature']
+        )
+        
+        if not is_valid:
+            raise ValueError("La firma no es válida. El mensaje podría haber sido alterado.")
+        
+        # Reconstruir el ciphertext de intercambio de claves
+        key_exchange_ct = {
+            'ml_kem': np.array(encrypted_message['key_exchange']['ml_kem'])
+        }
+        
+        # Desencapsular la clave compartida
+        shared_key = parallel_hybrid_decaps(
+            key_exchange_ct,
+            self.key_exchange_keys,
+            sender_public_keys['key_exchange']['ecdh']['public']
+        )
+        
+        # Descifrar el mensaje con AES-GCM
+        decryptor = Cipher(
+            algorithms.AES(shared_key[:32]),
+            modes.GCM(iv, tag)
+        ).decryptor()
+        
+        # Añadir datos autenticados (AAD)
+        decryptor.authenticate_additional_data(b"secure-messaging")
+        
+        # Descifrar el mensaje
+        try:
+            plaintext = decryptor.update(ciphertext_message) + decryptor.finalize()
+            return plaintext
+        except Exception as e:
+            raise ValueError(f"Error al descifrar el mensaje: {e}")
+
+def main():
+    print("Sistema de Mensajería Segura con Criptografía Híbrida")
+    
+    # Crear instancias para Alice y Bob
+    print("\nGenerando claves para Alice...")
+    alice = SecureMessagingSystem()
+    
+    print("Generando claves para Bob...")
+    bob = SecureMessagingSystem()
+    
+    # Intercambiar claves públicas (simulado)
+    alice_public_keys = {
+        'key_exchange': {
+            'ecdh': {'public': alice.key_exchange_keys['ecdh']['public']},
+            'ml_kem': {'public': alice.key_exchange_keys['ml_kem']['public']}
+        },
+        'signature': {
+            'ecdsa': {'public': alice.signature_keys['ecdsa']['public']},
+            'ml_dsa': {'public': alice.signature_keys['ml_dsa']['public']}
+        }
+    }
+    
+    bob_public_keys = {
+        'key_exchange': {
+            'ecdh': {'public': bob.key_exchange_keys['ecdh']['public']},
+            'ml_kem': {'public': bob.key_exchange_keys['ml_kem']['public']}
+        },
+        'signature': {
+            'ecdsa': {'public': bob.signature_keys['ecdsa']['public']},
+            'ml_dsa': {'public': bob.signature_keys['ml_dsa']['public']}
+        }
+    }
+    
+    # Alice envía un mensaje a Bob
+    message = "Hola Bob, este es un mensaje secreto protegido con criptografía híbrida."
+    print(f"\nAlice quiere enviar a Bob: '{message}'")
+    
+    print("\nAlice cifra y firma el mensaje...")
+    encrypted_message = alice.encrypt_message(message, bob_public_keys)
+    
+    print("Mensaje cifrado y firmado enviado a Bob.")
+    
+    print("\nBob verifica la firma y descifra el mensaje...")
+    try:
+        decrypted_message = bob.decrypt_message(encrypted_message, alice_public_keys)
+        print(f"Bob ha descifrado: '{decrypted_message.decode()}'")
+        print("\n¡Comunicación segura establecida con éxito!")
+    except Exception as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Entregables</h2>
+            <p>Al finalizar esta práctica, deberás entregar:</p>
+            <ol>
+                <li>Código fuente de las implementaciones (<code>hybrid_key_exchange.py</code>, <code>hybrid_signatures.py</code> y <code>secure_messaging.py</code>)</li>
+                <li>Capturas de pantalla o gráficos generados durante la ejecución</li>
+                <li>Un informe breve (máximo 3 páginas) que incluya:
+                    <ul>
+                        <li>Resultados obtenidos en las pruebas de rendimiento</li>
+                        <li>Análisis comparativo entre los diferentes esquemas híbridos</li>
+                        <li>Respuestas a las preguntas de reflexión</li>
+                        <li>Conclusiones sobre la viabilidad de la criptografía híbrida para aplicaciones prácticas</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Recursos Adicionales</h2>
+            <ul>
+                <li><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography/migration" target="_blank">NIST: Post-Quantum Cryptography Migration</a></li>
+                <li><a href="https://www.etsi.org/technologies/quantum-safe-cryptography" target="_blank">ETSI: Quantum-Safe Cryptography</a></li>
+                <li><a href="https://datatracker.ietf.org/doc/draft-ietf-tls-hybrid-design/" target="_blank">IETF: Hybrid Key Exchange in TLS 1.3</a></li>
+                <li><a href="https://eprint.iacr.org/2020/1309" target="_blank">Artículo: A Cryptographic Analysis of the TLS 1.3 Handshake Protocol with Post-Quantum Key Exchange</a></li>
+                <li><a href="https://openquantumsafe.org/" target="_blank">Open Quantum Safe Project</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Guías Disponibles</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+</html>

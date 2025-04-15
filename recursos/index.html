@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; Recursos
+    </div>
+
+    <main>
+        <h1>Recursos y Bibliografía</h1>
+
+        <section class="resource-section">
+            <h2>Libros Recomendados</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>Post-Quantum Cryptography</h3>
+                    <p><strong>Autores:</strong> Daniel J. Bernstein, Johannes Buchmann, Erik Dahmen</p>
+                    <p><strong>Editorial:</strong> Springer</p>
+                    <p><strong>Año:</strong> 2009</p>
+                    <p><strong>Descripción:</strong> Obra fundamental que introduce los conceptos básicos de criptografía post-cuántica y analiza las principales familias de algoritmos resistentes a ataques cuánticos.</p>
+                    <p><strong>Enlace:</strong> <a href="https://link.springer.com/book/10.1007/978-3-540-88702-7" target="_blank">Springer Link</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Quantum Computing: A Gentle Introduction</h3>
+                    <p><strong>Autores:</strong> Eleanor G. Rieffel, Wolfgang H. Polak</p>
+                    <p><strong>Editorial:</strong> MIT Press</p>
+                    <p><strong>Año:</strong> 2011</p>
+                    <p><strong>Descripción:</strong> Excelente introducción a la computación cuántica, con explicaciones claras de los algoritmos de Shor y Grover y sus implicaciones para la criptografía.</p>
+                    <p><strong>Enlace:</strong> <a href="https://mitpress.mit.edu/books/quantum-computing" target="_blank">MIT Press</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Introduction to Modern Cryptography</h3>
+                    <p><strong>Autores:</strong> Jonathan Katz, Yehuda Lindell</p>
+                    <p><strong>Editorial:</strong> Chapman and Hall/CRC</p>
+                    <p><strong>Año:</strong> 2020 (3ª edición)</p>
+                    <p><strong>Descripción:</strong> Referencia completa sobre criptografía moderna con un enfoque riguroso pero accesible. La última edición incluye secciones sobre criptografía post-cuántica.</p>
+                    <p><strong>Enlace:</strong> <a href="https://www.routledge.com/Introduction-to-Modern-Cryptography/Katz-Lindell/p/book/9780815354369" target="_blank">Routledge</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Lattice-Based Cryptography for Beginners</h3>
+                    <p><strong>Autores:</strong> Jintai Ding, Zheng Zhang</p>
+                    <p><strong>Editorial:</strong> Springer</p>
+                    <p><strong>Año:</strong> 2022</p>
+                    <p><strong>Descripción:</strong> Introducción accesible a la criptografía basada en retículos, explicando los fundamentos matemáticos y las construcciones criptográficas más importantes.</p>
+                    <p><strong>Enlace:</strong> <a href="https://link.springer.com/book/10.1007/978-981-19-3802-2" target="_blank">Springer Link</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resource-section">
+            <h2>Artículos y Publicaciones Científicas</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>CRYSTALS-Kyber: A CCA-Secure Module-Lattice-Based KEM</h3>
+                    <p><strong>Autores:</strong> Joppe Bos, Léo Ducas, Eike Kiltz, Tancrède Lepoint, Vadim Lyubashevsky, John M. Schanck, Peter Schwabe, Gregor Seiler, Damien Stehlé</p>
+                    <p><strong>Conferencia:</strong> IEEE European Symposium on Security and Privacy (EuroS&P)</p>
+                    <p><strong>Año:</strong> 2018</p>
+                    <p><strong>Descripción:</strong> Artículo original que describe Kyber, el algoritmo seleccionado por el NIST como estándar para encapsulamiento de claves post-cuántico (ML-KEM).</p>
+                    <p><strong>Enlace:</strong> <a href="https://eprint.iacr.org/2017/634" target="_blank">Cryptology ePrint Archive</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>CRYSTALS-Dilithium: A Lattice-Based Digital Signature Scheme</h3>
+                    <p><strong>Autores:</strong> Léo Ducas, Eike Kiltz, Tancrède Lepoint, Vadim Lyubashevsky, Peter Schwabe, Gregor Seiler, Damien Stehlé</p>
+                    <p><strong>Conferencia:</strong> IACR Transactions on Cryptographic Hardware and Embedded Systems</p>
+                    <p><strong>Año:</strong> 2018</p>
+                    <p><strong>Descripción:</strong> Artículo original que describe Dilithium, el algoritmo seleccionado por el NIST como estándar para firmas digitales post-cuánticas (ML-DSA).</p>
+                    <p><strong>Enlace:</strong> <a href="https://eprint.iacr.org/2017/633" target="_blank">Cryptology ePrint Archive</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>SPHINCS+: Robust Post-Quantum Signatures</h3>
+                    <p><strong>Autores:</strong> Daniel J. Bernstein, Andreas Hülsing, Stefan Kölbl, Ruben Niederhagen, Joost Rijneveld, Peter Schwabe</p>
+                    <p><strong>Conferencia:</strong> IACR Cryptology ePrint Archive</p>
+                    <p><strong>Año:</strong> 2019</p>
+                    <p><strong>Descripción:</strong> Artículo que describe SPHINCS+, el algoritmo seleccionado por el NIST como estándar alternativo para firmas digitales post-cuánticas (SLH-DSA).</p>
+                    <p><strong>Enlace:</strong> <a href="https://eprint.iacr.org/2019/1086" target="_blank">Cryptology ePrint Archive</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Quantum Key Distribution: A Networking Perspective</h3>
+                    <p><strong>Autores:</strong> Chip Elliott</p>
+                    <p><strong>Revista:</strong> New Journal of Physics</p>
+                    <p><strong>Año:</strong> 2019</p>
+                    <p><strong>Descripción:</strong> Revisión completa de los aspectos prácticos de implementar QKD en redes de comunicación reales.</p>
+                    <p><strong>Enlace:</strong> <a href="https://iopscience.iop.org/article/10.1088/1367-2630/4/1/346" target="_blank">IOP Science</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resource-section">
+            <h2>Estándares y Documentación Técnica</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>FIPS 203: Module-Lattice-Based Key-Encapsulation Mechanism Standard</h3>
+                    <p><strong>Organización:</strong> NIST (National Institute of Standards and Technology)</p>
+                    <p><strong>Año:</strong> 2023</p>
+                    <p><strong>Descripción:</strong> Estándar oficial que especifica ML-KEM (anteriormente CRYSTALS-Kyber), el mecanismo de encapsulamiento de claves post-cuántico seleccionado por el NIST.</p>
+                    <p><strong>Enlace:</strong> <a href="https://csrc.nist.gov/publications/detail/fips/203/draft" target="_blank">NIST CSRC</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>FIPS 204: Module-Lattice-Based Digital Signature Standard</h3>
+                    <p><strong>Organización:</strong> NIST (National Institute of Standards and Technology)</p>
+                    <p><strong>Año:</strong> 2023</p>
+                    <p><strong>Descripción:</strong> Estándar oficial que especifica ML-DSA (anteriormente CRYSTALS-Dilithium), el esquema de firma digital post-cuántico seleccionado por el NIST.</p>
+                    <p><strong>Enlace:</strong> <a href="https://csrc.nist.gov/publications/detail/fips/204/draft" target="_blank">NIST CSRC</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>FIPS 205: Stateless Hash-Based Digital Signature Standard</h3>
+                    <p><strong>Organización:</strong> NIST (National Institute of Standards and Technology)</p>
+                    <p><strong>Año:</strong> 2023</p>
+                    <p><strong>Descripción:</strong> Estándar oficial que especifica SLH-DSA (anteriormente SPHINCS+), el esquema alternativo de firma digital post-cuántico seleccionado por el NIST.</p>
+                    <p><strong>Enlace:</strong> <a href="https://csrc.nist.gov/publications/detail/fips/205/draft" target="_blank">NIST CSRC</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>ETSI GR QSC 001: Quantum-Safe Cryptography; Quantum-Safe Algorithmic Framework</h3>
+                    <p><strong>Organización:</strong> ETSI (European Telecommunications Standards Institute)</p>
+                    <p><strong>Año:</strong> 2022</p>
+                    <p><strong>Descripción:</strong> Marco de referencia para la implementación de criptografía segura ante amenazas cuánticas en sistemas de telecomunicaciones.</p>
+                    <p><strong>Enlace:</strong> <a href="https://www.etsi.org/deliver/etsi_gr/QSC/001_099/001/01.01.01_60/gr_QSC001v010101p.pdf" target="_blank">ETSI</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resource-section">
+            <h2>Sitios Web y Recursos en Línea</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>NIST Post-Quantum Cryptography Standardization</h3>
+                    <p><strong>Organización:</strong> NIST (National Institute of Standards and Technology)</p>
+                    <p><strong>Descripción:</strong> Sitio oficial del proceso de estandarización de criptografía post-cuántica del NIST, con información actualizada sobre el estado de los algoritmos candidatos y los estándares seleccionados.</p>
+                    <p><strong>Enlace:</strong> <a href="https://csrc.nist.gov/projects/post-quantum-cryptography" target="_blank">NIST CSRC</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>PQC Lounge</h3>
+                    <p><strong>Organización:</strong> BSI (Bundesamt für Sicherheit in der Informationstechnik)</p>
+                    <p><strong>Descripción:</strong> Repositorio de información sobre criptografía post-cuántica mantenido por la Oficina Federal Alemana para la Seguridad de la Información, con recursos educativos y técnicos.</p>
+                    <p><strong>Enlace:</strong> <a href="https://pqc-lounge.info/" target="_blank">PQC Lounge</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Open Quantum Safe Project</h3>
+                    <p><strong>Organización:</strong> Open Quantum Safe</p>
+                    <p><strong>Descripción:</strong> Proyecto de código abierto que desarrolla y mantiene libtack, una biblioteca de implementaciones de algoritmos post-cuánticos, y prototipos de integración con protocolos de seguridad como TLS.</p>
+                    <p><strong>Enlace:</strong> <a href="https://openquantumsafe.org/" target="_blank">Open Quantum Safe</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Quantum Computing Report</h3>
+                    <p><strong>Organización:</strong> Quantum Computing Report</p>
+                    <p><strong>Descripción:</strong> Portal de noticias y recursos sobre computación cuántica y criptografía post-cuántica, con actualizaciones regulares sobre avances en el campo.</p>
+                    <p><strong>Enlace:</strong> <a href="https://quantumcomputingreport.com/" target="_blank">Quantum Computing Report</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resource-section">
+            <h2>Herramientas y Bibliotecas</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>liboqs (Open Quantum Safe)</h3>
+                    <p><strong>Tipo:</strong> Biblioteca de código abierto</p>
+                    <p><strong>Lenguaje:</strong> C</p>
+                    <p><strong>Descripción:</strong> Biblioteca que implementa algoritmos de criptografía post-cuántica, incluyendo todos los finalistas del proceso de estandarización del NIST.</p>
+                    <p><strong>Enlace:</strong> <a href="https://github.com/open-quantum-safe/liboqs" target="_blank">GitHub</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>PQClean</h3>
+                    <p><strong>Tipo:</strong> Biblioteca de código abierto</p>
+                    <p><strong>Lenguaje:</strong> C</p>
+                    <p><strong>Descripción:</strong> Colección de implementaciones limpias y auditadas de algoritmos post-cuánticos, diseñada para ser integrada en otras bibliotecas criptográficas.</p>
+                    <p><strong>Enlace:</strong> <a href="https://github.com/PQClean/PQClean" target="_blank">GitHub</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>PALISADE</h3>
+                    <p><strong>Tipo:</strong> Biblioteca de código abierto</p>
+                    <p><strong>Lenguaje:</strong> C++</p>
+                    <p><strong>Descripción:</strong> Biblioteca para criptografía basada en retículos, que implementa esquemas como BGV, BFV, CKKS y FHEW, con soporte para computación homomórfica.</p>
+                    <p><strong>Enlace:</strong> <a href="https://palisade-crypto.org/" target="_blank">PALISADE</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Qiskit</h3>
+                    <p><strong>Tipo:</strong> Framework de código abierto</p>
+                    <p><strong>Lenguaje:</strong> Python</p>
+                    <p><strong>Descripción:</strong> Framework para computación cuántica desarrollado por IBM, que incluye módulos para simular algoritmos cuánticos como Shor y Grover, y para experimentar con protocolos QKD.</p>
+                    <p><strong>Enlace:</strong> <a href="https://qiskit.org/" target="_blank">Qiskit</a></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resource-section">
+            <h2>Cursos y Material Educativo</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>Quantum Computing and Quantum Cryptography</h3>
+                    <p><strong>Plataforma:</strong> edX</p>
+                    <p><strong>Institución:</strong> MIT</p>
+                    <p><strong>Descripción:</strong> Curso introductorio sobre computación cuántica y sus implicaciones para la criptografía, incluyendo secciones sobre algoritmos cuánticos y criptografía post-cuántica.</p>
+                    <p><strong>Enlace:</strong> <a href="https://www.edx.org/learn/quantum-computing" target="_blank">edX</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Post-Quantum Cryptography: Lattice-based Cryptography</h3>
+                    <p><strong>Plataforma:</strong> Coursera</p>
+                    <p><strong>Institución:</strong> University of Waterloo</p>
+                    <p><strong>Descripción:</strong> Curso especializado en criptografía basada en retículos, con explicaciones detalladas de los fundamentos matemáticos y las construcciones criptográficas.</p>
+                    <p><strong>Enlace:</strong> <a href="https://www.coursera.org/learn/lattice-based-cryptography" target="_blank">Coursera</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Introduction to Quantum Computing</h3>
+                    <p><strong>Plataforma:</strong> Qiskit Textbook</p>
+                    <p><strong>Institución:</strong> IBM Quantum</p>
+                    <p><strong>Descripción:</strong> Libro de texto interactivo que introduce los conceptos de computación cuántica, incluyendo capítulos sobre algoritmos de Shor y Grover y sus implicaciones para la criptografía.</p>
+                    <p><strong>Enlace:</strong> <a href="https://qiskit.org/textbook/preface.html" target="_blank">Qiskit Textbook</a></p>
+                </div>
+
+                <div class="resource-item">
+                    <h3>Cryptography I</h3>
+                    <p><strong>Plataforma:</strong> Coursera</p>
+                    <p><strong>Institución:</strong> Stanford University</p>
+                    <p><strong>Descripción:</strong> Curso fundamental sobre criptografía moderna impartido por Dan Boneh, con una sección sobre amenazas cuánticas y criptografía post-cuántica.</p>
+                    <p><strong>Enlace:</strong> <a href="https://www.coursera.org/learn/crypto" target="_blank">Coursera</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Temas</h3>
+                <ul>
+                    <li><a href="../temas/tema1/index.html">Fundamentos de Criptografía Moderna</a></li>
+                    <li><a href="../temas/tema2/index.html">Infraestructura de Seguridad en Internet</a></li>
+                    <li><a href="../temas/tema3/index.html">Fundamentos de Criptografía Post-Cuántica</a></li>
+                    <li><a href="../temas/tema4/index.html">Estandarización de Criptografía Post-Cuántica</a></li>
+                    <li><a href="../temas/tema5/index.html">Implementaciones y Desafíos</a></li>
+                    <li><a href="../temas/tema6/index.html">Distribución Cuántica de Claves</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptografía Híbrida - Ejemplos Prácticos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Ejemplos Prácticos</a> &gt; Criptografía Híbrida
+    </div>
+
+    <main>
+        <h1>Criptografía Híbrida: Combinando Algoritmos Clásicos y Post-Cuánticos</h1>
+        
+        <section class="intro">
+            <p>La criptografía híbrida combina algoritmos criptográficos clásicos (como RSA o ECDH) con algoritmos post-cuánticos (como ML-KEM) para proporcionar seguridad tanto contra ataques clásicos como cuánticos durante el período de transición hacia la criptografía post-cuántica.</p>
+            <p>En este ejemplo, exploraremos diferentes enfoques para implementar criptografía híbrida y veremos una implementación simplificada que ilustra cómo se pueden combinar estos algoritmos en la práctica.</p>
+        </section>
+
+        <section class="example-code">
+            <h2>Implementación Simplificada de Criptografía Híbrida</h2>
+            <p>El siguiente código es una implementación didáctica simplificada de criptografía híbrida que combina ECDH (curvas elípticas) con ML-KEM. No es criptográficamente segura y solo tiene fines educativos.</p>
+            
+            <pre><code class="language-python">"""
+Implementación didáctica simplificada de Criptografía Híbrida (ECDH + ML-KEM)
+NOTA: Esta implementación es solo para fines educativos y no es criptográficamente segura.
+"""
+import os
+import hashlib
+import numpy as np
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+# Simulación simplificada de ML-KEM (basada en el estándar FIPS 203)
+class SimplifiedMLKEM:
+    def __init__(self, security_level=128):
+        self.n = 256  # Grado del polinomio
+        self.q = 3329  # Módulo primo
+        self.security_level = security_level
+    
+    def keygen(self):
+        """Genera un par de claves ML-KEM"""
+        # Generar semilla aleatoria
+        seed = os.urandom(32)
+        
+        # Simular generación de matriz A y vector secreto s
+        np.random.seed(int.from_bytes(seed, byteorder='big'))
+        A = np.random.randint(0, self.q, (self.n, self.n))
+        s = np.random.randint(-2, 3, self.n)  # Coeficientes pequeños
+        e = np.random.randint(-2, 3, self.n)  # Error pequeño
+        
+        # Calcular clave pública t = A·s + e
+        t = (A.dot(s) + e) % self.q
+        
+        # Clave pública: (seed, t)
+        # Clave privada: s
+        return {
+            'public': {'seed': seed, 't': t},
+            'private': {'s': s}
+        }
+    
+    def encapsulate(self, public_key):
+        """Encapsula una clave compartida usando la clave pública"""
+        seed = public_key['seed']
+        t = public_key['t']
+        
+        # Reconstruir matriz A
+        np.random.seed(int.from_bytes(seed, byteorder='big'))
+        A = np.random.randint(0, self.q, (self.n, self.n))
+        
+        # Generar vector efímero r y errores
+        r = np.random.randint(-2, 3, self.n)
+        e1 = np.random.randint(-2, 3, self.n)
+        e2 = np.random.randint(-2, 3, self.n)
+        
+        # Calcular u = A^T·r + e1
+        u = (A.T.dot(r) + e1) % self.q
+        
+        # Calcular v = t^T·r + e2 + encode(m)
+        # Para simplificar, usamos un mensaje aleatorio m
+        m = os.urandom(32)
+        m_encoded = int.from_bytes(m, byteorder='big') % 2  # Solo usamos 1 bit
+        v = (np.dot(t, r) + e2 + m_encoded * (self.q // 2)) % self.q
+        
+        # Derivar clave compartida de m
+        shared_key = hashlib.sha256(m).digest()
+        
+        # Ciphertext: (u, v)
+        return {
+            'ciphertext': {'u': u, 'v': v},
+            'shared_key': shared_key
+        }
+    
+    def decapsulate(self, ciphertext, private_key):
+        """Decapsula una clave compartida usando la clave privada"""
+        u = ciphertext['u']
+        v = ciphertext['v']
+        s = private_key['s']
+        
+        # Calcular v - s^T·u
+        w = (v - np.dot(s, u)) % self.q
+        
+        # Decodificar mensaje
+        # Si w está cerca de q/2, m' = 1; si está cerca de 0, m' = 0
+        if abs(w - self.q // 2) < abs(w):
+            m_bit = 1
+        else:
+            m_bit = 0
+        
+        # Reconstruir m
+        m = m_bit.to_bytes(32, byteorder='big')
+        
+        # Derivar clave compartida de m
+        shared_key = hashlib.sha256(m).digest()
+        
+        return shared_key
+
+# Implementación de criptografía híbrida
+class HybridCryptography:
+    def __init__(self, mode="parallel"):
+        """
+        Inicializa el sistema de criptografía híbrida
+        
+        Modos:
+        - "parallel": ECDH y ML-KEM se ejecutan en paralelo, las claves se combinan
+        - "serial": La clave ECDH se usa para cifrar la clave ML-KEM
+        - "integrated": Se usa una KDF para combinar las claves ECDH y ML-KEM
+        """
+        self.mode = mode
+        self.ml_kem = SimplifiedMLKEM()
+    
+    def keygen(self):
+        """Genera pares de claves híbridas"""
+        # Generar par de claves ECDH
+        ecdh_private_key = ec.generate_private_key(ec.SECP256R1())
+        ecdh_public_key = ecdh_private_key.public_key()
+        
+        # Generar par de claves ML-KEM
+        ml_kem_keys = self.ml_kem.keygen()
+        
+        return {
+            'ecdh': {
+                'private': ecdh_private_key,
+                'public': ecdh_public_key
+            },
+            'ml_kem': ml_kem_keys
+        }
+    
+    def encapsulate(self, public_keys):
+        """Encapsula una clave compartida híbrida"""
+        ecdh_public_key = public_keys['ecdh']['public']
+        ml_kem_public_key = public_keys['ml_kem']['public']
+        
+        # Generar clave efímera ECDH
+        ecdh_ephemeral_private = ec.generate_private_key(ec.SECP256R1())
+        ecdh_ephemeral_public = ecdh_ephemeral_private.public_key()
+        
+        # Calcular secreto compartido ECDH
+        ecdh_shared_secret = ecdh_ephemeral_private.exchange(
+            ec.ECDH(), ecdh_public_key
+        )
+        
+        # Encapsular clave ML-KEM
+        ml_kem_result = self.ml_kem.encapsulate(ml_kem_public_key)
+        ml_kem_ciphertext = ml_kem_result['ciphertext']
+        ml_kem_shared_key = ml_kem_result['shared_key']
+        
+        # Combinar claves según el modo
+        if self.mode == "parallel":
+            # Modo paralelo: concatenar y derivar
+            combined_key = self._derive_combined_key(
+                ecdh_shared_secret + ml_kem_shared_key
+            )
+        elif self.mode == "serial":
+            # Modo serial: cifrar ML-KEM con ECDH
+            # (simplificado: XOR con hash de ECDH)
+            ecdh_key_hash = hashlib.sha256(ecdh_shared_secret).digest()
+            combined_key = bytes(a ^ b for a, b in zip(ml_kem_shared_key, ecdh_key_hash))
+        else:  # "integrated"
+            # Modo integrado: usar KDF con ambas entradas
+            combined_key = self._derive_integrated_key(
+                ecdh_shared_secret, ml_kem_shared_key
+            )
+        
+        return {
+            'ecdh_ephemeral_public': ecdh_ephemeral_public,
+            'ml_kem_ciphertext': ml_kem_ciphertext,
+            'shared_key': combined_key
+        }
+    
+    def decapsulate(self, encapsulation, private_keys):
+        """Decapsula una clave compartida híbrida"""
+        ecdh_private_key = private_keys['ecdh']['private']
+        ml_kem_private_key = private_keys['ml_kem']['private']
+        
+        ecdh_ephemeral_public = encapsulation['ecdh_ephemeral_public']
+        ml_kem_ciphertext = encapsulation['ml_kem_ciphertext']
+        
+        # Calcular secreto compartido ECDH
+        ecdh_shared_secret = ecdh_private_key.exchange(
+            ec.ECDH(), ecdh_ephemeral_public
+        )
+        
+        # Decapsular clave ML-KEM
+        ml_kem_shared_key = self.ml_kem.decapsulate(
+            ml_kem_ciphertext, ml_kem_private_key
+        )
+        
+        # Combinar claves según el modo
+        if self.mode == "parallel":
+            # Modo paralelo: concatenar y derivar
+            combined_key = self._derive_combined_key(
+                ecdh_shared_secret + ml_kem_shared_key
+            )
+        elif self.mode == "serial":
+            # Modo serial: descifrar ML-KEM con ECDH
+            # (simplificado: XOR con hash de ECDH)
+            ecdh_key_hash = hashlib.sha256(ecdh_shared_secret).digest()
+            combined_key = bytes(a ^ b for a, b in zip(ml_kem_shared_key, ecdh_key_hash))
+        else:  # "integrated"
+            # Modo integrado: usar KDF con ambas entradas
+            combined_key = self._derive_integrated_key(
+                ecdh_shared_secret, ml_kem_shared_key
+            )
+        
+        return combined_key
+    
+    def _derive_combined_key(self, key_material):
+        """Deriva una clave combinada a partir del material de clave"""
+        return HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=None,
+            info=b'hybrid_key'
+        ).derive(key_material)
+    
+    def _derive_integrated_key(self, ecdh_key, ml_kem_key):
+        """Deriva una clave integrada a partir de ambas claves"""
+        # Usar HKDF con dos extractos
+        ecdh_extract = HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=None,
+            info=b'ecdh_extract'
+        ).derive(ecdh_key)
+        
+        return HKDF(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=ecdh_extract,  # Usar extracto ECDH como sal
+            info=b'hybrid_integrated_key'
+        ).derive(ml_kem_key)
+
+# Ejemplo de uso
+def simulate_quantum_attack(hybrid_crypto, encapsulation, alice_keys, bob_keys):
+    """Simula un ataque cuántico que compromete ECDH pero no ML-KEM"""
+    print("\nSimulando ataque cuántico...")
+    
+    # En un ataque real con computadora cuántica, el atacante podría:
+    # 1. Usar el algoritmo de Shor para romper ECDH
+    # 2. Recuperar la clave privada ECDH de Bob
+    # 3. Calcular el mismo secreto compartido ECDH
+    
+    # Simulamos que el atacante ha obtenido la clave privada ECDH
+    ecdh_private_key = bob_keys['ecdh']['private']
+    ecdh_ephemeral_public = encapsulation['ecdh_ephemeral_public']
+    
+    # El atacante calcula el mismo secreto compartido ECDH
+    ecdh_shared_secret = ecdh_private_key.exchange(
+        ec.ECDH(), ecdh_ephemeral_public
+    )
+    
+    print("El atacante ha comprometido la clave ECDH.")
+    
+    # Verificar si el atacante puede recuperar la clave final
+    if hybrid_crypto.mode == "parallel":
+        print("Modo paralelo: El atacante no puede recuperar la clave final sin la parte ML-KEM.")
+        return False
+    elif hybrid_crypto.mode == "serial":
+        print("Modo serial: El atacante no puede recuperar la clave final sin descifrar ML-KEM.")
+        return False
+    else:  # "integrated"
+        print("Modo integrado: El atacante no puede recuperar la clave final sin la parte ML-KEM.")
+        return False
+
+if __name__ == "__main__":
+    # Probar los tres modos de criptografía híbrida
+    modes = ["parallel", "serial", "integrated"]
+    
+    for mode in modes:
+        print(f"\n=== Modo {mode} ===")
+        
+        # Inicializar criptografía híbrida
+        hybrid_crypto = HybridCryptography(mode=mode)
+        
+        # Alice genera sus claves
+        alice_keys = hybrid_crypto.keygen()
+        print("Alice ha generado sus claves híbridas.")
+        
+        # Bob genera sus claves
+        bob_keys = hybrid_crypto.keygen()
+        print("Bob ha generado sus claves híbridas.")
+        
+        # Alice encapsula una clave para Bob
+        encapsulation = hybrid_crypto.encapsulate(bob_keys)
+        alice_shared_key = encapsulation['shared_key']
+        print("Alice ha encapsulado una clave compartida para Bob.")
+        
+        # Bob decapsula la clave
+        bob_shared_key = hybrid_crypto.decapsulate(encapsulation, bob_keys)
+        print("Bob ha decapsulado la clave compartida.")
+        
+        # Verificar que ambos tengan la misma clave
+        if alice_shared_key == bob_shared_key:
+            print("¡Éxito! Alice y Bob comparten la misma clave secreta.")
+        else:
+            print("Error: Las claves no coinciden.")
+        
+        # Simular ataque cuántico
+        attack_success = simulate_quantum_attack(
+            hybrid_crypto, encapsulation, alice_keys, bob_keys
+        )
+        
+        if attack_success:
+            print("¡Ataque exitoso! El atacante ha recuperado la clave compartida.")
+        else:
+            print("Ataque fallido. La criptografía híbrida ha protegido la clave compartida.")
+</code></pre>
+        </section>
+
+        <section class="explanation">
+            <h2>Explicación de la Criptografía Híbrida</h2>
+            
+            <h3>¿Por qué Criptografía Híbrida?</h3>
+            <p>La criptografía híbrida ofrece varias ventajas durante la transición hacia la criptografía post-cuántica:</p>
+            <ul>
+                <li><strong>Seguridad a prueba de futuro:</strong> Protección contra ataques clásicos y cuánticos.</li>
+                <li><strong>Compatibilidad:</strong> Permite una migración gradual sin comprometer la seguridad.</li>
+                <li><strong>Confianza:</strong> Los algoritmos clásicos tienen décadas de análisis, mientras que los post-cuánticos son relativamente nuevos.</li>
+                <li><strong>Rendimiento:</strong> Algunos algoritmos post-cuánticos tienen mayor sobrecarga, que puede compensarse con los clásicos.</li>
+            </ul>
+            
+            <h3>Enfoques para la Criptografía Híbrida</h3>
+            <p>Existen tres enfoques principales para implementar criptografía híbrida:</p>
+            
+            <div class="approach-container">
+                <div class="approach-card">
+                    <h4>1. Enfoque en Paralelo</h4>
+                    <img src="../images/hybrid_parallel.svg" alt="Diagrama de enfoque en paralelo" class="approach-diagram">
+                    <p><strong>Funcionamiento:</strong> Se ejecutan ambos algoritmos de forma independiente y se combinan las claves resultantes.</p>
+                    <p><strong>Ventajas:</strong> Simple de implementar, mantiene la seguridad del algoritmo más fuerte.</p>
+                    <p><strong>Desventajas:</strong> Mayor sobrecarga en comunicación (dos conjuntos de claves públicas y ciphertexts).</p>
+                </div>
+                
+                <div class="approach-card">
+                    <h4>2. Enfoque en Serie</h4>
+                    <img src="../images/hybrid_serial.svg" alt="Diagrama de enfoque en serie" class="approach-diagram">
+                    <p><strong>Funcionamiento:</strong> Un algoritmo protege la clave del otro (típicamente, RSA/ECDH cifra la clave ML-KEM).</p>
+                    <p><strong>Ventajas:</strong> Menor sobrecarga en comunicación que el enfoque paralelo.</p>
+                    <p><strong>Desventajas:</strong> Si el algoritmo exterior se rompe, la seguridad depende completamente del algoritmo interior.</p>
+                </div>
+                
+                <div class="approach-card">
+                    <h4>3. Enfoque Integrado</h4>
+                    <img src="../images/hybrid_integrated.svg" alt="Diagrama de enfoque integrado" class="approach-diagram">
+                    <p><strong>Funcionamiento:</strong> Se utiliza una función de derivación de claves (KDF) para combinar los secretos de ambos algoritmos.</p>
+                    <p><strong>Ventajas:</strong> Mayor flexibilidad y seguridad, permite personalizar cómo se combinan las claves.</p>
+                    <p><strong>Desventajas:</strong> Más complejo de implementar correctamente.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="comparison">
+            <h2>Comparación de Seguridad</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Escenario</th>
+                        <th>Algoritmo Clásico (ECDH)</th>
+                        <th>Algoritmo PQ (ML-KEM)</th>
+                        <th>Híbrido Paralelo</th>
+                        <th>Híbrido Serie</th>
+                        <th>Híbrido Integrado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Atacante Clásico</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                    </tr>
+                    <tr>
+                        <td>Atacante Cuántico</td>
+                        <td>Vulnerable</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                    </tr>
+                    <tr>
+                        <td>Vulnerabilidad en Clásico</td>
+                        <td>Comprometido</td>
+                        <td>No afectado</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                        <td>Seguro</td>
+                    </tr>
+                    <tr>
+                        <td>Vulnerabilidad en PQ</td>
+                        <td>No afectado</td>
+                        <td>Comprometido</td>
+                        <td>Seguro</td>
+                        <td>Comprometido</td>
+                        <td>Seguro</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="applications">
+            <h2>Aplicaciones Prácticas</h2>
+            <p>La criptografía híbrida ya está siendo implementada en varios contextos:</p>
+            <ul>
+                <li><strong>TLS 1.3:</strong> Extensiones experimentales para soportar intercambio de claves híbrido.</li>
+                <li><strong>VPN:</strong> Soluciones como OpenVPN están implementando soporte para criptografía híbrida.</li>
+                <li><strong>SSH:</strong> Implementaciones experimentales de SSH con soporte para algoritmos híbridos.</li>
+                <li><strong>S/MIME y PGP:</strong> Extensiones para correo electrónico seguro con criptografía híbrida.</li>
+                <li><strong>Blockchain:</strong> Algunas criptomonedas están migrando a esquemas de firma híbridos.</li>
+            </ul>
+            
+            <p>El NIST y otras organizaciones de estandarización están trabajando en guías oficiales para la implementación de criptografía híbrida durante la transición a la criptografía post-cuántica.</p>
+        </section>
+
+        <div class="interactive-demo">
+            <h2>Demostración Interactiva: Criptografía Híbrida</h2>
+            <div class="demo-container">
+                <div class="demo-controls">
+                    <select id="hybrid-scheme-select">
+                        <option value="serial">Esquema en Serie (RSA + ML-KEM)</option>
+                        <option value="parallel">Esquema en Paralelo (ECDH + ML-KEM)</option>
+                        <option value="integrated">Esquema Integrado (ECDH + ML-KEM con KDF)</option>
+                    </select>
+                    <button id="generate-hybrid-keys-btn">Generar Claves Híbridas</button>
+                    <button id="encapsulate-btn" disabled>Encapsular Clave</button>
+                    <button id="decapsulate-btn" disabled>Decapsular Clave</button>
+                    <button id="attack-simulate-btn" disabled>Simular Ataque Cuántico</button>
+                </div>
+                <div class="demo-output">
+                    <div class="output-section">
+                        <h3>Estado</h3>
+                        <div id="hybrid-status-output" class="status-box">Esperando acción...</div>
+                    </div>
+                    <div class="output-section">
+                        <h3>Claves</h3>
+                        <div id="hybrid-keys-display" class="key-box"></div>
+                    </div>
+                    <div class="output-section">
+                        <h3>Encapsulamiento</h3>
+                        <div id="encapsulation-display" class="encapsulation-box"></div>
+                    </div>
+                    <div class="output-section">
+                        <h3>Clave Compartida</h3>
+                        <div id="shared-key-display" class="shared-key-box"></div>
+                    </div>
+                    <div class="output-section">
+                        <h3>Resultados del Ataque</h3>
+                        <div id="attack-results-display" class="attack-results-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/examples.js"></script>
+    <script src="../js/criptografia_hibrida_interactive.js"></script>
+</body>
+</html>

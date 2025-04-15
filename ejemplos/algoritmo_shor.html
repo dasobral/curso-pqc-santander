@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo de Shor - Ejemplos Prácticos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/prism.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="index.html" class="active">Ejemplos Prácticos</a></li>
+                <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Ejemplos Prácticos</a> &gt; Algoritmo de Shor
+    </div>
+
+    <main>
+        <h1>Algoritmo de Shor</h1>
+        
+        <div class="ejemplo-header">
+            <div class="ejemplo-icon large">🔢</div>
+            <div class="ejemplo-meta">
+                <p class="ejemplo-tema">Tema relacionado: <a href="../temas/tema1/index.html">Tema 1: Fundamentos de Criptografía Moderna</a></p>
+                <p class="ejemplo-guia">Guía de laboratorio: <a href="../guias/algoritmo_shor.html">Guía del Algoritmo de Shor</a></p>
+            </div>
+        </div>
+
+        <section class="ejemplo-intro">
+            <h2>Introducción</h2>
+            <p>
+                El algoritmo de Shor, desarrollado por Peter Shor en 1994, es uno de los algoritmos cuánticos más importantes 
+                debido a su capacidad para factorizar números enteros grandes en tiempo polinómico. Esta capacidad representa 
+                una amenaza directa para la seguridad de los sistemas criptográficos basados en RSA y otros sistemas que dependen 
+                de la dificultad de factorizar números grandes.
+            </p>
+            <p>
+                En este ejemplo, exploraremos cómo funciona el algoritmo de Shor y demostraremos su impacto en la seguridad 
+                criptográfica mediante una simulación simplificada.
+            </p>
+        </section>
+
+        <section class="ejemplo-teoria">
+            <h2>Fundamento Teórico</h2>
+            
+            <h3>El Problema de la Factorización</h3>
+            <p>
+                La seguridad de RSA se basa en la dificultad computacional de factorizar el producto de dos números primos grandes. 
+                Si N = p × q, donde p y q son primos grandes, encontrar p y q conociendo solo N es computacionalmente difícil 
+                con algoritmos clásicos (complejidad sub-exponencial).
+            </p>
+            
+            <h3>Enfoque del Algoritmo de Shor</h3>
+            <p>
+                El algoritmo de Shor resuelve este problema en dos partes:
+            </p>
+            <ol>
+                <li>
+                    <strong>Reducción a Búsqueda de Período:</strong> Transforma el problema de factorización en el problema 
+                    de encontrar el período de una función modular f(x) = a<sup>x</sup> mod N, donde a es un número coprimo con N.
+                </li>
+                <li>
+                    <strong>Búsqueda Cuántica de Período:</strong> Utiliza la transformada cuántica de Fourier para encontrar 
+                    el período de la función de manera eficiente.
+                </li>
+            </ol>
+            
+            <h3>Pasos del Algoritmo</h3>
+            <ol>
+                <li>Elegir un número aleatorio a &lt; N y verificar que gcd(a, N) = 1 (son coprimos).</li>
+                <li>Preparar un registro cuántico y aplicar la transformada cuántica de Fourier.</li>
+                <li>Medir el registro para obtener una aproximación del período r de la función f(x) = a<sup>x</sup> mod N.</li>
+                <li>Si r es par y a<sup>r/2</sup> ≠ -1 mod N, calcular gcd(a<sup>r/2</sup> ± 1, N) para encontrar un factor de N.</li>
+            </ol>
+            
+            <h3>Complejidad</h3>
+            <p>
+                El algoritmo de Shor tiene una complejidad de tiempo O((log N)<sup>3</sup>), lo que lo hace exponencialmente 
+                más rápido que los mejores algoritmos clásicos conocidos para factorización.
+            </p>
+        </section>
+
+        <section class="ejemplo-simulacion">
+            <h2>Simulación Interactiva</h2>
+            
+            <div class="simulacion-container">
+                <div class="simulacion-controls">
+                    <div class="control-group">
+                        <label for="inputN">Número a factorizar (N):</label>
+                        <input type="number" id="inputN" min="4" max="1000" value="15" step="1">
+                        <small>Para esta simulación, use valores pequeños (4-1000)</small>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="inputA">Base (a):</label>
+                        <input type="number" id="inputA" min="2" value="7" step="1">
+                        <small>Debe ser coprimo con N</small>
+                    </div>
+                    
+                    <button id="btnSimular" class="btn">Ejecutar Algoritmo</button>
+                    <button id="btnReset" class="btn btn-outline">Reiniciar</button>
+                </div>
+                
+                <div class="simulacion-output">
+                    <h3>Resultados</h3>
+                    <div id="outputPasos" class="output-pasos">
+                        <p>Configure los parámetros y haga clic en "Ejecutar Algoritmo" para comenzar.</p>
+                    </div>
+                    
+                    <div id="outputFactores" class="output-resultado">
+                        <h4>Factores encontrados:</h4>
+                        <p id="factores">-</p>
+                    </div>
+                </div>
+                
+                <div class="simulacion-visualization">
+                    <h3>Visualización</h3>
+                    <div id="visualization" class="visualization-container">
+                        <!-- La visualización se generará dinámicamente con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ejemplo-codigo">
+            <h2>Implementación</h2>
+            
+            <p>
+                A continuación se muestra una implementación simplificada del algoritmo de Shor en Python. 
+                Esta implementación es para fines educativos y simula los aspectos cuánticos del algoritmo.
+            </p>
+            
+            <pre><code class="language-python">import math
+import random
+import numpy as np
+
+def gcd(a, b):
+    """Calcula el máximo común divisor de a y b."""
+    while b:
+        a, b = b, a % b
+    return a
+
+def find_period(a, N):
+    """
+    Simula la parte cuántica del algoritmo de Shor para encontrar
+    el período de f(x) = a^x mod N.
+    
+    En un ordenador cuántico real, esto utilizaría la transformada
+    cuántica de Fourier para encontrar el período eficientemente.
+    """
+    # En esta simulación, calculamos el período directamente
+    x = 1
+    for r in range(1, N):
+        x = (x * a) % N
+        if x == 1:
+            return r
+    return None
+
+def shor_algorithm(N):
+    """
+    Implementación simplificada del algoritmo de Shor para factorizar N.
+    """
+    # Paso 1: Verificar si N es par
+    if N % 2 == 0:
+        return 2, N // 2
+    
+    # Paso 2: Verificar si N es una potencia perfecta
+    k = 2
+    while k**2 <= N:
+        if int(N**(1/k)) ** k == N:
+            return int(N**(1/k)), k
+        k += 1
+    
+    # Paso 3: Elegir un número aleatorio a < N
+    for _ in range(5):  # Intentar varias veces
+        a = random.randint(2, N-1)
+        
+        # Verificar que a y N son coprimos
+        if gcd(a, N) > 1:
+            return gcd(a, N), N // gcd(a, N)
+        
+        # Paso 4: Encontrar el período de a^x mod N
+        r = find_period(a, N)
+        
+        if r is None or r % 2 != 0:
+            continue  # Intentar con otro valor de a
+        
+        # Paso 5: Calcular a^(r/2) mod N
+        x = pow(a, r // 2, N)
+        
+        if x == N - 1:
+            continue  # Intentar con otro valor de a
+        
+        # Paso 6: Calcular los factores
+        factor1 = gcd(x - 1, N)
+        factor2 = gcd(x + 1, N)
+        
+        if factor1 > 1 and factor1 < N:
+            return factor1, N // factor1
+        if factor2 > 1 and factor2 < N:
+            return factor2, N // factor2
+    
+    # Si no se encontraron factores después de varios intentos
+    return None, None
+
+# Ejemplo de uso
+N = 15
+factor1, factor2 = shor_algorithm(N)
+print(f"Factores de {N}: {factor1} × {factor2}")</code></pre>
+            
+            <p>
+                Esta implementación es una simulación clásica del algoritmo de Shor. En un ordenador cuántico real, 
+                la búsqueda del período se realizaría utilizando registros cuánticos y la transformada cuántica de Fourier, 
+                lo que proporcionaría la aceleración exponencial.
+            </p>
+        </section>
+
+        <section class="ejemplo-impacto">
+            <h2>Impacto en la Seguridad Criptográfica</h2>
+            
+            <p>
+                El algoritmo de Shor tiene profundas implicaciones para la seguridad criptográfica:
+            </p>
+            
+            <div class="impacto-grid">
+                <div class="impacto-item">
+                    <h3>RSA</h3>
+                    <p>
+                        La seguridad de RSA depende directamente de la dificultad de factorizar números grandes. 
+                        Un ordenador cuántico que ejecute el algoritmo de Shor podría romper RSA en cuestión de horas o días, 
+                        independientemente de la longitud de la clave.
+                    </p>
+                </div>
+                
+                <div class="impacto-item">
+                    <h3>Diffie-Hellman</h3>
+                    <p>
+                        El algoritmo de Shor también puede resolver eficientemente el problema del logaritmo discreto, 
+                        comprometiendo la seguridad del intercambio de claves Diffie-Hellman y sistemas basados en curvas elípticas.
+                    </p>
+                </div>
+                
+                <div class="impacto-item">
+                    <h3>Criptografía Simétrica</h3>
+                    <p>
+                        Los algoritmos simétricos como AES son menos afectados. El algoritmo de Grover reduce la seguridad 
+                        efectiva a la mitad, pero esto puede contrarrestarse duplicando la longitud de la clave.
+                    </p>
+                </div>
+                
+                <div class="impacto-item">
+                    <h3>Necesidad de PQC</h3>
+                    <p>
+                        La amenaza del algoritmo de Shor es la principal motivación para el desarrollo de la criptografía 
+                        post-cuántica, que utiliza problemas matemáticos que se cree son difíciles incluso para ordenadores cuánticos.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="ejemplo-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <ul>
+                <li>
+                    <a href="https://arxiv.org/abs/quant-ph/9508027" target="_blank">
+                        Shor, P. W. (1995). Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer.
+                    </a>
+                </li>
+                <li>
+                    <a href="https://quantum-computing.ibm.com/composer/docs/iqx/guide/shors-algorithm" target="_blank">
+                        IBM Quantum Experience: Guía del Algoritmo de Shor
+                    </a>
+                </li>
+                <li>
+                    <a href="../guias/algoritmo_shor.html">
+                        Guía de Laboratorio: Algoritmo de Shor
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <div class="ejemplo-navegacion">
+            <a href="index.html" class="btn btn-outline">
+                <span class="flecha">←</span> Volver a Ejemplos
+            </a>
+            <a href="ml_kem.html" class="btn">
+                Siguiente: ML-KEM <span class="flecha">→</span>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/prism.js"></script>
+    <script src="../js/visualizations.js"></script>
+    <script>
+        // Código específico para la simulación del algoritmo de Shor
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnSimular = document.getElementById('btnSimular');
+            const btnReset = document.getElementById('btnReset');
+            const inputN = document.getElementById('inputN');
+            const inputA = document.getElementById('inputA');
+            const outputPasos = document.getElementById('outputPasos');
+            const factores = document.getElementById('factores');
+            const visualization = document.getElementById('visualization');
+            
+            // Función para verificar si dos números son coprimos
+            function gcd(a, b) {
+                while (b) {
+                    [a, b] = [b, a % b];
+                }
+                return a;
+            }
+            
+            // Función para encontrar el período (simulación clásica)
+            function findPeriod(a, N) {
+                let x = 1;
+                let values = [1];
+                let found = false;
+                let r = 0;
+                
+                // Calculamos a^x mod N para valores sucesivos de x
+                for (let i = 1; i < N; i++) {
+                    x = (x * a) % N;
+                    values.push(x);
+                    
+                    if (x === 1) {
+                        found = true;
+                        r = i;
+                        break;
+                    }
+                }
+                
+                return { found, r, values };
+            }
+            
+            // Función para simular el algoritmo de Shor
+            function shorAlgorithm(N, a) {
+                // Paso 1: Verificar si N y a son coprimos
+                const mcd = gcd(a, N);
+                if (mcd > 1) {
+                    return {
+                        success: true,
+                        factor1: mcd,
+                        factor2: N / mcd,
+                        steps: [`El MCD de ${a} y ${N} es ${mcd}, que es un factor trivial.`]
+                    };
+                }
+                
+                // Paso 2: Encontrar el período
+                const { found, r, values } = findPeriod(a, N);
+                
+                if (!found) {
+                    return {
+                        success: false,
+                        steps: [`No se pudo encontrar el período de ${a}^x mod ${N}.`]
+                    };
+                }
+                
+                const steps = [
+                    `Paso 1: Verificamos que gcd(${a}, ${N}) = 1, por lo que son coprimos.`,
+                    `Paso 2: Calculamos la secuencia ${a}^x mod ${N} para x = 0, 1, 2, ...`,
+                    `Secuencia: ${values.join(', ')}`,
+                    `Paso 3: Encontramos que el período es r = ${r}.`
+                ];
+                
+                // Paso 3: Verificar si r es par
+                if (r % 2 !== 0) {
+                    steps.push(`Paso 4: El período ${r} no es par. Necesitamos intentar con otro valor de a.`);
+                    return {
+                        success: false,
+                        steps
+                    };
+                }
+                
+                steps.push(`Paso 4: El período ${r} es par, continuamos.`);
+                
+                // Paso 4: Calcular a^(r/2) mod N
+                const x = Math.pow(a, r/2) % N;
+                steps.push(`Paso 5: Calculamos ${a}^(${r}/2) mod ${N} = ${x}.`);
+                
+                if (x === N - 1) {
+                    steps.push(`Paso 6: ${x} = ${N} - 1, lo que no nos ayuda. Necesitamos intentar con otro valor de a.`);
+                    return {
+                        success: false,
+                        steps
+                    };
+                }
+                
+                // Paso 5: Calcular los factores
+                const factor1 = gcd(x - 1, N);
+                const factor2 = gcd(x + 1, N);
+                
+                steps.push(`Paso 6: Calculamos gcd(${x} - 1, ${N}) = ${factor1} y gcd(${x} + 1, ${N}) = ${factor2}.`);
+                
+                if (factor1 > 1 && factor1 < N) {
+                    steps.push(`Paso 7: Encontramos los factores ${factor1} y ${N / factor1}.`);
+                    return {
+                        success: true,
+                        factor1,
+                        factor2: N / factor1,
+                        steps
+                    };
+                }
+                
+                if (factor2 > 1 && factor2 < N) {
+                    steps.push(`Paso 7: Encontramos los factores ${factor2} y ${N / factor2}.`);
+                    return {
+                        success: true,
+                        factor1: factor2,
+                        factor2: N / factor2,
+                        steps
+                    };
+                }
+                
+                steps.push(`Paso 7: No se encontraron factores no triviales. Necesitamos intentar con otro valor de a.`);
+                return {
+                    success: false,
+                    steps
+                };
+            }
+            
+            // Función para visualizar la secuencia modular
+            function visualizeModularSequence(a, N, values) {
+                visualization.innerHTML = '';
+                
+                // Crear un gráfico circular para visualizar la secuencia modular
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "300");
+                svg.setAttribute("viewBox", "-110 -110 220 220");
+                
+                // Círculo exterior
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", "0");
+                circle.setAttribute("cy", "0");
+                circle.setAttribute("r", "100");
+                circle.setAttribute("fill", "none");
+                circle.setAttribute("stroke", "#ccc");
+                circle.setAttribute("stroke-width", "2");
+                svg.appendChild(circle);
+                
+                // Marcas para cada valor posible mod N
+                for (let i = 0; i < N; i++) {
+                    const angle = (i / N) * 2 * Math.PI - Math.PI/2;
+                    const x = 100 * Math.cos(angle);
+                    const y = 100 * Math.sin(angle);
+                    
+                    // Línea de marca
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", 0.9 * x);
+                    line.setAttribute("y1", 0.9 * y);
+                    line.setAttribute("x2", 1.1 * x);
+                    line.setAttribute("y2", 1.1 * y);
+                    line.setAttribute("stroke", "#999");
+                    line.setAttribute("stroke-width", "1");
+                    svg.appendChild(line);
+                    
+                    // Etiqueta
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", 1.2 * x);
+                    text.setAttribute("y", 1.2 * y);
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("dominant-baseline", "middle");
+                    text.setAttribute("font-size", "12");
+                    text.textContent = i;
+                    svg.appendChild(text);
+                }
+                
+                // Dibujar la secuencia
+                for (let i = 0; i < values.length - 1; i++) {
+                    const value1 = values[i];
+                    const value2 = values[i + 1];
+                    
+                    const angle1 = (value1 / N) * 2 * Math.PI - Math.PI/2;
+                    const angle2 = (value2 / N) * 2 * Math.PI - Math.PI/2;
+                    
+                    const x1 = 80 * Math.cos(angle1);
+                    const y1 = 80 * Math.sin(angle1);
+                    const x2 = 80 * Math.cos(angle2);
+                    const y2 = 80 * Math.sin(angle2);
+                    
+                    // Línea de conexión
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", x1);
+                    line.setAttribute("y1", y1);
+                    line.setAttribute("x2", x2);
+                    line.setAttribute("y2", y2);
+                    line.setAttribute("stroke", "#3498db");
+                    line.setAttribute("stroke-width", "2");
+                    line.setAttribute("marker-end", "url(#arrowhead)");
+                    svg.appendChild(line);
+                    
+                    // Punto para el valor
+                    const point = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    point.setAttribute("cx", x1);
+                    point.setAttribute("cy", y1);
+                    point.setAttribute("r", "4");
+                    point.setAttribute("fill", "#e74c3c");
+                    svg.appendChild(point);
+                    
+                    // Etiqueta para el exponente
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", 0.9 * x1);
+                    text.setAttribute("y", 0.9 * y1);
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("dominant-baseline", "middle");
+                    text.setAttribute("font-size", "10");
+                    text.setAttribute("fill", "#333");
+                    text.textContent = i;
+                    svg.appendChild(text);
+                }
+                
+                // Punto final
+                const lastValue = values[values.length - 1];
+                const lastAngle = (lastValue / N) * 2 * Math.PI - Math.PI/2;
+                const lastX = 80 * Math.cos(lastAngle);
+                const lastY = 80 * Math.sin(lastAngle);
+                
+                const lastPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                lastPoint.setAttribute("cx", lastX);
+                lastPoint.setAttribute("cy", lastY);
+                lastPoint.setAttribute("r", "4");
+                lastPoint.setAttribute("fill", "#e74c3c");
+                svg.appendChild(lastPoint);
+                
+                // Etiqueta para el último exponente
+                const lastText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                lastText.setAttribute("x", 0.9 * lastX);
+                lastText.setAttribute("y", 0.9 * lastY);
+                lastText.setAttribute("text-anchor", "middle");
+                lastText.setAttribute("dominant-baseline", "middle");
+                lastText.setAttribute("font-size", "10");
+                lastText.setAttribute("fill", "#333");
+                lastText.textContent = values.length - 1;
+                svg.appendChild(lastText);
+                
+                // Definir marcador de flecha
+                const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+                const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+                marker.setAttribute("id", "arrowhead");
+                marker.setAttribute("markerWidth", "10");
+                marker.setAttribute("markerHeight", "7");
+                marker.setAttribute("refX", "10");
+                marker.setAttribute("refY", "3.5");
+                marker.setAttribute("orient", "auto");
+                
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("points", "0 0, 10 3.5, 0 7");
+                polygon.setAttribute("fill", "#3498db");
+                
+                marker.appendChild(polygon);
+                defs.appendChild(marker);
+                svg.appendChild(defs);
+                
+                // Título
+                const title = document.createElement("h4");
+                title.textContent = `Visualización de la secuencia ${a}^x mod ${N}`;
+                visualization.appendChild(title);
+                
+                // Leyenda
+                const legend = document.createElement("div");
+                legend.className = "visualization-legend";
+                legend.innerHTML = `
+                    <p>El gráfico muestra la secuencia de valores ${a}^x mod ${N} para x = 0, 1, 2, ...</p>
+                    <p>El período r = ${values.length - 1} es la longitud del ciclo antes de que la secuencia vuelva a 1.</p>
+                `;
+                
+                visualization.appendChild(svg);
+                visualization.appendChild(legend);
+            }
+            
+            // Manejador para el botón de simulación
+            btnSimular.addEventListener('click', function() {
+                const N = parseInt(inputN.value);
+                const a = parseInt(inputA.value);
+                
+                if (isNaN(N) || isNaN(a) || N < 4 || a < 2 || a >= N) {
+                    alert("Por favor, ingrese valores válidos: N ≥ 4 y 2 ≤ a < N");
+                    return;
+                }
+                
+                // Ejecutar el algoritmo
+                const result = shorAlgorithm(N, a);
+                
+                // Mostrar los pasos
+                outputPasos.innerHTML = result.steps.map(step => `<p>${step}</p>`).join('');
+                
+                // Mostrar los factores
+                if (result.success) {
+                    factores.textContent = `${result.factor1} × ${result.factor2}`;
+                } else {
+                    factores.textContent = "No se encontraron factores";
+                }
+                
+                // Visualizar la secuencia modular
+                const { values } = findPeriod(a, N);
+                visualizeModularSequence(a, N, values);
+            });
+            
+            // Manejador para el botón de reinicio
+            btnReset.addEventListener('click', function() {
+                inputN.value = "15";
+                inputA.value = "7";
+                outputPasos.innerHTML = "<p>Configure los parámetros y haga clic en \"Ejecutar Algoritmo\" para comenzar.</p>";
+                factores.textContent = "-";
+                visualization.innerHTML = "";
+            });
+        });
+    </script>
+</body>
+</html>

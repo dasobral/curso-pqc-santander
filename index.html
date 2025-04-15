@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="programa.html">Programa</a></li>
+                <li><a href="temas/tema1/index.html">Temas</a></li>
+                <li><a href="ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Bienvenido al Curso de Criptografía Post-Cuántica</h1>
+            <p>Este curso introductorio de 16 horas está diseñado para proporcionar una comprensión clara de los fundamentos, desafíos y soluciones en el campo emergente de la criptografía post-cuántica.</p>
+            
+            <div class="alert alert-info">
+                <p><strong>Nota:</strong> Este curso mantiene un equilibrio entre claridad conceptual y contenido técnico, haciéndolo accesible para estudiantes con conocimientos básicos de criptografía.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Objetivos del Curso</h2>
+            <ul>
+                <li>Comprender los fundamentos de la criptografía moderna y sus vulnerabilidades ante la computación cuántica</li>
+                <li>Explorar los principios matemáticos detrás de los algoritmos post-cuánticos</li>
+                <li>Analizar los estándares emergentes de criptografía post-cuántica</li>
+                <li>Implementar y evaluar soluciones criptográficas resistentes a ataques cuánticos</li>
+                <li>Examinar casos de uso prácticos y estrategias de migración</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Estructura del Curso</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 1</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Fundamentos de Criptografía Moderna</h4>
+                        <p>Revisión de criptografía simétrica, asimétrica y funciones hash. Vulnerabilidades ante computación cuántica.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema1/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 2</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Infraestructura de Seguridad en Internet</h4>
+                        <p>Análisis de PKI, TLS/SSL, y protocolos de seguridad actuales. Impacto de la computación cuántica.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema2/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 3</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Fundamentos de Criptografía Post-Cuántica</h4>
+                        <p>Introducción a retículos, códigos, isogenias y sistemas multivariables. Problemas matemáticos subyacentes.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema3/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 4</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Estandarización de Criptografía Post-Cuántica</h4>
+                        <p>Proceso de estandarización del NIST. Análisis de ML-KEM, ML-DSA y SLH-DSA.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema4/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 5</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Implementaciones, Consideraciones y Desafíos</h4>
+                        <p>Estrategias de migración, criptografía híbrida y desafíos de implementación.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema5/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tema 6</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Distribución Cuántica de Claves (QKD)</h4>
+                        <p>Principios de QKD, protocolo BB84, implementaciones prácticas y limitaciones.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="temas/tema6/index.html" class="btn">Ver tema</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Ejemplos Prácticos</h2>
+            <p>El curso incluye implementaciones prácticas para reforzar los conceptos teóricos:</p>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Algoritmo de Shor</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Simulación del algoritmo que amenaza la criptografía de clave pública actual.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="ejemplos/algoritmo_shor.html" class="btn">Ver ejemplo</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>ML-KEM</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Implementación simplificada del mecanismo de encapsulamiento de claves basado en retículos.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="ejemplos/ml_kem.html" class="btn">Ver ejemplo</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>ML-DSA</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Implementación simplificada del algoritmo de firma digital basado en retículos.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="ejemplos/ml_dsa.html" class="btn">Ver ejemplo</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Criptografía Híbrida</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Combinación de algoritmos clásicos y post-cuánticos para una transición segura.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="ejemplos/criptografia_hibrida.html" class="btn">Ver ejemplo</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>QKD BB84</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Simulación del protocolo de distribución cuántica de claves BB84.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="ejemplos/qkd_bb84.html" class="btn">Ver ejemplo</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Guías de Laboratorio</h2>
+            <p>Para una experiencia práctica completa, el curso incluye guías detalladas de laboratorio:</p>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Guías Disponibles</h3>
+                        <ul>
+                            <li>Simulación del Algoritmo de Shor</li>
+                            <li>Implementación de ML-KEM</li>
+                            <li>Implementación de ML-DSA</li>
+                            <li>Configuración de Criptografía Híbrida</li>
+                            <li>Simulación de QKD</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <a href="guias/index.html" class="btn">Ver todas las guías</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="programa.html">Programa</a></li>
+                    <li><a href="temas/tema1/index.html">Temas</a></li>
+                    <li><a href="ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Recursos</h3>
+                <ul>
+                    <li><a href="recursos/index.html#libros">Libros</a></li>
+                    <li><a href="recursos/index.html#articulos">Artículos</a></li>
+                    <li><a href="recursos/index.html#estandares">Estándares</a></li>
+                    <li><a href="recursos/index.html#herramientas">Herramientas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

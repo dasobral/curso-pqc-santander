@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 4: Estandarización de Criptografía Post-Cuántica - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../../programa.html">Programa</a></li>
+                <li><a href="../tema1/index.html">Temas</a></li>
+                <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../../index.html">Inicio</a> &gt; <a href="../tema1/index.html">Temas</a> &gt; Tema 4: Estandarización de Criptografía Post-Cuántica
+    </div>
+
+    <main>
+        <h1>Tema 4: Estandarización de Criptografía Post-Cuántica</h1>
+        
+        <div class="tema-navegacion">
+            <div class="tema-nav-item">
+                <a href="../tema1/index.html">
+                    <span>Tema 1</span>
+                    <p>Fundamentos de Criptografía Moderna</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema2/index.html">
+                    <span>Tema 2</span>
+                    <p>Infraestructura de Seguridad en Internet</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema3/index.html">
+                    <span>Tema 3</span>
+                    <p>Fundamentos de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item actual">
+                <span>Tema 4</span>
+                <p>Estandarización de Criptografía Post-Cuántica</p>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema5/index.html">
+                    <span>Tema 5</span>
+                    <p>Implementaciones, Consideraciones y Desafíos</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema6/index.html">
+                    <span>Tema 6</span>
+                    <p>Distribución Cuántica de Claves (QKD)</p>
+                </a>
+            </div>
+        </div>
+
+        <section class="tema-intro">
+            <h2>Introducción</h2>
+            <p>Este tema examina los esfuerzos de estandarización de la criptografía post-cuántica, con especial énfasis en el proceso del NIST y los algoritmos seleccionados. Analizaremos en detalle los estándares emergentes y sus características técnicas, así como los procesos de evaluación y selección que han llevado a su adopción.</p>
+            
+            <div class="tema-info">
+                <div class="info-item">
+                    <h3>Duración</h3>
+                    <p>3 horas</p>
+                </div>
+                <div class="info-item">
+                    <h3>Objetivos</h3>
+                    <ul>
+                        <li>Comprender el proceso de estandarización del NIST para criptografía post-cuántica</li>
+                        <li>Analizar en detalle los algoritmos seleccionados: ML-KEM, ML-DSA y SLH-DSA</li>
+                        <li>Examinar los criterios de evaluación y selección utilizados</li>
+                        <li>Explorar otros esfuerzos de estandarización a nivel internacional</li>
+                        <li>Entender las implicaciones de estos estándares para la seguridad futura</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tema-contenido">
+            <h2>Contenido del Tema</h2>
+            
+            <div class="subtema">
+                <h3>4.1 Proceso de Estandarización del NIST</h3>
+                <p>El Instituto Nacional de Estándares y Tecnología (NIST) de Estados Unidos ha liderado el esfuerzo global para estandarizar algoritmos criptográficos post-cuánticos a través de un proceso competitivo y transparente.</p>
+                
+                <h4>Cronología del Proceso</h4>
+                <ul>
+                    <li><strong>Diciembre 2016:</strong> Anuncio del concurso y solicitud de propuestas.</li>
+                    <li><strong>Noviembre 2017:</strong> Fecha límite para presentación de candidatos. Se recibieron 69 propuestas válidas.</li>
+                    <li><strong>Abril 2018:</strong> Primera Conferencia PQC del NIST, inicio de la primera ronda de evaluación.</li>
+                    <li><strong>Enero 2019:</strong> Selección de 26 candidatos para la segunda ronda.</li>
+                    <li><strong>Julio 2020:</strong> Selección de 7 finalistas y 8 candidatos alternativos para la tercera ronda.</li>
+                    <li><strong>Julio 2022:</strong> Anuncio de los primeros algoritmos seleccionados para estandarización.</li>
+                    <li><strong>Agosto 2023:</strong> Publicación de los borradores de estándares FIPS 203, 204 y 205.</li>
+                    <li><strong>2024-2025:</strong> Finalización y publicación de los estándares oficiales.</li>
+                </ul>
+                
+                <h4>Criterios de Evaluación</h4>
+                <p>El NIST evaluó los algoritmos candidatos según varios criterios:</p>
+                <ul>
+                    <li><strong>Seguridad:</strong> Resistencia a ataques cuánticos y clásicos, madurez del análisis criptográfico, confianza en las suposiciones subyacentes.</li>
+                    <li><strong>Rendimiento y Características:</strong> Tamaño de claves y firmas/cifrados, velocidad de ejecución, requisitos de memoria.</li>
+                    <li><strong>Implementación:</strong> Facilidad de implementación correcta, resistencia a ataques de canal lateral, flexibilidad.</li>
+                    <li><strong>Diversidad de Enfoques:</strong> Selección de algoritmos basados en diferentes problemas matemáticos para diversificar el riesgo.</li>
+                </ul>
+                
+                <h4>Categorías de Algoritmos</h4>
+                <p>El NIST buscó algoritmos para dos categorías principales:</p>
+                <ul>
+                    <li><strong>Mecanismos de Establecimiento de Claves (KEM):</strong> Para cifrado y establecimiento seguro de claves.</li>
+                    <li><strong>Firmas Digitales:</strong> Para autenticación e integridad de datos.</li>
+                </ul>
+                
+                <h4>Niveles de Seguridad</h4>
+                <p>El NIST definió cinco niveles de seguridad para evaluar los algoritmos:</p>
+                <ul>
+                    <li><strong>Nivel 1:</strong> Al menos tan difícil de romper como AES-128.</li>
+                    <li><strong>Nivel 2:</strong> Al menos tan difícil de romper como SHA-256.</li>
+                    <li><strong>Nivel 3:</strong> Al menos tan difícil de romper como AES-192.</li>
+                    <li><strong>Nivel 4:</strong> Al menos tan difícil de romper como SHA-384.</li>
+                    <li><strong>Nivel 5:</strong> Al menos tan difícil de romper como AES-256.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>4.2 ML-KEM (FIPS 203)</h3>
+                <p>ML-KEM, anteriormente conocido como Kyber, es un mecanismo de encapsulamiento de claves basado en el problema Module Learning With Errors (MLWE). Ha sido seleccionado por el NIST como el primer estándar post-cuántico para establecimiento de claves.</p>
+                
+                <h4>Fundamentos Matemáticos</h4>
+                <ul>
+                    <li><strong>Module Learning With Errors (MLWE):</strong> Generalización del problema Ring-LWE que combina aspectos de LWE y RLWE.</li>
+                    <li><strong>Anillo Polinomial:</strong> R = Zq[X]/(X^n + 1), donde n = 256 y q = 3329.</li>
+                    <li><strong>Módulo:</strong> Rk, donde k varía según el nivel de seguridad (2, 3 o 4).</li>
+                    <li><strong>Distribución de Error:</strong> Distribución centrada binomial con parámetro η.</li>
+                </ul>
+                
+                <h4>Variantes y Parámetros</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Variante</th>
+                            <th>Nivel de Seguridad</th>
+                            <th>Parámetro k</th>
+                            <th>Tamaño de Clave Pública</th>
+                            <th>Tamaño de Clave Privada</th>
+                            <th>Tamaño de Cifrado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ML-KEM-512</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>800 bytes</td>
+                            <td>1632 bytes</td>
+                            <td>768 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>ML-KEM-768</td>
+                            <td>3</td>
+                            <td>3</td>
+                            <td>1184 bytes</td>
+                            <td>2400 bytes</td>
+                            <td>1088 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>ML-KEM-1024</td>
+                            <td>5</td>
+                            <td>4</td>
+                            <td>1568 bytes</td>
+                            <td>3168 bytes</td>
+                            <td>1568 bytes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Operaciones Principales</h4>
+                <ol>
+                    <li><strong>Generación de Claves (KeyGen):</strong>
+                        <ul>
+                            <li>Genera una matriz A aleatoria.</li>
+                            <li>Muestrea vectores secretos s y e de la distribución de error.</li>
+                            <li>Calcula t = As + e.</li>
+                            <li>La clave pública es (t, A), la clave privada es s.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Encapsulamiento (Encaps):</strong>
+                        <ul>
+                            <li>Genera un mensaje aleatorio m.</li>
+                            <li>Codifica m a un vector r.</li>
+                            <li>Muestrea vectores de error e₁ y e₂.</li>
+                            <li>Calcula u = A^T r + e₁ y v = t^T r + e₂ + ⌈q/2⌋m.</li>
+                            <li>El texto cifrado es (u, v).</li>
+                            <li>La clave compartida K se deriva de m y (u, v) usando una función hash.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Desencapsulamiento (Decaps):</strong>
+                        <ul>
+                            <li>Calcula m' = Decode(v - s^T u).</li>
+                            <li>Verifica que el encapsulamiento de m' produce (u, v).</li>
+                            <li>Si la verificación es exitosa, deriva K de m' y (u, v); de lo contrario, usa un valor aleatorio.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Características y Ventajas</h4>
+                <ul>
+                    <li><strong>Eficiencia:</strong> Operaciones rápidas gracias al uso de transformadas rápidas de Fourier (NTT).</li>
+                    <li><strong>Tamaño Compacto:</strong> Claves y cifrados relativamente pequeños en comparación con otros esquemas post-cuánticos.</li>
+                    <li><strong>Seguridad Demostrable:</strong> Reducción a problemas MLWE bien estudiados.</li>
+                    <li><strong>Resistencia a Ataques de Canal Lateral:</strong> Diseñado con consideraciones para implementaciones seguras.</li>
+                    <li><strong>Flexibilidad:</strong> Múltiples niveles de seguridad con la misma estructura básica.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>4.3 ML-DSA (FIPS 204)</h3>
+                <p>ML-DSA, anteriormente conocido como Dilithium, es un esquema de firma digital basado en el problema Module Learning With Errors (MLWE). Ha sido seleccionado por el NIST como uno de los estándares post-cuánticos para firmas digitales.</p>
+                
+                <h4>Fundamentos Matemáticos</h4>
+                <ul>
+                    <li><strong>Module Learning With Errors (MLWE):</strong> Similar a ML-KEM, utiliza el mismo anillo polinomial R = Zq[X]/(X^n + 1).</li>
+                    <li><strong>Enfoque "Fiat-Shamir con Abortos":</strong> Técnica para convertir protocolos de identificación en esquemas de firma.</li>
+                    <li><strong>Parámetros Principales:</strong> n = 256, q = 8380417, y varios parámetros adicionales que varían según el nivel de seguridad.</li>
+                </ul>
+                
+                <h4>Variantes y Parámetros</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Variante</th>
+                            <th>Nivel de Seguridad</th>
+                            <th>Tamaño de Clave Pública</th>
+                            <th>Tamaño de Clave Privada</th>
+                            <th>Tamaño de Firma</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ML-DSA-44</td>
+                            <td>2</td>
+                            <td>1312 bytes</td>
+                            <td>2528 bytes</td>
+                            <td>2420 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>ML-DSA-65</td>
+                            <td>3</td>
+                            <td>1952 bytes</td>
+                            <td>3856 bytes</td>
+                            <td>3293 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>ML-DSA-87</td>
+                            <td>5</td>
+                            <td>2592 bytes</td>
+                            <td>5184 bytes</td>
+                            <td>4595 bytes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Operaciones Principales</h4>
+                <ol>
+                    <li><strong>Generación de Claves (KeyGen):</strong>
+                        <ul>
+                            <li>Genera una matriz A aleatoria.</li>
+                            <li>Muestrea vectores secretos s₁ y s₂ con coeficientes pequeños.</li>
+                            <li>Calcula t = As₁ + s₂.</li>
+                            <li>La clave pública es (t, A), la clave privada es (s₁, s₂, t).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Firma (Sign):</strong>
+                        <ul>
+                            <li>Muestrea un vector aleatorio y.</li>
+                            <li>Calcula w = Ay.</li>
+                            <li>Calcula el desafío c como un hash de w y el mensaje.</li>
+                            <li>Calcula z = y + cs₁.</li>
+                            <li>Calcula h = cs₂.</li>
+                            <li>Si z o h son demasiado grandes, vuelve a empezar (enfoque "con abortos").</li>
+                            <li>La firma es (z, c, h).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Verificación (Verify):</strong>
+                        <ul>
+                            <li>Verifica que z tiene coeficientes dentro de un rango específico.</li>
+                            <li>Calcula w' = Az - ct.</li>
+                            <li>Verifica que c es igual al hash de w' y el mensaje.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Características y Ventajas</h4>
+                <ul>
+                    <li><strong>Eficiencia:</strong> Operaciones rápidas gracias al uso de transformadas rápidas de Fourier (NTT).</li>
+                    <li><strong>Determinismo:</strong> Opción para firmas deterministas que mejoran la resistencia a ataques de canal lateral.</li>
+                    <li><strong>Seguridad Demostrable:</strong> Reducción a problemas MLWE bien estudiados.</li>
+                    <li><strong>Compatibilidad:</strong> Comparte estructura matemática con ML-KEM, facilitando implementaciones conjuntas.</li>
+                    <li><strong>Tamaño Moderado:</strong> Firmas más grandes que en esquemas clásicos pero más pequeñas que en otros esquemas post-cuánticos.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>4.4 SLH-DSA (FIPS 205)</h3>
+                <p>SLH-DSA, anteriormente conocido como SPHINCS+, es un esquema de firma digital basado en funciones hash. Ha sido seleccionado por el NIST como un estándar post-cuántico alternativo para firmas digitales, ofreciendo diferentes características y suposiciones de seguridad que ML-DSA.</p>
+                
+                <h4>Fundamentos Criptográficos</h4>
+                <ul>
+                    <li><strong>Firmas de Un Solo Uso:</strong> Esquemas WOTS+ (Winternitz One-Time Signature) como componente básico.</li>
+                    <li><strong>Árboles de Merkle:</strong> Estructura para autenticar múltiples claves de un solo uso.</li>
+                    <li><strong>Árboles Hiperarbóreos:</strong> Estructura jerárquica de árboles de Merkle para mejorar la eficiencia.</li>
+                    <li><strong>Funciones Hash:</strong> Utiliza funciones hash como SHA-256, SHAKE-256 o Haraka.</li>
+                </ul>
+                
+                <h4>Variantes y Parámetros</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Variante</th>
+                            <th>Nivel de Seguridad</th>
+                            <th>Función Hash</th>
+                            <th>Tamaño de Clave Pública</th>
+                            <th>Tamaño de Clave Privada</th>
+                            <th>Tamaño de Firma</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SLH-DSA-SHA2-128s</td>
+                            <td>1</td>
+                            <td>SHA-256</td>
+                            <td>32 bytes</td>
+                            <td>64 bytes</td>
+                            <td>7856 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHAKE-128s</td>
+                            <td>1</td>
+                            <td>SHAKE-256</td>
+                            <td>32 bytes</td>
+                            <td>64 bytes</td>
+                            <td>7856 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHA2-192s</td>
+                            <td>3</td>
+                            <td>SHA-256</td>
+                            <td>48 bytes</td>
+                            <td>96 bytes</td>
+                            <td>16224 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHAKE-192s</td>
+                            <td>3</td>
+                            <td>SHAKE-256</td>
+                            <td>48 bytes</td>
+                            <td>96 bytes</td>
+                            <td>16224 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHA2-256s</td>
+                            <td>5</td>
+                            <td>SHA-256</td>
+                            <td>64 bytes</td>
+                            <td>128 bytes</td>
+                            <td>29792 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHAKE-256s</td>
+                            <td>5</td>
+                            <td>SHAKE-256</td>
+                            <td>64 bytes</td>
+                            <td>128 bytes</td>
+                            <td>29792 bytes</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Operaciones Principales</h4>
+                <ol>
+                    <li><strong>Generación de Claves (KeyGen):</strong>
+                        <ul>
+                            <li>Genera una semilla maestra aleatoria SK.seed.</li>
+                            <li>Deriva una semilla pública PK.seed.</li>
+                            <li>Construye la raíz del árbol de Merkle superior usando SK.seed y PK.seed.</li>
+                            <li>La clave pública es (PK.seed, raíz), la clave privada es SK.seed.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Firma (Sign):</strong>
+                        <ul>
+                            <li>Genera un índice aleatorio o determinista para seleccionar una hoja del árbol.</li>
+                            <li>Genera una firma WOTS+ para el mensaje usando la clave de un solo uso correspondiente a esa hoja.</li>
+                            <li>Incluye la autenticación de la hoja hasta la raíz del árbol (camino de autenticación).</li>
+                            <li>La firma incluye el índice, la firma WOTS+ y el camino de autenticación.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Verificación (Verify):</strong>
+                        <ul>
+                            <li>Verifica la firma WOTS+ del mensaje.</li>
+                            <li>Reconstruye el camino desde la hoja hasta la raíz usando el camino de autenticación.</li>
+                            <li>Verifica que la raíz reconstruida coincide con la raíz en la clave pública.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Características y Ventajas</h4>
+                <ul>
+                    <li><strong>Mínimas Suposiciones Criptográficas:</strong> Solo requiere funciones hash seguras.</li>
+                    <li><strong>Sin Estado:</strong> No necesita mantener un estado entre firmas, a diferencia de otros esquemas basados en hash.</li>
+                    <li><strong>Claves Pequeñas:</strong> Tamaños de clave pública y privada muy compactos.</li>
+                    <li><strong>Diversificación:</strong> Proporciona una alternativa basada en diferentes suposiciones matemáticas que ML-DSA.</li>
+                    <li><strong>Resistencia a Avances Criptanalíticos:</strong> Alta confianza en la seguridad a largo plazo.</li>
+                </ul>
+                
+                <h4>Desventajas</h4>
+                <ul>
+                    <li><strong>Firmas Grandes:</strong> Tamaños de firma significativamente mayores que ML-DSA y esquemas clásicos.</li>
+                    <li><strong>Rendimiento:</strong> Operaciones de firma y verificación más lentas que ML-DSA.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>4.5 Otros Esfuerzos de Estandarización</h3>
+                <p>Además del proceso del NIST, existen otros esfuerzos de estandarización de criptografía post-cuántica a nivel internacional.</p>
+                
+                <h4>IETF (Internet Engineering Task Force)</h4>
+                <ul>
+                    <li><strong>RFC 8391:</strong> XMSS - Esquema de firma basado en hash estandarizado en 2018.</li>
+                    <li><strong>Grupo de Trabajo PQUIP:</strong> Post-Quantum Use In Protocols, trabajando en la integración de algoritmos post-cuánticos en protocolos de Internet.</li>
+                    <li><strong>Borradores para TLS:</strong> Extensiones para incluir algoritmos post-cuánticos en TLS 1.3.</li>
+                    <li><strong>Borradores para IKEv2:</strong> Integración de algoritmos post-cuánticos en IKEv2 para VPNs.</li>
+                </ul>
+                
+                <h4>ETSI (European Telecommunications Standards Institute)</h4>
+                <ul>
+                    <li><strong>Grupo de Trabajo QSC:</strong> Quantum-Safe Cryptography, desarrollando estándares para criptografía resistente a ataques cuánticos.</li>
+                    <li><strong>ETSI TS 103 744:</strong> Guía de migración a criptografía cuánticamente segura.</li>
+                    <li><strong>ETSI TR 103 619:</strong> Análisis de algoritmos post-cuánticos para firmas digitales.</li>
+                </ul>
+                
+                <h4>ISO/IEC</h4>
+                <ul>
+                    <li><strong>ISO/IEC 18033-7:</strong> En desarrollo, cubrirá mecanismos de cifrado resistentes a ataques cuánticos.</li>
+                    <li><strong>ISO/IEC 14888-4:</strong> En desarrollo, cubrirá firmas digitales resistentes a ataques cuánticos.</li>
+                    <li><strong>ISO/IEC 23837:</strong> En desarrollo, cubrirá la seguridad de los sistemas criptográficos post-cuánticos.</li>
+                </ul>
+                
+                <h4>Iniciativas Nacionales</h4>
+                <ul>
+                    <li><strong>BSI (Alemania):</strong> Recomendaciones para criptografía post-cuántica.</li>
+                    <li><strong>ANSSI (Francia):</strong> Guía de migración a criptografía post-cuántica.</li>
+                    <li><strong>NCSC (Reino Unido):</strong> Orientación sobre preparación para amenazas cuánticas.</li>
+                    <li><strong>CCN (España):</strong> Guías de seguridad para la transición a criptografía post-cuántica.</li>
+                </ul>
+                
+                <h4>Estándares Industriales</h4>
+                <ul>
+                    <li><strong>OASIS KMIP:</strong> Extensiones para gestión de claves post-cuánticas.</li>
+                    <li><strong>GlobalPlatform:</strong> Especificaciones para implementaciones seguras en tarjetas inteligentes y elementos seguros.</li>
+                    <li><strong>PCI DSS:</strong> Considerando requisitos para la transición a criptografía post-cuántica.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>4.6 Implicaciones y Próximos Pasos</h3>
+                <p>La estandarización de algoritmos post-cuánticos marca el comienzo de una transición global hacia una infraestructura criptográfica resistente a ataques cuánticos.</p>
+                
+                <h4>Implicaciones para la Industria</h4>
+                <ul>
+                    <li><strong>Fabricantes de Hardware:</strong> Necesidad de desarrollar aceleradores hardware para algoritmos post-cuánticos.</li>
+                    <li><strong>Desarrolladores de Software:</strong> Actualización de bibliotecas criptográficas y aplicaciones.</li>
+                    <li><strong>Proveedores de Servicios Cloud:</strong> Implementación de opciones post-cuánticas para clientes.</li>
+                    <li><strong>Sector Financiero:</strong> Actualización de infraestructura de pagos y banca en línea.</li>
+                    <li><strong>Sector Sanitario:</strong> Protección a largo plazo de datos médicos sensibles.</li>
+                    <li><strong>Infraestructuras Críticas:</strong> Actualización de sistemas de control y comunicación.</li>
+                </ul>
+                
+                <h4>Próximos Pasos en Estandarización</h4>
+                <ul>
+                    <li><strong>Finalización de Estándares FIPS:</strong> Publicación final de FIPS 203, 204 y 205.</li>
+                    <li><strong>Estándares de Implementación:</strong> Guías detalladas para implementaciones seguras.</li>
+                    <li><strong>Perfiles de Uso:</strong> Recomendaciones específicas para diferentes aplicaciones y sectores.</li>
+                    <li><strong>Certificación:</strong> Desarrollo de esquemas de certificación para implementaciones.</li>
+                    <li><strong>Algoritmos Adicionales:</strong> Posible estandarización de algoritmos adicionales para casos de uso específicos.</li>
+                </ul>
+                
+                <h4>Desafíos Pendientes</h4>
+                <ul>
+                    <li><strong>Criptografía Híbrida:</strong> Estandarización de enfoques híbridos que combinen algoritmos clásicos y post-cuánticos.</li>
+                    <li><strong>Protocolos de Nivel Superior:</strong> Actualización de protocolos como TLS, SSH, IKE, etc.</li>
+                    <li><strong>Interoperabilidad:</strong> Asegurar la compatibilidad entre diferentes implementaciones.</li>
+                    <li><strong>Migración:</strong> Estrategias para la transición gradual de sistemas existentes.</li>
+                    <li><strong>Educación y Formación:</strong> Desarrollo de capacidades en la industria y academia.</li>
+                </ul>
+                
+                <h4>Línea Temporal Estimada</h4>
+                <ul>
+                    <li><strong>2024-2025:</strong> Publicación final de estándares FIPS.</li>
+                    <li><strong>2025-2027:</strong> Adopción temprana en sectores críticos y de alta seguridad.</li>
+                    <li><strong>2027-2030:</strong> Adopción generalizada en infraestructura de Internet y servicios comerciales.</li>
+                    <li><strong>2030-2035:</strong> Transición completa a criptografía post-cuántica en la mayoría de sistemas.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="tema-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <div class="recursos-grid">
+                <div class="recurso-item">
+                    <h3>Lecturas Recomendadas</h3>
+                    <ul>
+                        <li>NIST. (2023). FIPS 203 (Draft): Module-Lattice-Based Key-Encapsulation Mechanism Standard.</li>
+                        <li>NIST. (2023). FIPS 204 (Draft): Module-Lattice-Based Digital Signature Standard.</li>
+                        <li>NIST. (2023). FIPS 205 (Draft): Stateless Hash-Based Digital Signature Standard.</li>
+                        <li>Alagic, G., et al. (2022). Status Report on the Third Round of the NIST Post-Quantum Cryptography Standardization Process. NISTIR 8413.</li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Recursos en Línea</h3>
+                    <ul>
+                        <li><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography/selected-algorithms-2022">NIST: Algoritmos Post-Cuánticos Seleccionados</a></li>
+                        <li><a href="https://pq-crystals.org/">Proyecto CRYSTALS (ML-KEM y ML-DSA)</a></li>
+                        <li><a href="https://sphincs.org/">Proyecto SPHINCS+ (SLH-DSA)</a></li>
+                        <li><a href="https://www.ietf.org/archive/id/draft-ietf-pquip-pqt-hybrid-00.html">IETF: Post-Quantum Traditional Hybrid Key Exchange</a></li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Ejemplos Prácticos</h3>
+                    <ul>
+                        <li><a href="../../ejemplos/ml_kem.html">Implementación de ML-KEM</a></li>
+                        <li><a href="../../ejemplos/ml_dsa.html">Implementación de ML-DSA</a></li>
+                        <li><a href="../../guias/ml_kem.html">Guía de Laboratorio: ML-KEM</a></li>
+                        <li><a href="../../guias/ml_dsa.html">Guía de Laboratorio: ML-DSA</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="tema-navegacion-inferior">
+            <div class="nav-anterior">
+                <a href="../tema3/index.html">
+                    <span class="flecha">←</span>
+                    Anterior: Tema 3 - Fundamentos de Criptografía Post-Cuántica
+                </a>
+            </div>
+            <div class="nav-siguiente">
+                <a href="../tema5/index.html">
+                    Siguiente: Tema 5 - Implementaciones, Consideraciones y Desafíos
+                    <span class="flecha">→</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../programa.html">Programa</a></li>
+                    <li><a href="../tema1/index.html">Temas</a></li>
+                    <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="../../ejemplos/algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="../../ejemplos/ml_kem.html">ML-KEM</a></li>
+                    <li><a href="../../ejemplos/ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="../../ejemplos/criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="../../ejemplos/qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

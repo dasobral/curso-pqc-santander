@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 2: Infraestructura de Seguridad en Internet - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../../programa.html">Programa</a></li>
+                <li><a href="../tema1/index.html">Temas</a></li>
+                <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../../index.html">Inicio</a> &gt; <a href="../tema1/index.html">Temas</a> &gt; Tema 2: Infraestructura de Seguridad en Internet
+    </div>
+
+    <main>
+        <h1>Tema 2: Infraestructura de Seguridad en Internet</h1>
+        
+        <div class="tema-navegacion">
+            <div class="tema-nav-item">
+                <a href="../tema1/index.html">
+                    <span>Tema 1</span>
+                    <p>Fundamentos de Criptografía Moderna</p>
+                </a>
+            </div>
+            <div class="tema-nav-item actual">
+                <span>Tema 2</span>
+                <p>Infraestructura de Seguridad en Internet</p>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema3/index.html">
+                    <span>Tema 3</span>
+                    <p>Fundamentos de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema4/index.html">
+                    <span>Tema 4</span>
+                    <p>Estandarización de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema5/index.html">
+                    <span>Tema 5</span>
+                    <p>Implementaciones, Consideraciones y Desafíos</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema6/index.html">
+                    <span>Tema 6</span>
+                    <p>Distribución Cuántica de Claves (QKD)</p>
+                </a>
+            </div>
+        </div>
+
+        <section class="tema-intro">
+            <h2>Introducción</h2>
+            <p>Este tema examina la infraestructura de seguridad que sustenta Internet y los sistemas digitales modernos. Analizaremos cómo la criptografía se implementa en protocolos y sistemas reales, y evaluaremos el impacto que la computación cuántica tendrá en esta infraestructura crítica.</p>
+            
+            <div class="tema-info">
+                <div class="info-item">
+                    <h3>Duración</h3>
+                    <p>2 horas</p>
+                </div>
+                <div class="info-item">
+                    <h3>Objetivos</h3>
+                    <ul>
+                        <li>Comprender la infraestructura de clave pública (PKI) y su importancia</li>
+                        <li>Analizar los protocolos de seguridad actuales como TLS/SSL</li>
+                        <li>Examinar el papel de los certificados digitales y las autoridades de certificación</li>
+                        <li>Evaluar el impacto de la computación cuántica en la infraestructura actual</li>
+                        <li>Identificar los desafíos de la transición a la criptografía post-cuántica</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tema-contenido">
+            <h2>Contenido del Tema</h2>
+            
+            <div class="subtema">
+                <h3>2.1 Infraestructura de Clave Pública (PKI)</h3>
+                <p>La Infraestructura de Clave Pública (PKI) es un conjunto de roles, políticas, hardware, software y procedimientos necesarios para crear, gestionar, distribuir, usar, almacenar y revocar certificados digitales y gestionar el cifrado de clave pública.</p>
+                
+                <h4>Componentes Principales de PKI</h4>
+                <ul>
+                    <li><strong>Autoridades de Certificación (CA):</strong> Entidades de confianza que emiten certificados digitales.</li>
+                    <li><strong>Autoridades de Registro (RA):</strong> Verifican la identidad de los solicitantes de certificados.</li>
+                    <li><strong>Certificados Digitales:</strong> Documentos electrónicos que vinculan una clave pública con una identidad.</li>
+                    <li><strong>Listas de Revocación de Certificados (CRL):</strong> Listas de certificados que ya no son válidos.</li>
+                    <li><strong>Protocolo de Estado de Certificados en Línea (OCSP):</strong> Alternativa a las CRL para verificar el estado de un certificado.</li>
+                    <li><strong>Almacenes de Certificados:</strong> Repositorios donde se almacenan los certificados y las CRL.</li>
+                </ul>
+                
+                <h4>Jerarquía de Confianza</h4>
+                <p>La PKI se basa en una jerarquía de confianza:</p>
+                <ul>
+                    <li><strong>CA Raíz:</strong> El punto de confianza más alto en la jerarquía.</li>
+                    <li><strong>CA Intermedias:</strong> Emiten certificados en nombre de la CA raíz.</li>
+                    <li><strong>Certificados de Entidad Final:</strong> Emitidos para servidores, clientes o individuos.</li>
+                </ul>
+                
+                <h4>Modelos de Confianza</h4>
+                <ul>
+                    <li><strong>Jerárquico:</strong> Estructura en árbol con una CA raíz.</li>
+                    <li><strong>Malla:</strong> Múltiples CAs que se reconocen mutuamente.</li>
+                    <li><strong>Web of Trust:</strong> Modelo descentralizado donde los usuarios certifican la identidad de otros (usado en PGP).</li>
+                    <li><strong>Bridge CA:</strong> Modelo que conecta múltiples dominios de PKI.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>2.2 TLS/SSL y Protocolos de Seguridad</h3>
+                <p>Transport Layer Security (TLS) y su predecesor, Secure Sockets Layer (SSL), son protocolos criptográficos diseñados para proporcionar comunicaciones seguras a través de una red informática.</p>
+                
+                <h4>Evolución de TLS/SSL</h4>
+                <ul>
+                    <li><strong>SSL 2.0 y 3.0:</strong> Versiones originales, ahora consideradas inseguras.</li>
+                    <li><strong>TLS 1.0 y 1.1:</strong> Mejoras incrementales, también consideradas obsoletas.</li>
+                    <li><strong>TLS 1.2:</strong> Ampliamente utilizado, con mejoras significativas en seguridad.</li>
+                    <li><strong>TLS 1.3:</strong> Versión más reciente, con rediseño importante para mejorar seguridad y rendimiento.</li>
+                </ul>
+                
+                <h4>Funcionamiento de TLS</h4>
+                <p>El protocolo TLS consta de dos capas principales:</p>
+                <ol>
+                    <li><strong>Protocolo de Handshake:</strong> Establece una conexión segura mediante:
+                        <ul>
+                            <li>Negociación de versión del protocolo</li>
+                            <li>Selección de algoritmos criptográficos (cipher suite)</li>
+                            <li>Autenticación mediante certificados</li>
+                            <li>Establecimiento de claves de sesión</li>
+                        </ul>
+                    </li>
+                    <li><strong>Protocolo de Registro:</strong> Protege los datos de la aplicación mediante:
+                        <ul>
+                            <li>Fragmentación de datos</li>
+                            <li>Compresión (opcional)</li>
+                            <li>Aplicación de MAC para integridad</li>
+                            <li>Cifrado para confidencialidad</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Cipher Suites</h4>
+                <p>Las cipher suites son combinaciones de algoritmos que definen cómo se protege una conexión TLS:</p>
+                <ul>
+                    <li><strong>Algoritmo de intercambio de claves:</strong> RSA, ECDHE, DHE</li>
+                    <li><strong>Algoritmo de autenticación:</strong> RSA, ECDSA</li>
+                    <li><strong>Algoritmo de cifrado simétrico:</strong> AES, ChaCha20</li>
+                    <li><strong>Modo de operación:</strong> GCM, CBC</li>
+                    <li><strong>Algoritmo de hash:</strong> SHA-256, SHA-384</li>
+                </ul>
+                <p>Ejemplo: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</p>
+                
+                <h4>Otros Protocolos de Seguridad</h4>
+                <ul>
+                    <li><strong>SSH (Secure Shell):</strong> Protocolo para acceso remoto seguro a sistemas.</li>
+                    <li><strong>IPsec:</strong> Conjunto de protocolos para asegurar las comunicaciones IP.</li>
+                    <li><strong>HTTPS:</strong> HTTP sobre TLS, para navegación web segura.</li>
+                    <li><strong>S/MIME:</strong> Estándar para correo electrónico cifrado y firmado.</li>
+                    <li><strong>PGP/OpenPGP:</strong> Estándar para cifrado y firma de correos y archivos.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>2.3 Certificados Digitales y Autoridades de Certificación</h3>
+                <p>Los certificados digitales son documentos electrónicos que vinculan una clave pública con una identidad, verificados por una tercera parte de confianza (la Autoridad de Certificación).</p>
+                
+                <h4>Estructura de un Certificado X.509</h4>
+                <p>El estándar X.509 define la estructura de los certificados digitales:</p>
+                <ul>
+                    <li><strong>Versión:</strong> Versión del formato X.509 (v1, v2, v3).</li>
+                    <li><strong>Número de Serie:</strong> Identificador único asignado por la CA.</li>
+                    <li><strong>Algoritmo de Firma:</strong> Algoritmo utilizado por la CA para firmar el certificado.</li>
+                    <li><strong>Emisor:</strong> Nombre distinguido (DN) de la CA emisora.</li>
+                    <li><strong>Validez:</strong> Período durante el cual el certificado es válido (fecha de inicio y fin).</li>
+                    <li><strong>Sujeto:</strong> Nombre distinguido de la entidad a la que pertenece la clave pública.</li>
+                    <li><strong>Información de Clave Pública:</strong> La clave pública y el algoritmo asociado.</li>
+                    <li><strong>Extensiones:</strong> Información adicional como usos de clave, políticas, etc.</li>
+                    <li><strong>Firma Digital:</strong> Firma de la CA que verifica la autenticidad del certificado.</li>
+                </ul>
+                
+                <h4>Tipos de Certificados</h4>
+                <ul>
+                    <li><strong>Certificados de Servidor SSL/TLS:</strong> Para autenticar servidores web y establecer conexiones seguras.</li>
+                    <li><strong>Certificados de Cliente:</strong> Para autenticar usuarios o dispositivos cliente.</li>
+                    <li><strong>Certificados de Firma de Código:</strong> Para verificar la autenticidad del software.</li>
+                    <li><strong>Certificados de Correo Electrónico (S/MIME):</strong> Para cifrar y firmar correos electrónicos.</li>
+                    <li><strong>Certificados de CA:</strong> Para identificar y autenticar autoridades de certificación.</li>
+                </ul>
+                
+                <h4>Autoridades de Certificación</h4>
+                <p>Las Autoridades de Certificación (CA) son entidades de confianza responsables de emitir certificados digitales. Sus responsabilidades incluyen:</p>
+                <ul>
+                    <li><strong>Verificación de Identidad:</strong> Confirmar que el solicitante es quien dice ser.</li>
+                    <li><strong>Emisión de Certificados:</strong> Crear y firmar certificados digitales.</li>
+                    <li><strong>Mantenimiento de CRLs:</strong> Publicar y actualizar listas de certificados revocados.</li>
+                    <li><strong>Servicios OCSP:</strong> Proporcionar verificación en tiempo real del estado de los certificados.</li>
+                    <li><strong>Protección de Claves Privadas:</strong> Salvaguardar sus propias claves privadas.</li>
+                </ul>
+                
+                <h4>Problemas y Desafíos</h4>
+                <ul>
+                    <li><strong>Compromiso de CA:</strong> Si una CA es comprometida, todos los certificados emitidos por ella son potencialmente inseguros.</li>
+                    <li><strong>Verificación de Identidad:</strong> Diferentes CAs tienen diferentes estándares de verificación.</li>
+                    <li><strong>Revocación:</strong> Los mecanismos de revocación (CRL, OCSP) tienen limitaciones.</li>
+                    <li><strong>Confianza Implícita:</strong> Los navegadores y sistemas operativos confían en cientos de CAs por defecto.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>2.4 Impacto de la Computación Cuántica en la Infraestructura Actual</h3>
+                <p>La computación cuántica representa una amenaza significativa para la infraestructura de seguridad actual, que depende en gran medida de la criptografía asimétrica vulnerable a ataques cuánticos.</p>
+                
+                <h4>Componentes Vulnerables</h4>
+                <ul>
+                    <li><strong>Certificados Digitales:</strong> Basados principalmente en RSA o ECDSA, vulnerables al algoritmo de Shor.</li>
+                    <li><strong>Handshake TLS:</strong> El intercambio de claves (RSA, ECDHE, DHE) es vulnerable a ataques cuánticos.</li>
+                    <li><strong>Firmas Digitales:</strong> Utilizadas para autenticar actualizaciones de software, documentos legales, etc.</li>
+                    <li><strong>VPNs:</strong> Muchas implementaciones dependen de IKE con Diffie-Hellman para establecer claves.</li>
+                    <li><strong>SSH:</strong> Utiliza algoritmos asimétricos para autenticación e intercambio de claves.</li>
+                </ul>
+                
+                <h4>Escenarios de Amenaza</h4>
+                <ul>
+                    <li><strong>"Harvest Now, Decrypt Later":</strong> Los adversarios pueden recopilar tráfico cifrado ahora para descifrarlo cuando dispongan de computadoras cuánticas.</li>
+                    <li><strong>Suplantación de Identidad:</strong> La capacidad de falsificar firmas digitales permitiría suplantar identidades y comprometer la autenticidad.</li>
+                    <li><strong>Compromiso de Sesiones:</strong> El descifrado de intercambios de claves permitiría acceder a comunicaciones supuestamente seguras.</li>
+                    <li><strong>Falsificación de Certificados:</strong> La capacidad de factorizar claves RSA permitiría crear certificados falsos que parecerían legítimos.</li>
+                </ul>
+                
+                <h4>Análisis de Riesgo</h4>
+                <p>El riesgo para una organización depende de varios factores:</p>
+                <ul>
+                    <li><strong>Vida Útil de los Datos:</strong> ¿Durante cuánto tiempo deben permanecer seguros los datos?</li>
+                    <li><strong>Sensibilidad de la Información:</strong> ¿Cuál sería el impacto si los datos fueran comprometidos?</li>
+                    <li><strong>Amenazas Específicas:</strong> ¿Quiénes podrían estar interesados en atacar la organización?</li>
+                    <li><strong>Complejidad de la Infraestructura:</strong> ¿Cuán difícil será migrar a soluciones post-cuánticas?</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>2.5 Desafíos de la Transición a PQC</h3>
+                <p>La transición a la criptografía post-cuántica presenta numerosos desafíos técnicos, logísticos y organizativos.</p>
+                
+                <h4>Desafíos Técnicos</h4>
+                <ul>
+                    <li><strong>Tamaño de Claves y Firmas:</strong> Muchos algoritmos post-cuánticos tienen claves o firmas significativamente más grandes.</li>
+                    <li><strong>Rendimiento:</strong> Algunos algoritmos post-cuánticos son más lentos que sus contrapartes clásicas.</li>
+                    <li><strong>Limitaciones de Ancho de Banda:</strong> El aumento de tamaño puede afectar protocolos con restricciones de tamaño de mensaje.</li>
+                    <li><strong>Dispositivos con Recursos Limitados:</strong> IoT y sistemas embebidos pueden no tener recursos para algoritmos post-cuánticos.</li>
+                    <li><strong>Compatibilidad:</strong> Asegurar que los sistemas nuevos y antiguos puedan interoperar durante la transición.</li>
+                </ul>
+                
+                <h4>Desafíos Organizativos</h4>
+                <ul>
+                    <li><strong>Inventario Criptográfico:</strong> Identificar todos los sistemas que utilizan criptografía vulnerable.</li>
+                    <li><strong>Priorización:</strong> Determinar qué sistemas deben actualizarse primero.</li>
+                    <li><strong>Planificación:</strong> Desarrollar un plan de migración que minimice la interrupción.</li>
+                    <li><strong>Formación:</strong> Capacitar al personal técnico en nuevas tecnologías.</li>
+                    <li><strong>Presupuesto:</strong> Asegurar recursos financieros para la transición.</li>
+                </ul>
+                
+                <h4>Estrategias de Migración</h4>
+                <ul>
+                    <li><strong>Criptografía Híbrida:</strong> Implementar tanto algoritmos clásicos como post-cuánticos en paralelo.</li>
+                    <li><strong>Enfoque por Fases:</strong> Migrar sistemas críticos primero, seguidos por sistemas menos críticos.</li>
+                    <li><strong>Actualización de Protocolos:</strong> Adoptar versiones de protocolos que soporten algoritmos post-cuánticos (ej. TLS con soporte PQC).</li>
+                    <li><strong>Crypto-Agilidad:</strong> Diseñar sistemas que puedan cambiar fácilmente entre diferentes algoritmos criptográficos.</li>
+                </ul>
+                
+                <h4>Iniciativas y Estándares</h4>
+                <ul>
+                    <li><strong>NIST PQC:</strong> Proceso de estandarización de algoritmos post-cuánticos.</li>
+                    <li><strong>IETF:</strong> Desarrollo de extensiones post-cuánticas para TLS, IKE, etc.</li>
+                    <li><strong>ETSI:</strong> Grupo de trabajo sobre criptografía cuántica y post-cuántica.</li>
+                    <li><strong>ISO/IEC:</strong> Desarrollo de estándares internacionales para PQC.</li>
+                    <li><strong>Iniciativas Gubernamentales:</strong> Directivas y guías para la migración a PQC en sectores críticos.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>2.6 Casos de Estudio y Ejemplos Prácticos</h3>
+                <p>Examinaremos algunos casos de estudio y ejemplos prácticos de organizaciones que están abordando la transición a la criptografía post-cuántica.</p>
+                
+                <h4>Caso de Estudio 1: Sector Financiero</h4>
+                <p>Un banco internacional está implementando una estrategia de migración a PQC:</p>
+                <ul>
+                    <li><strong>Fase 1:</strong> Inventario de todos los sistemas criptográficos y evaluación de riesgos.</li>
+                    <li><strong>Fase 2:</strong> Implementación de criptografía híbrida en sistemas críticos (banca en línea, procesamiento de pagos).</li>
+                    <li><strong>Fase 3:</strong> Actualización de infraestructura PKI para soportar certificados post-cuánticos.</li>
+                    <li><strong>Fase 4:</strong> Migración completa a algoritmos post-cuánticos en todos los sistemas.</li>
+                </ul>
+                <p>Desafíos específicos: compatibilidad con sistemas de terceros, cumplimiento normativo, gestión de claves a largo plazo.</p>
+                
+                <h4>Caso de Estudio 2: Infraestructura Crítica</h4>
+                <p>Una empresa de energía está protegiendo sus sistemas de control industrial:</p>
+                <ul>
+                    <li><strong>Evaluación:</strong> Identificación de sistemas SCADA y otros sistemas de control vulnerables.</li>
+                    <li><strong>Segmentación:</strong> Aislamiento de sistemas críticos en redes separadas.</li>
+                    <li><strong>Actualización:</strong> Implementación de VPNs con soporte para algoritmos post-cuánticos.</li>
+                    <li><strong>Monitorización:</strong> Sistemas de detección de intrusiones mejorados para identificar posibles ataques.</li>
+                </ul>
+                <p>Desafíos específicos: sistemas heredados con larga vida útil, restricciones de recursos en dispositivos embebidos.</p>
+                
+                <h4>Ejemplo Práctico: Actualización de TLS</h4>
+                <p>Implementación de TLS con soporte para algoritmos post-cuánticos:</p>
+                <ol>
+                    <li>Actualización de bibliotecas criptográficas para soportar algoritmos PQC.</li>
+                    <li>Configuración de cipher suites híbridas que combinan algoritmos clásicos y post-cuánticos.</li>
+                    <li>Pruebas de interoperabilidad con diferentes clientes y servidores.</li>
+                    <li>Monitorización del rendimiento y ajuste de parámetros.</li>
+                    <li>Despliegue gradual, comenzando con servidores no críticos.</li>
+                </ol>
+                <p>Resultados: aumento moderado en el tamaño de los handshakes, ligero impacto en la latencia, pero seguridad mejorada contra amenazas cuánticas.</p>
+            </div>
+        </section>
+
+        <section class="tema-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <div class="recursos-grid">
+                <div class="recurso-item">
+                    <h3>Lecturas Recomendadas</h3>
+                    <ul>
+                        <li>Mosca, M. (2018). Cybersecurity in an era with quantum computers: will we be ready? IEEE Security & Privacy, 16(5), 38-41.</li>
+                        <li>NIST. (2020). Migration to Post-Quantum Cryptography. NISTIR 8336 (Draft).</li>
+                        <li>Barker, E. (2020). Recommendation for Key Management: Part 1 – General. NIST Special Publication 800-57 Part 1 Rev. 5.</li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Recursos en Línea</h3>
+                    <ul>
+                        <li><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography/migration-to-post-quantum-cryptography">NIST: Migración a Criptografía Post-Cuántica</a></li>
+                        <li><a href="https://www.ietf.org/archive/id/draft-ietf-tls-hybrid-design-01.html">IETF: Hybrid Key Exchange in TLS 1.3</a></li>
+                        <li><a href="https://www.etsi.org/technologies/quantum-safe-cryptography">ETSI: Quantum-Safe Cryptography</a></li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Ejemplos Prácticos</h3>
+                    <ul>
+                        <li><a href="../../ejemplos/criptografia_hibrida.html">Implementación de Criptografía Híbrida</a></li>
+                        <li><a href="../../guias/criptografia_hibrida.html">Guía de Laboratorio: Criptografía Híbrida</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="tema-navegacion-inferior">
+            <div class="nav-anterior">
+                <a href="../tema1/index.html">
+                    <span class="flecha">←</span>
+                    Anterior: Tema 1 - Fundamentos de Criptografía Moderna
+                </a>
+            </div>
+            <div class="nav-siguiente">
+                <a href="../tema3/index.html">
+                    Siguiente: Tema 3 - Fundamentos de Criptografía Post-Cuántica
+                    <span class="flecha">→</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../programa.html">Programa</a></li>
+                    <li><a href="../tema1/index.html">Temas</a></li>
+                    <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="../../ejemplos/algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="../../ejemplos/ml_kem.html">ML-KEM</a></li>
+                    <li><a href="../../ejemplos/ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="../../ejemplos/criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="../../ejemplos/qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

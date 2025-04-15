@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML-DSA - Guía de Laboratorio</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Guías de Laboratorio</a> &gt; ML-DSA
+    </div>
+
+    <main>
+        <h1>Guía de Laboratorio: Implementación de ML-DSA</h1>
+
+        <section class="lab-section">
+            <h2>Objetivos de Aprendizaje</h2>
+            <ul>
+                <li>Comprender los fundamentos teóricos de ML-DSA (anteriormente Dilithium)</li>
+                <li>Implementar una versión simplificada del algoritmo de firma digital</li>
+                <li>Analizar las propiedades de seguridad y eficiencia de ML-DSA</li>
+                <li>Comparar ML-DSA con algoritmos de firma tradicionales como ECDSA</li>
+            </ul>
+        </section>
+
+        <section class="lab-section">
+            <h2>Requisitos Previos</h2>
+            <ul>
+                <li>Conocimientos básicos de criptografía de clave pública y firmas digitales</li>
+                <li>Familiaridad con conceptos matemáticos: álgebra lineal, retículos, distribuciones estadísticas</li>
+                <li>Python 3.8 o superior instalado</li>
+                <li>Bibliotecas requeridas: numpy, scipy, matplotlib</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <p><strong>Nota:</strong> Esta práctica implementa una versión simplificada de ML-DSA con fines educativos. No debe utilizarse en entornos de producción.</p>
+            </div>
+        </section>
+
+        <section class="lab-section">
+            <h2>Introducción Teórica</h2>
+            <p>ML-DSA (Module-Lattice-Based Digital Signature Algorithm), anteriormente conocido como Dilithium, es un algoritmo de firma digital basado en retículos modulares. Fue seleccionado por el NIST como el estándar para firmas digitales post-cuánticas (FIPS 204).</p>
+            
+            <p>ML-DSA basa su seguridad en la dificultad del problema de Learning With Errors (LWE) en su variante modular, similar a ML-KEM. Este problema es considerado resistente a ataques cuánticos, incluyendo el algoritmo de Shor.</p>
+            
+            <p>El esquema consta de tres algoritmos principales:</p>
+            <ol>
+                <li><strong>KeyGen</strong>: Genera un par de claves pública/privada.</li>
+                <li><strong>Sign</strong>: Utiliza la clave privada para firmar un mensaje.</li>
+                <li><strong>Verify</strong>: Utiliza la clave pública para verificar la firma de un mensaje.</li>
+            </ol>
+
+            <p>ML-DSA viene en tres variantes con diferentes niveles de seguridad:</p>
+            <ul>
+                <li><strong>ML-DSA-44</strong>: Seguridad aproximadamente equivalente a AES-128</li>
+                <li><strong>ML-DSA-65</strong>: Seguridad aproximadamente equivalente a AES-192</li>
+                <li><strong>ML-DSA-87</strong>: Seguridad aproximadamente equivalente a AES-256</li>
+            </ul>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 1: Implementación Simplificada de ML-DSA</h2>
+            
+            <h3>1.1 Configuración del Entorno</h3>
+            <p>Crea un nuevo archivo Python llamado <code>ml_dsa_simplified.py</code> e importa las bibliotecas necesarias:</p>
+            <pre><code class="language-python">import numpy as np
+import hashlib
+import os
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+</code></pre>
+
+            <h3>1.2 Implementación de Funciones Auxiliares</h3>
+            <p>Primero, implementaremos algunas funciones auxiliares necesarias:</p>
+            <pre><code class="language-python"># Parámetros para ML-DSA-44 simplificado
+PARAMS = {
+    'n': 256,       # Dimensión del polinomio
+    'k': 3,         # Dimensión del módulo (filas)
+    'l': 2,         # Dimensión del módulo (columnas)
+    'q': 8380417,   # Módulo
+    'eta': 2,       # Parámetro de ruido para la clave secreta
+    'gamma1': 2**17,# Parámetro para el desafío
+    'gamma2': 95232,# Parámetro para el vector de firma
+    'tau': 39,      # Número de coeficientes no nulos en c
+    'beta': 78,     # Límite de rechazo para z
+    'omega': 80,    # Límite de rechazo para el vector de pistas
+}
+
+# Función para generar una distribución centrada binomial
+def centered_binomial_distribution(eta, size):
+    """
+    Genera muestras de una distribución centrada binomial con parámetro eta.
+    Esta es una aproximación a la distribución normal discreta utilizada en ML-DSA.
+    """
+    a = np.random.randint(0, 2, size=(size, eta))
+    b = np.random.randint(0, 2, size=(size, eta))
+    return np.sum(a, axis=1) - np.sum(b, axis=1)
+
+# Función para generar una matriz A uniforme aleatoria
+def gen_matrix_A(k, l, n, q, seed=None):
+    """
+    Genera una matriz A uniforme aleatoria de dimensiones (k, l, n) con coeficientes en Z_q.
+    En la implementación real, esto se haría usando XOF (función de expansión de salida extendida).
+    """
+    if seed is not None:
+        np.random.seed(seed)
+    return np.random.randint(0, q, size=(k, l, n))
+
+# Función para multiplicar polinomios en el anillo R_q
+def poly_mul(a, b, q):
+    """
+    Multiplica dos polinomios en el anillo R_q = Z_q[X]/(X^n + 1).
+    Esta es una implementación simplificada que no utiliza NTT para eficiencia.
+    """
+    n = len(a)
+    c = np.zeros(n, dtype=int)
+    
+    for i in range(n):
+        for j in range(n):
+            idx = (i + j) % n
+            if i + j >= n:
+                c[idx] = (c[idx] - a[i] * b[j]) % q
+            else:
+                c[idx] = (c[idx] + a[i] * b[j]) % q
+    
+    return c
+
+# Función para multiplicar matrices de polinomios
+def matrix_poly_mul(A, s, q):
+    """
+    Multiplica una matriz de polinomios A por un vector de polinomios s.
+    """
+    k = A.shape[0]
+    l = A.shape[1]
+    n = A.shape[2]
+    result = np.zeros((k, n), dtype=int)
+    
+    for i in range(k):
+        for j in range(l):
+            result[i] = (result[i] + poly_mul(A[i, j], s[j], q)) % q
+    
+    return result
+
+# Función para añadir vectores de polinomios
+def poly_add(a, b, q):
+    """
+    Suma dos vectores de polinomios módulo q.
+    """
+    return (a + b) % q
+
+# Función para restar vectores de polinomios
+def poly_sub(a, b, q):
+    """
+    Resta dos vectores de polinomios módulo q.
+    """
+    return (a - b) % q
+
+# Función para generar un hash
+def hash_function(data):
+    """
+    Función de hash utilizada en ML-DSA.
+    En la implementación real, se utilizarían funciones específicas como SHA3.
+    """
+    return hashlib.sha256(data).digest()
+
+# Función para generar un desafío c
+def challenge_generation(seed, n, tau):
+    """
+    Genera un polinomio de desafío c con tau coeficientes no nulos.
+    """
+    # Usar el seed para generar un hash
+    hash_bytes = hash_function(seed)
+    # Convertir el hash a un array de bytes
+    hash_array = np.frombuffer(hash_bytes, dtype=np.uint8)
+    
+    # Inicializar c con ceros
+    c = np.zeros(n, dtype=int)
+    
+    # Generar tau posiciones aleatorias
+    positions = np.random.choice(n, tau, replace=False)
+    
+    # Establecer esas posiciones a 1 o -1
+    for pos in positions:
+        c[pos] = 1 if np.random.random() < 0.5 else -1
+    
+    return c
+
+# Función para calcular la norma infinito de un vector de polinomios
+def infinity_norm(v):
+    """
+    Calcula la norma infinito de un vector de polinomios.
+    """
+    return np.max(np.abs(v))
+
+# Función para calcular la norma L2 de un vector de polinomios
+def l2_norm(v):
+    """
+    Calcula la norma L2 de un vector de polinomios.
+    """
+    return np.sqrt(np.sum(v**2))
+</code></pre>
+
+            <h3>1.3 Implementación de los Algoritmos Principales</h3>
+            <p>Ahora implementaremos los tres algoritmos principales de ML-DSA:</p>
+            <pre><code class="language-python"># Algoritmo KeyGen
+def keygen(params=PARAMS):
+    """
+    Genera un par de claves pública/privada para ML-DSA.
+    """
+    n = params['n']
+    k = params['k']
+    l = params['l']
+    q = params['q']
+    eta = params['eta']
+    
+    # Generar matriz A aleatoria
+    A = gen_matrix_A(k, l, n, q)
+    
+    # Generar vector secreto s1 con ruido
+    s1 = np.zeros((l, n), dtype=int)
+    for i in range(l):
+        s1[i] = centered_binomial_distribution(eta, n)
+    
+    # Generar vector secreto s2 con ruido
+    s2 = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        s2[i] = centered_binomial_distribution(eta, n)
+    
+    # Calcular t = A·s1 + s2
+    t = poly_add(matrix_poly_mul(A, s1, q), s2, q)
+    
+    # Clave pública: (A, t)
+    # Clave privada: (A, t, s1, s2)
+    return {'public': (A, t), 'private': (A, t, s1, s2)}
+
+# Algoritmo Sign
+def sign(message, private_key, params=PARAMS):
+    """
+    Firma un mensaje utilizando la clave privada.
+    """
+    A, t, s1, s2 = private_key
+    n = params['n']
+    k = params['k']
+    l = params['l']
+    q = params['q']
+    gamma1 = params['gamma1']
+    gamma2 = params['gamma2']
+    tau = params['tau']
+    beta = params['beta']
+    omega = params['omega']
+    
+    # Convertir mensaje a bytes si es necesario
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Generar semilla aleatoria para el vector y
+    seed_y = os.urandom(32)
+    
+    while True:
+        # Generar vector y aleatorio
+        y = np.zeros((l, n), dtype=int)
+        for i in range(l):
+            y[i] = np.random.randint(-gamma1, gamma1 + 1, size=n)
+        
+        # Calcular w = A·y
+        w = matrix_poly_mul(A, y, q)
+        
+        # Generar desafío c
+        seed_c = hash_function(seed_y + message)
+        c = challenge_generation(seed_c, n, tau)
+        
+        # Calcular z = y + c·s1
+        z = np.zeros((l, n), dtype=int)
+        for i in range(l):
+            z[i] = (y[i] + poly_mul(c, s1[i], q)) % q
+        
+        # Verificar si z está dentro de los límites
+        if infinity_norm(z) >= gamma1 - beta:
+            continue
+        
+        # Calcular h = c·s2
+        h = np.zeros((k, n), dtype=int)
+        for i in range(k):
+            h[i] = poly_mul(c, s2[i], q)
+        
+        # Calcular w - h
+        w_minus_h = poly_sub(w, h, q)
+        
+        # Verificar si w - h está dentro de los límites
+        if infinity_norm(w_minus_h) >= gamma2 - beta:
+            continue
+        
+        # Calcular pistas (hints)
+        hints = []
+        for i in range(k):
+            for j in range(n):
+                if abs(w_minus_h[i, j]) > gamma2:
+                    hints.append((i, j))
+        
+        # Verificar si el número de pistas está dentro de los límites
+        if len(hints) > omega:
+            continue
+        
+        # Firma: (z, h, c)
+        return (z, hints, c)
+
+# Algoritmo Verify
+def verify(message, signature, public_key, params=PARAMS):
+    """
+    Verifica la firma de un mensaje utilizando la clave pública.
+    """
+    A, t = public_key
+    z, hints, c = signature
+    n = params['n']
+    k = params['k']
+    l = params['l']
+    q = params['q']
+    gamma1 = params['gamma1']
+    gamma2 = params['gamma2']
+    
+    # Convertir mensaje a bytes si es necesario
+    if isinstance(message, str):
+        message = message.encode()
+    
+    # Verificar si z está dentro de los límites
+    if infinity_norm(z) >= gamma1:
+        return False
+    
+    # Verificar si el número de pistas está dentro de los límites
+    if len(hints) > params['omega']:
+        return False
+    
+    # Calcular A·z
+    Az = matrix_poly_mul(A, z, q)
+    
+    # Calcular c·t
+    ct = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        ct[i] = poly_mul(c, t[i], q)
+    
+    # Calcular w' = A·z - c·t
+    w_prime = poly_sub(Az, ct, q)
+    
+    # Aplicar pistas
+    for i, j in hints:
+        if w_prime[i, j] > 0:
+            w_prime[i, j] -= q
+        else:
+            w_prime[i, j] += q
+    
+    # Verificar si w' está dentro de los límites
+    if infinity_norm(w_prime) >= gamma2:
+        return False
+    
+    return True
+</code></pre>
+
+            <h3>1.4 Función Principal y Visualización</h3>
+            <p>Finalmente, implementaremos la función principal y algunas visualizaciones:</p>
+            <pre><code class="language-python">def main():
+    print("Implementación simplificada de ML-DSA (anteriormente Dilithium)")
+    print("Parámetros utilizados:", PARAMS)
+    
+    # Generar claves
+    print("\nGenerando par de claves...")
+    keys = keygen()
+    public_key = keys['public']
+    private_key = keys['private']
+    print("Claves generadas.")
+    
+    # Mensaje a firmar
+    message = "Este es un mensaje de prueba para ML-DSA."
+    print(f"\nMensaje a firmar: '{message}'")
+    
+    # Firmar mensaje
+    print("\nFirmando mensaje...")
+    signature = sign(message, private_key)
+    z, hints, c = signature
+    print("Mensaje firmado.")
+    print(f"Tamaño de la firma: {z.nbytes + len(hints) * 8 + c.nbytes} bytes aproximadamente")
+    print(f"Número de pistas (hints): {len(hints)}")
+    
+    # Verificar firma
+    print("\nVerificando firma...")
+    is_valid = verify(message, signature, public_key)
+    print(f"Resultado de la verificación: {'Válida' if is_valid else 'Inválida'}")
+    
+    # Intentar verificar con un mensaje modificado
+    modified_message = message + " (modificado)"
+    print(f"\nIntentando verificar con mensaje modificado: '{modified_message}'")
+    is_valid_modified = verify(modified_message, signature, public_key)
+    print(f"Resultado de la verificación: {'Válida' if is_valid_modified else 'Inválida'}")
+    
+    # Visualizaciones
+    plt.figure(figsize=(15, 10))
+    
+    # Distribución de la clave privada (s1)
+    plt.subplot(2, 2, 1)
+    s1_flat = private_key[2].flatten()
+    plt.hist(s1_flat, bins=range(min(s1_flat)-1, max(s1_flat)+2), alpha=0.7, rwidth=0.85)
+    plt.title('Distribución de la clave privada (s1)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución de la clave privada (s2)
+    plt.subplot(2, 2, 2)
+    s2_flat = private_key[3].flatten()
+    plt.hist(s2_flat, bins=range(min(s2_flat)-1, max(s2_flat)+2), alpha=0.7, rwidth=0.85)
+    plt.title('Distribución de la clave privada (s2)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución del vector z
+    plt.subplot(2, 2, 3)
+    z_flat = z.flatten()
+    plt.hist(z_flat, bins=30, alpha=0.7, rwidth=0.85)
+    plt.title('Distribución del vector z (firma)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución del polinomio de desafío c
+    plt.subplot(2, 2, 4)
+    plt.stem(range(len(c)), c)
+    plt.title('Polinomio de desafío c')
+    plt.xlabel('Índice')
+    plt.ylabel('Valor')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('ml_dsa_visualization.png')
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 2: Análisis de Seguridad y Rendimiento</h2>
+            
+            <h3>2.1 Comparación con ECDSA</h3>
+            <p>Implementaremos una versión simplificada de ECDSA para comparar con ML-DSA:</p>
+            <pre><code class="language-python"># Crear un nuevo archivo ecdsa_comparison.py
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import utils
+
+# Importar nuestra implementación de ML-DSA
+from ml_dsa_simplified import keygen, sign, verify, PARAMS
+
+def ecdsa_keygen():
+    """
+    Genera un par de claves para ECDSA.
+    """
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def ecdsa_sign(message, private_key):
+    """
+    Firma un mensaje usando ECDSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    signature = private_key.sign(
+        message,
+        ec.ECDSA(hashes.SHA256())
+    )
+    return signature
+
+def ecdsa_verify(message, signature, public_key):
+    """
+    Verifica una firma ECDSA.
+    """
+    if isinstance(message, str):
+        message = message.encode()
+    
+    try:
+        public_key.verify(
+            signature,
+            message,
+            ec.ECDSA(hashes.SHA256())
+        )
+        return True
+    except Exception:
+        return False
+
+def compare_performance(num_trials=10):
+    """
+    Compara el rendimiento de ML-DSA y ECDSA.
+    """
+    # Mensaje de prueba
+    message = "Este es un mensaje de prueba para comparar ML-DSA y ECDSA."
+    
+    # Tiempos para ML-DSA
+    ml_dsa_keygen_times = []
+    ml_dsa_sign_times = []
+    ml_dsa_verify_times = []
+    
+    # Tiempos para ECDSA
+    ecdsa_keygen_times = []
+    ecdsa_sign_times = []
+    ecdsa_verify_times = []
+    
+    # Tamaños de firma
+    ml_dsa_signature_sizes = []
+    ecdsa_signature_sizes = []
+    
+    for _ in range(num_trials):
+        # ML-DSA
+        start_time = time.time()
+        keys = keygen()
+        ml_dsa_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        signature = sign(message, keys['private'])
+        ml_dsa_sign_times.append(time.time() - start_time)
+        
+        z, hints, c = signature
+        ml_dsa_signature_sizes.append(z.nbytes + len(hints) * 8 + c.nbytes)
+        
+        start_time = time.time()
+        verify(message, signature, keys['public'])
+        ml_dsa_verify_times.append(time.time() - start_time)
+        
+        # ECDSA
+        start_time = time.time()
+        private_key, public_key = ecdsa_keygen()
+        ecdsa_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ecdsa_signature = ecdsa_sign(message, private_key)
+        ecdsa_sign_times.append(time.time() - start_time)
+        
+        ecdsa_signature_sizes.append(len(ecdsa_signature))
+        
+        start_time = time.time()
+        ecdsa_verify(message, ecdsa_signature, public_key)
+        ecdsa_verify_times.append(time.time() - start_time)
+    
+    # Calcular promedios
+    ml_dsa_keygen_avg = np.mean(ml_dsa_keygen_times)
+    ml_dsa_sign_avg = np.mean(ml_dsa_sign_times)
+    ml_dsa_verify_avg = np.mean(ml_dsa_verify_times)
+    ml_dsa_signature_avg = np.mean(ml_dsa_signature_sizes)
+    
+    ecdsa_keygen_avg = np.mean(ecdsa_keygen_times)
+    ecdsa_sign_avg = np.mean(ecdsa_sign_times)
+    ecdsa_verify_avg = np.mean(ecdsa_verify_times)
+    ecdsa_signature_avg = np.mean(ecdsa_signature_sizes)
+    
+    # Visualizar resultados
+    plt.figure(figsize=(15, 10))
+    
+    # Tiempos de generación de claves
+    plt.subplot(2, 2, 1)
+    plt.bar(['ML-DSA', 'ECDSA'], [ml_dsa_keygen_avg, ecdsa_keygen_avg])
+    plt.title('Tiempo de Generación de Claves')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de firma
+    plt.subplot(2, 2, 2)
+    plt.bar(['ML-DSA', 'ECDSA'], [ml_dsa_sign_avg, ecdsa_sign_avg])
+    plt.title('Tiempo de Firma')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de verificación
+    plt.subplot(2, 2, 3)
+    plt.bar(['ML-DSA', 'ECDSA'], [ml_dsa_verify_avg, ecdsa_verify_avg])
+    plt.title('Tiempo de Verificación')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tamaños de firma
+    plt.subplot(2, 2, 4)
+    plt.bar(['ML-DSA', 'ECDSA'], [ml_dsa_signature_avg, ecdsa_signature_avg])
+    plt.title('Tamaño de Firma')
+    plt.ylabel('Tamaño (bytes)')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('ml_dsa_vs_ecdsa.png')
+    plt.show()
+    
+    # Imprimir resultados
+    print("\nComparación de Rendimiento (promedio de", num_trials, "pruebas):")
+    print("\nML-DSA:")
+    print("  Generación de claves:", ml_dsa_keygen_avg, "segundos")
+    print("  Firma:", ml_dsa_sign_avg, "segundos")
+    print("  Verificación:", ml_dsa_verify_avg, "segundos")
+    print("  Tamaño de firma:", ml_dsa_signature_avg, "bytes")
+    
+    print("\nECDSA:")
+    print("  Generación de claves:", ecdsa_keygen_avg, "segundos")
+    print("  Firma:", ecdsa_sign_avg, "segundos")
+    print("  Verificación:", ecdsa_verify_avg, "segundos")
+    print("  Tamaño de firma:", ecdsa_signature_avg, "bytes")
+    
+    # Calcular ratios
+    print("\nRatios ML-DSA/ECDSA:")
+    print("  Generación de claves:", ml_dsa_keygen_avg / ecdsa_keygen_avg, "veces más lento")
+    print("  Firma:", ml_dsa_sign_avg / ecdsa_sign_avg, "veces más lento")
+    print("  Verificación:", ml_dsa_verify_avg / ecdsa_verify_avg, "veces más lento")
+    print("  Tamaño de firma:", ml_dsa_signature_avg / ecdsa_signature_avg, "veces más grande")
+
+if __name__ == "__main__":
+    compare_performance()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 3: Ejercicios y Preguntas de Reflexión</h2>
+            
+            <h3>3.1 Ejercicios</h3>
+            <ol>
+                <li>Modifica el código para implementar ML-DSA-65 ajustando los parámetros adecuadamente.</li>
+                <li>Implementa una función para medir el tiempo de ejecución de cada operación en ML-DSA y compara los resultados con diferentes tamaños de parámetros.</li>
+                <li>Modifica el código para simular un ataque de falsificación de firma y analiza su efectividad.</li>
+                <li>Implementa una versión híbrida que combine ML-DSA con ECDSA para una transición segura.</li>
+            </ol>
+            
+            <h3>3.2 Preguntas de Reflexión</h3>
+            <ol>
+                <li>¿Cuáles son las ventajas y desventajas de ML-DSA en comparación con ECDSA?</li>
+                <li>¿Por qué ML-DSA utiliza un proceso de rechazo en el algoritmo de firma? ¿Qué implicaciones tiene esto para la seguridad y el rendimiento?</li>
+                <li>¿Cómo afecta el tamaño de los parámetros (n, k, l, q) a la seguridad y eficiencia de ML-DSA?</li>
+                <li>¿Qué estrategias de implementación podrían mejorar el rendimiento de ML-DSA en dispositivos con recursos limitados?</li>
+                <li>¿Cuáles son los desafíos para la adopción generalizada de ML-DSA en sistemas existentes?</li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 4: Extensión (Opcional) - Aplicaciones Prácticas</h2>
+            <p>Implementa una aplicación práctica que utilice ML-DSA para firmar y verificar documentos:</p>
+            <pre><code class="language-python"># Crear un nuevo archivo document_signing.py
+import os
+import time
+import hashlib
+from ml_dsa_simplified import keygen, sign, verify
+
+def hash_file(file_path):
+    """
+    Calcula el hash SHA-256 de un archivo.
+    """
+    sha256_hash = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.digest()
+
+def sign_document(file_path, private_key):
+    """
+    Firma un documento utilizando ML-DSA.
+    """
+    # Calcular el hash del documento
+    document_hash = hash_file(file_path)
+    
+    # Firmar el hash
+    signature = sign(document_hash, private_key)
+    
+    return signature
+
+def verify_document(file_path, signature, public_key):
+    """
+    Verifica la firma de un documento utilizando ML-DSA.
+    """
+    # Calcular el hash del documento
+    document_hash = hash_file(file_path)
+    
+    # Verificar la firma
+    return verify(document_hash, signature, public_key)
+
+def main():
+    # Generar claves
+    print("Generando par de claves ML-DSA...")
+    keys = keygen()
+    
+    # Crear un documento de prueba
+    document_path = "documento_prueba.txt"
+    with open(document_path, "w") as f:
+        f.write("Este es un documento de prueba para firmar con ML-DSA.\n")
+        f.write("Contiene información importante que debe ser verificada.\n")
+    
+    print(f"Documento creado: {document_path}")
+    
+    # Firmar el documento
+    print("Firmando documento...")
+    start_time = time.time()
+    signature = sign_document(document_path, keys['private'])
+    sign_time = time.time() - start_time
+    print(f"Documento firmado en {sign_time:.4f} segundos")
+    
+    # Verificar la firma
+    print("Verificando firma...")
+    start_time = time.time()
+    is_valid = verify_document(document_path, signature, keys['public'])
+    verify_time = time.time() - start_time
+    print(f"Resultado de la verificación: {'Válida' if is_valid else 'Inválida'}")
+    print(f"Verificación completada en {verify_time:.4f} segundos")
+    
+    # Modificar el documento
+    print("\nModificando documento...")
+    with open(document_path, "a") as f:
+        f.write("Esta línea ha sido añadida después de firmar el documento.\n")
+    
+    # Verificar la firma del documento modificado
+    print("Verificando firma del documento modificado...")
+    is_valid = verify_document(document_path, signature, keys['public'])
+    print(f"Resultado de la verificación: {'Válida' if is_valid else 'Inválida'}")
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Entregables</h2>
+            <p>Al finalizar esta práctica, deberás entregar:</p>
+            <ol>
+                <li>Código fuente de las implementaciones (<code>ml_dsa_simplified.py</code>, <code>ecdsa_comparison.py</code> y <code>document_signing.py</code>)</li>
+                <li>Capturas de pantalla o gráficos generados durante la ejecución</li>
+                <li>Un informe breve (máximo 3 páginas) que incluya:
+                    <ul>
+                        <li>Resultados obtenidos en las pruebas de rendimiento</li>
+                        <li>Análisis comparativo entre ML-DSA y ECDSA</li>
+                        <li>Respuestas a las preguntas de reflexión</li>
+                        <li>Conclusiones sobre la viabilidad de ML-DSA para aplicaciones prácticas</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Recursos Adicionales</h2>
+            <ul>
+                <li><a href="https://csrc.nist.gov/pubs/fips/204/ipd" target="_blank">FIPS 204: Module-Lattice-Based Digital Signature Standard</a></li>
+                <li><a href="https://pq-crystals.org/dilithium/" target="_blank">Sitio oficial de CRYSTALS-Dilithium (ahora ML-DSA)</a></li>
+                <li><a href="https://eprint.iacr.org/2017/633" target="_blank">Artículo original: CRYSTALS-Dilithium: A Lattice-Based Digital Signature Scheme</a></li>
+                <li><a href="https://github.com/pq-crystals/dilithium" target="_blank">Implementación de referencia de Dilithium</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Digital_Signature_Algorithm" target="_blank">Wikipedia: Digital Signature Algorithm</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Guías Disponibles</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+</html>

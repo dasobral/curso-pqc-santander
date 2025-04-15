@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 3: Fundamentos de Criptografía Post-Cuántica - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../../programa.html">Programa</a></li>
+                <li><a href="../tema1/index.html">Temas</a></li>
+                <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../../index.html">Inicio</a> &gt; <a href="../tema1/index.html">Temas</a> &gt; Tema 3: Fundamentos de Criptografía Post-Cuántica
+    </div>
+
+    <main>
+        <h1>Tema 3: Fundamentos de Criptografía Post-Cuántica</h1>
+        
+        <div class="tema-navegacion">
+            <div class="tema-nav-item">
+                <a href="../tema1/index.html">
+                    <span>Tema 1</span>
+                    <p>Fundamentos de Criptografía Moderna</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema2/index.html">
+                    <span>Tema 2</span>
+                    <p>Infraestructura de Seguridad en Internet</p>
+                </a>
+            </div>
+            <div class="tema-nav-item actual">
+                <span>Tema 3</span>
+                <p>Fundamentos de Criptografía Post-Cuántica</p>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema4/index.html">
+                    <span>Tema 4</span>
+                    <p>Estandarización de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema5/index.html">
+                    <span>Tema 5</span>
+                    <p>Implementaciones, Consideraciones y Desafíos</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema6/index.html">
+                    <span>Tema 6</span>
+                    <p>Distribución Cuántica de Claves (QKD)</p>
+                </a>
+            </div>
+        </div>
+
+        <section class="tema-intro">
+            <h2>Introducción</h2>
+            <p>Este tema explora los fundamentos matemáticos y conceptuales de la criptografía post-cuántica. Examinaremos los diferentes enfoques y familias de algoritmos que se han desarrollado para resistir ataques de computadoras cuánticas, con especial énfasis en los problemas matemáticos subyacentes que proporcionan seguridad contra adversarios cuánticos.</p>
+            
+            <div class="tema-info">
+                <div class="info-item">
+                    <h3>Duración</h3>
+                    <p>4 horas</p>
+                </div>
+                <div class="info-item">
+                    <h3>Objetivos</h3>
+                    <ul>
+                        <li>Comprender los problemas matemáticos resistentes a ataques cuánticos</li>
+                        <li>Explorar las principales familias de algoritmos post-cuánticos</li>
+                        <li>Analizar las ventajas y desventajas de cada enfoque</li>
+                        <li>Familiarizarse con los conceptos matemáticos fundamentales de la criptografía basada en retículos</li>
+                        <li>Implementar algoritmos básicos para ilustrar los principios post-cuánticos</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tema-contenido">
+            <h2>Contenido del Tema</h2>
+            
+            <div class="subtema">
+                <h3>3.1 Introducción a Problemas Matemáticos Resistentes a Ataques Cuánticos</h3>
+                <p>La criptografía post-cuántica se basa en problemas matemáticos que se consideran difíciles incluso para computadoras cuánticas. Estos problemas tienen características específicas que los hacen resistentes al algoritmo de Shor y otros algoritmos cuánticos conocidos.</p>
+                
+                <h4>Características de Problemas Resistentes a Ataques Cuánticos</h4>
+                <ul>
+                    <li><strong>No Reducibles a Factorización o Logaritmos Discretos:</strong> Deben ser fundamentalmente diferentes de los problemas que el algoritmo de Shor puede resolver eficientemente.</li>
+                    <li><strong>Resistencia a Transformadas Cuánticas de Fourier:</strong> No deben tener una estructura periódica que pueda ser explotada por transformadas cuánticas.</li>
+                    <li><strong>Complejidad Demostrable:</strong> Idealmente, deben tener pruebas formales de su dificultad o reducciones a problemas bien estudiados.</li>
+                    <li><strong>Historia de Análisis Criptográfico:</strong> Preferiblemente, problemas que han sido estudiados durante años y han resistido intentos de solución.</li>
+                </ul>
+                
+                <h4>Principales Categorías de Problemas</h4>
+                <p>Los problemas matemáticos utilizados en criptografía post-cuántica se pueden clasificar en varias categorías principales:</p>
+                <ul>
+                    <li><strong>Problemas de Retículos:</strong> Encontrar vectores cortos o cercanos en estructuras matemáticas llamadas retículos.</li>
+                    <li><strong>Problemas de Códigos:</strong> Decodificar códigos aleatorios sin conocer una estructura especial.</li>
+                    <li><strong>Problemas Multivariables:</strong> Resolver sistemas de ecuaciones polinómicas multivariables.</li>
+                    <li><strong>Problemas de Isogenias:</strong> Encontrar mapeos específicos entre curvas elípticas.</li>
+                    <li><strong>Problemas Basados en Hash:</strong> Explotar propiedades de funciones hash para construir esquemas de firma.</li>
+                </ul>
+                
+                <h4>Comparación con Problemas Clásicos</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Problema Clásico</th>
+                            <th>Problema Post-Cuántico</th>
+                            <th>Diferencia Clave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Factorización de Enteros (RSA)</td>
+                            <td>Problema del Vector más Corto (SIS)</td>
+                            <td>No tiene estructura periódica explotable por QFT</td>
+                        </tr>
+                        <tr>
+                            <td>Logaritmo Discreto (ECC)</td>
+                            <td>Learning With Errors (LWE)</td>
+                            <td>Incluye ruido aleatorio que dificulta ataques cuánticos</td>
+                        </tr>
+                        <tr>
+                            <td>Problema del Logaritmo Discreto en Curvas Elípticas</td>
+                            <td>Problema de Isogenias Supersingulares</td>
+                            <td>Basado en mapeos entre curvas, no en operaciones dentro de una curva</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.2 Criptografía Basada en Retículos</h3>
+                <p>La criptografía basada en retículos es una de las aproximaciones más prometedoras para la criptografía post-cuántica, con algoritmos como ML-KEM (anteriormente Kyber) y ML-DSA (anteriormente Dilithium) seleccionados por el NIST para estandarización.</p>
+                
+                <h4>Fundamentos de Retículos</h4>
+                <p>Un retículo es un conjunto de puntos en un espacio n-dimensional con una estructura regular y repetitiva.</p>
+                <ul>
+                    <li><strong>Definición Formal:</strong> Un retículo L es el conjunto de todas las combinaciones lineales enteras de un conjunto de vectores base linealmente independientes: L = {a₁v₁ + a₂v₂ + ... + aₙvₙ | aᵢ ∈ ℤ}.</li>
+                    <li><strong>Base del Retículo:</strong> Conjunto de vectores linealmente independientes que generan el retículo. Un mismo retículo puede tener múltiples bases.</li>
+                    <li><strong>Determinante:</strong> Volumen del paralelotopo fundamental, mide la "densidad" del retículo.</li>
+                </ul>
+                
+                <h4>Problemas Computacionales en Retículos</h4>
+                <ul>
+                    <li><strong>Problema del Vector más Corto (SVP):</strong> Encontrar el vector no nulo más corto en un retículo.</li>
+                    <li><strong>Problema del Vector más Cercano (CVP):</strong> Dado un punto arbitrario, encontrar el punto del retículo más cercano.</li>
+                    <li><strong>Short Integer Solution (SIS):</strong> Encontrar una combinación lineal corta de vectores que sume cero módulo q.</li>
+                    <li><strong>Learning With Errors (LWE):</strong> Distinguir entre muestras aleatorias y muestras con una estructura lineal oculta perturbada por pequeños errores.</li>
+                    <li><strong>Ring-LWE y Module-LWE:</strong> Variantes más eficientes de LWE que operan en estructuras algebraicas específicas.</li>
+                </ul>
+                
+                <h4>Algoritmos Basados en Retículos</h4>
+                <ul>
+                    <li><strong>ML-KEM (Kyber):</strong> Mecanismo de encapsulamiento de claves basado en Module-LWE, seleccionado por el NIST para estandarización (FIPS 203).</li>
+                    <li><strong>ML-DSA (Dilithium):</strong> Esquema de firma digital basado en Module-LWE, seleccionado por el NIST para estandarización (FIPS 204).</li>
+                    <li><strong>NTRU:</strong> Uno de los primeros sistemas criptográficos basados en retículos, basado en el problema de encontrar divisores cortos de polinomios.</li>
+                    <li><strong>Falcon:</strong> Esquema de firma que utiliza técnicas de muestreo gaussiano para generar firmas cortas.</li>
+                </ul>
+                
+                <h4>Ventajas y Desventajas</h4>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Basados en problemas bien estudiados con reducciones de seguridad.</li>
+                    <li>Relativamente eficientes en comparación con otras familias post-cuánticas.</li>
+                    <li>Versátiles, permitiendo cifrado, firmas y otras primitivas criptográficas.</li>
+                    <li>Parámetros ajustables para diferentes niveles de seguridad.</li>
+                </ul>
+                <p><strong>Desventajas:</strong></p>
+                <ul>
+                    <li>Claves y firmas más grandes que en criptografía clásica.</li>
+                    <li>Complejidad matemática que puede dificultar implementaciones correctas.</li>
+                    <li>Algunos esquemas requieren generación de números aleatorios de alta calidad.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.3 Criptografía Basada en Códigos</h3>
+                <p>La criptografía basada en códigos utiliza la teoría de códigos correctores de errores para construir sistemas criptográficos resistentes a ataques cuánticos. Es una de las aproximaciones más antiguas a la criptografía post-cuántica.</p>
+                
+                <h4>Fundamentos de Códigos Correctores de Errores</h4>
+                <ul>
+                    <li><strong>Código Lineal:</strong> Subespacio vectorial de Fⁿq donde Fq es un campo finito.</li>
+                    <li><strong>Matriz Generadora (G):</strong> Define cómo codificar mensajes.</li>
+                    <li><strong>Matriz de Paridad (H):</strong> Define cómo verificar si un vector pertenece al código.</li>
+                    <li><strong>Distancia Mínima:</strong> Mínimo número de posiciones en que difieren dos palabras código distintas.</li>
+                    <li><strong>Capacidad de Corrección:</strong> Número máximo de errores que el código puede corregir.</li>
+                </ul>
+                
+                <h4>Problemas Computacionales en Códigos</h4>
+                <ul>
+                    <li><strong>Problema de Decodificación de Síndrome (SDP):</strong> Dado un síndrome, encontrar un vector de error de peso mínimo que lo produzca.</li>
+                    <li><strong>Problema de Decodificación por Distancia Mínima:</strong> Encontrar la palabra código más cercana a un vector dado.</li>
+                    <li><strong>Problema de Decodificación General:</strong> Decodificar un código aleatorio sin conocer una estructura especial.</li>
+                </ul>
+                
+                <h4>Algoritmos Basados en Códigos</h4>
+                <ul>
+                    <li><strong>McEliece:</strong> Uno de los primeros sistemas post-cuánticos, propuesto en 1978, basado en códigos de Goppa.</li>
+                    <li><strong>Classic McEliece:</strong> Versión moderna del sistema McEliece, finalista en el proceso de estandarización del NIST.</li>
+                    <li><strong>BIKE (Bit Flipping Key Encapsulation):</strong> Basado en códigos QC-MDPC (Quasi-Cyclic Moderate Density Parity-Check).</li>
+                    <li><strong>HQC (Hamming Quasi-Cyclic):</strong> Combina códigos BCH con el problema de decodificación de códigos aleatorios.</li>
+                </ul>
+                
+                <h4>Ventajas y Desventajas</h4>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Larga historia de análisis criptográfico (McEliece ha resistido ataques durante más de 40 años).</li>
+                    <li>Operaciones de cifrado rápidas.</li>
+                    <li>Basados en problemas bien estudiados en teoría de códigos.</li>
+                </ul>
+                <p><strong>Desventajas:</strong></p>
+                <ul>
+                    <li>Claves públicas muy grandes (especialmente en Classic McEliece).</li>
+                    <li>Menos versátiles que los sistemas basados en retículos.</li>
+                    <li>Algunos esquemas tienen tasas de decodificación fallida no nulas.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.4 Criptografía Basada en Isogenias</h3>
+                <p>La criptografía basada en isogenias utiliza mapeos especiales entre curvas elípticas llamados isogenias. Aunque es un área relativamente nueva, ofrece algunas de las claves más compactas entre los sistemas post-cuánticos.</p>
+                
+                <h4>Fundamentos de Curvas Elípticas e Isogenias</h4>
+                <ul>
+                    <li><strong>Curva Elíptica:</strong> Conjunto de puntos que satisfacen una ecuación de la forma y² = x³ + ax + b.</li>
+                    <li><strong>Isogenia:</strong> Mapeo racional entre curvas elípticas que preserva la estructura de grupo.</li>
+                    <li><strong>Curvas Supersingulares:</strong> Clase especial de curvas elípticas con propiedades matemáticas particulares.</li>
+                    <li><strong>Grafo de Isogenias:</strong> Grafo cuyos vértices son curvas elípticas y las aristas son isogenias entre ellas.</li>
+                </ul>
+                
+                <h4>Problemas Computacionales en Isogenias</h4>
+                <ul>
+                    <li><strong>Problema de Camino de Isogenias Supersingulares (SSIP):</strong> Encontrar un camino de isogenias entre dos curvas supersingulares.</li>
+                    <li><strong>Problema de Acción de Isogenias Conmutativas (CSIA):</strong> Recuperar una acción de grupo a partir de su resultado.</li>
+                </ul>
+                
+                <h4>Algoritmos Basados en Isogenias</h4>
+                <ul>
+                    <li><strong>SIKE (Supersingular Isogeny Key Encapsulation):</strong> Basado en isogenias entre curvas elípticas supersingulares. Fue un candidato en el proceso del NIST pero se rompió en 2022.</li>
+                    <li><strong>CSIDH (Commutative Supersingular Isogeny Diffie-Hellman):</strong> Utiliza la acción de un grupo de clase en curvas supersingulares.</li>
+                    <li><strong>SQISign (Short Quantum-resistant Isogeny-based Signatures):</strong> Esquema de firma basado en isogenias con firmas compactas.</li>
+                </ul>
+                
+                <h4>Ventajas y Desventajas</h4>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Claves muy compactas en comparación con otros sistemas post-cuánticos.</li>
+                    <li>Estructura matemática elegante y bien fundamentada.</li>
+                    <li>Potencial para esquemas con propiedades especiales (como homomorfismo).</li>
+                </ul>
+                <p><strong>Desventajas:</strong></p>
+                <ul>
+                    <li>Área relativamente nueva con menos análisis criptográfico.</li>
+                    <li>Operaciones computacionalmente intensivas.</li>
+                    <li>Algunos esquemas (como SIKE) han sido vulnerables a ataques inesperados.</li>
+                </ul>
+                
+                <h4>Estado Actual</h4>
+                <p>La criptografía basada en isogenias sufrió un revés significativo cuando SIKE fue roto en 2022 mediante un ataque inesperado basado en torsión. Sin embargo, este ataque no afecta a todos los sistemas basados en isogenias, y la investigación continúa en esquemas alternativos como CSIDH y SQISign.</p>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.5 Criptografía Multivariable</h3>
+                <p>La criptografía multivariable se basa en la dificultad de resolver sistemas de ecuaciones polinómicas multivariables sobre campos finitos, un problema que se considera difícil incluso para computadoras cuánticas.</p>
+                
+                <h4>Fundamentos de Sistemas Polinómicos Multivariables</h4>
+                <ul>
+                    <li><strong>Sistema Polinómico Multivariable:</strong> Conjunto de ecuaciones polinómicas con múltiples variables.</li>
+                    <li><strong>Grado:</strong> El grado máximo de los polinomios en el sistema.</li>
+                    <li><strong>Campo Base:</strong> Campo finito sobre el que se definen los polinomios (típicamente F₂ o campos pequeños).</li>
+                </ul>
+                
+                <h4>Problemas Computacionales Multivariables</h4>
+                <ul>
+                    <li><strong>Problema MQ (Multivariate Quadratic):</strong> Resolver un sistema de ecuaciones cuadráticas multivariables sobre un campo finito.</li>
+                    <li><strong>Problema de Isomorfismo de Polinomios (IP):</strong> Determinar si dos conjuntos de polinomios son equivalentes bajo transformaciones lineales.</li>
+                    <li><strong>Problema MinRank:</strong> Encontrar una combinación lineal de matrices con rango mínimo.</li>
+                </ul>
+                
+                <h4>Algoritmos Basados en Sistemas Multivariables</h4>
+                <ul>
+                    <li><strong>Rainbow:</strong> Esquema de firma basado en el principio de "aceite y vinagre", fue un finalista en el proceso del NIST pero se rompió en 2022.</li>
+                    <li><strong>HFE (Hidden Field Equations):</strong> Utiliza polinomios simples en una extensión de campo que se vuelven complejos cuando se expresan sobre el campo base.</li>
+                    <li><strong>UOV (Unbalanced Oil and Vinegar):</strong> Divide las variables en dos conjuntos ("aceite" y "vinagre") con interacciones específicas.</li>
+                    <li><strong>MQDSS (Multivariate Quadratic Digital Signature Scheme):</strong> Esquema de firma basado directamente en el problema MQ.</li>
+                </ul>
+                
+                <h4>Ventajas y Desventajas</h4>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Operaciones de verificación muy rápidas (especialmente útil para firmas).</li>
+                    <li>Basados en problemas bien estudiados en matemáticas computacionales.</li>
+                    <li>Estructura matemática diferente a otras familias post-cuánticas (diversificación).</li>
+                </ul>
+                <p><strong>Desventajas:</strong></p>
+                <ul>
+                    <li>Claves públicas grandes.</li>
+                    <li>Historial de esquemas rotos debido a estructura oculta.</li>
+                    <li>Complejidad en el diseño e implementación.</li>
+                </ul>
+                
+                <h4>Estado Actual</h4>
+                <p>La criptografía multivariable ha enfrentado desafíos significativos en los últimos años. Rainbow, que era un finalista en el proceso del NIST, fue roto en 2022. Sin embargo, la investigación continúa en nuevos diseños y variantes que podrían superar las vulnerabilidades identificadas.</p>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.6 Criptografía Basada en Hash</h3>
+                <p>La criptografía basada en hash utiliza las propiedades de las funciones hash criptográficas para construir esquemas de firma digital resistentes a ataques cuánticos. Es una aproximación conceptualmente simple pero con implementaciones sofisticadas.</p>
+                
+                <h4>Fundamentos de Funciones Hash Criptográficas</h4>
+                <ul>
+                    <li><strong>Función Hash:</strong> Mapea datos de tamaño arbitrario a valores de tamaño fijo.</li>
+                    <li><strong>Propiedades Criptográficas:</strong> Resistencia a preimagen, a segunda preimagen y a colisiones.</li>
+                    <li><strong>Funciones Hash Comunes:</strong> SHA-2, SHA-3, BLAKE2, BLAKE3.</li>
+                </ul>
+                
+                <h4>Esquemas de Firma Basados en Hash</h4>
+                <ul>
+                    <li><strong>Firmas de Un Solo Uso (OTS):</strong> Esquemas que solo pueden firmar un mensaje de forma segura.
+                        <ul>
+                            <li><strong>Lamport-Diffie:</strong> Esquema básico de firma de un solo uso.</li>
+                            <li><strong>Winternitz OTS (WOTS):</strong> Mejora de Lamport-Diffie con firmas más compactas.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Árboles de Merkle:</strong> Estructura que permite convertir esquemas de un solo uso en esquemas de múltiples usos.
+                        <ul>
+                            <li><strong>XMSS (eXtended Merkle Signature Scheme):</strong> Esquema estandarizado por el IETF (RFC 8391).</li>
+                            <li><strong>SPHINCS:</strong> Esquema sin estado basado en árboles de hash hiperarbóreos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>SLH-DSA (SPHINCS+):</strong> Versión mejorada de SPHINCS, seleccionada por el NIST para estandarización (FIPS 205).</li>
+                </ul>
+                
+                <h4>Ventajas y Desventajas</h4>
+                <p><strong>Ventajas:</strong></p>
+                <ul>
+                    <li>Seguridad basada en propiedades fundamentales de funciones hash.</li>
+                    <li>Mínimas suposiciones criptográficas (solo requiere funciones hash seguras).</li>
+                    <li>Resistencia a avances en criptoanálisis cuántico y clásico.</li>
+                </ul>
+                <p><strong>Desventajas:</strong></p>
+                <ul>
+                    <li>Firmas relativamente grandes.</li>
+                    <li>Operaciones de firma y verificación más lentas que en otros esquemas.</li>
+                    <li>Complejidad en la implementación de árboles de Merkle eficientes.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>3.7 Comparación de Enfoques Post-Cuánticos</h3>
+                <p>Cada familia de algoritmos post-cuánticos tiene sus propias ventajas y desventajas en términos de seguridad, rendimiento y características prácticas.</p>
+                
+                <h4>Comparación de Rendimiento</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Familia</th>
+                            <th>Tamaño de Clave Pública</th>
+                            <th>Tamaño de Firma/Cifrado</th>
+                            <th>Velocidad de Operación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Retículos (ML-KEM)</td>
+                            <td>Medio (~1-2 KB)</td>
+                            <td>Pequeño-Medio (~1 KB)</td>
+                            <td>Rápida</td>
+                        </tr>
+                        <tr>
+                            <td>Retículos (ML-DSA)</td>
+                            <td>Medio (~1-2 KB)</td>
+                            <td>Medio (~2-3 KB)</td>
+                            <td>Rápida</td>
+                        </tr>
+                        <tr>
+                            <td>Códigos (Classic McEliece)</td>
+                            <td>Muy grande (~1 MB)</td>
+                            <td>Pequeño</td>
+                            <td>Rápida (cifrado), Lenta (descifrado)</td>
+                        </tr>
+                        <tr>
+                            <td>Isogenias (CSIDH)</td>
+                            <td>Muy pequeño (~100 bytes)</td>
+                            <td>Pequeño</td>
+                            <td>Muy lenta</td>
+                        </tr>
+                        <tr>
+                            <td>Multivariable</td>
+                            <td>Grande (~100 KB)</td>
+                            <td>Muy pequeño</td>
+                            <td>Muy rápida (verificación), Media (firma)</td>
+                        </tr>
+                        <tr>
+                            <td>Hash (SLH-DSA)</td>
+                            <td>Pequeño (~32 bytes)</td>
+                            <td>Grande (~8-30 KB)</td>
+                            <td>Lenta</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Comparación de Seguridad</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Familia</th>
+                            <th>Madurez del Análisis</th>
+                            <th>Confianza en Suposiciones</th>
+                            <th>Resistencia a Avances Criptanalíticos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Retículos</td>
+                            <td>Alta</td>
+                            <td>Media-Alta</td>
+                            <td>Media-Alta</td>
+                        </tr>
+                        <tr>
+                            <td>Códigos</td>
+                            <td>Muy Alta</td>
+                            <td>Alta</td>
+                            <td>Alta</td>
+                        </tr>
+                        <tr>
+                            <td>Isogenias</td>
+                            <td>Baja-Media</td>
+                            <td>Media</td>
+                            <td>Media (algunos esquemas rotos)</td>
+                        </tr>
+                        <tr>
+                            <td>Multivariable</td>
+                            <td>Alta</td>
+                            <td>Media-Baja</td>
+                            <td>Baja (varios esquemas rotos)</td>
+                        </tr>
+                        <tr>
+                            <td>Hash</td>
+                            <td>Alta</td>
+                            <td>Muy Alta</td>
+                            <td>Muy Alta</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Aplicaciones Recomendadas</h4>
+                <ul>
+                    <li><strong>Retículos (ML-KEM, ML-DSA):</strong> Uso general para cifrado y firmas, buen equilibrio entre rendimiento y seguridad.</li>
+                    <li><strong>Códigos (Classic McEliece):</strong> Aplicaciones de alta seguridad donde el tamaño de clave no es crítico.</li>
+                    <li><strong>Hash (SLH-DSA):</strong> Aplicaciones que requieren garantías de seguridad máximas y pueden tolerar firmas grandes.</li>
+                    <li><strong>Enfoque Híbrido:</strong> Combinar múltiples familias para diversificar las suposiciones de seguridad.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="tema-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <div class="recursos-grid">
+                <div class="recurso-item">
+                    <h3>Lecturas Recomendadas</h3>
+                    <ul>
+                        <li>Bernstein, D. J., & Lange, T. (2017). Post-quantum cryptography. Nature, 549(7671), 188-194.</li>
+                        <li>Micciancio, D., & Regev, O. (2009). Lattice-based cryptography. In Post-quantum cryptography (pp. 147-191). Springer.</li>
+                        <li>Galbraith, S. D. (2012). Mathematics of public key cryptography. Cambridge University Press.</li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Recursos en Línea</h3>
+                    <ul>
+                        <li><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography">Proyecto de Criptografía Post-Cuántica del NIST</a></li>
+                        <li><a href="https://pq-crystals.org/">Proyecto CRYSTALS (ML-KEM y ML-DSA)</a></li>
+                        <li><a href="https://sphincs.org/">Proyecto SPHINCS+ (SLH-DSA)</a></li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Ejemplos Prácticos</h3>
+                    <ul>
+                        <li><a href="../../ejemplos/ml_kem.html">Implementación de ML-KEM</a></li>
+                        <li><a href="../../ejemplos/ml_dsa.html">Implementación de ML-DSA</a></li>
+                        <li><a href="../../guias/ml_kem.html">Guía de Laboratorio: ML-KEM</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="tema-navegacion-inferior">
+            <div class="nav-anterior">
+                <a href="../tema2/index.html">
+                    <span class="flecha">←</span>
+                    Anterior: Tema 2 - Infraestructura de Seguridad en Internet
+                </a>
+            </div>
+            <div class="nav-siguiente">
+                <a href="../tema4/index.html">
+                    Siguiente: Tema 4 - Estandarización de Criptografía Post-Cuántica
+                    <span class="flecha">→</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../programa.html">Programa</a></li>
+                    <li><a href="../tema1/index.html">Temas</a></li>
+                    <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="../../ejemplos/algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="../../ejemplos/ml_kem.html">ML-KEM</a></li>
+                    <li><a href="../../ejemplos/ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="../../ejemplos/criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="../../ejemplos/qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

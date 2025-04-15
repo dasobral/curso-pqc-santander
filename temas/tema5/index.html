@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 5: Implementaciones, Consideraciones y Desafíos - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../../programa.html">Programa</a></li>
+                <li><a href="../tema1/index.html">Temas</a></li>
+                <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../../index.html">Inicio</a> &gt; <a href="../tema1/index.html">Temas</a> &gt; Tema 5: Implementaciones, Consideraciones y Desafíos
+    </div>
+
+    <main>
+        <h1>Tema 5: Implementaciones, Consideraciones y Desafíos</h1>
+        
+        <div class="tema-navegacion">
+            <div class="tema-nav-item">
+                <a href="../tema1/index.html">
+                    <span>Tema 1</span>
+                    <p>Fundamentos de Criptografía Moderna</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema2/index.html">
+                    <span>Tema 2</span>
+                    <p>Infraestructura de Seguridad en Internet</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema3/index.html">
+                    <span>Tema 3</span>
+                    <p>Fundamentos de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema4/index.html">
+                    <span>Tema 4</span>
+                    <p>Estandarización de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item actual">
+                <span>Tema 5</span>
+                <p>Implementaciones, Consideraciones y Desafíos</p>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema6/index.html">
+                    <span>Tema 6</span>
+                    <p>Distribución Cuántica de Claves (QKD)</p>
+                </a>
+            </div>
+        </div>
+
+        <section class="tema-intro">
+            <h2>Introducción</h2>
+            <p>Este tema aborda los aspectos prácticos de la implementación de criptografía post-cuántica, incluyendo consideraciones de rendimiento, seguridad y despliegue. Examinaremos los desafíos que enfrentan las organizaciones al migrar a algoritmos post-cuánticos y las estrategias para una transición exitosa.</p>
+            
+            <div class="tema-info">
+                <div class="info-item">
+                    <h3>Duración</h3>
+                    <p>3 horas</p>
+                </div>
+                <div class="info-item">
+                    <h3>Objetivos</h3>
+                    <ul>
+                        <li>Analizar implementaciones prácticas de algoritmos post-cuánticos</li>
+                        <li>Comprender las consideraciones de rendimiento y optimización</li>
+                        <li>Explorar estrategias de migración y criptografía híbrida</li>
+                        <li>Examinar vulnerabilidades y ataques de implementación</li>
+                        <li>Evaluar el impacto en diferentes sectores y aplicaciones</li>
+                        <li>Desarrollar un plan de migración para escenarios reales</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tema-contenido">
+            <h2>Contenido del Tema</h2>
+            
+            <div class="subtema">
+                <h3>5.1 Implementaciones de Algoritmos Post-Cuánticos</h3>
+                <p>La implementación efectiva de algoritmos post-cuánticos requiere considerar diversos aspectos técnicos, desde bibliotecas de software hasta optimizaciones específicas de hardware.</p>
+                
+                <h4>Bibliotecas y Frameworks</h4>
+                <ul>
+                    <li><strong>liboqs:</strong> Biblioteca C de código abierto que implementa algoritmos post-cuánticos, desarrollada por el Open Quantum Safe Project.</li>
+                    <li><strong>PQCRYPTO:</strong> Conjunto de implementaciones de algoritmos post-cuánticos desarrollado por el proyecto PQCRYPTO de la UE.</li>
+                    <li><strong>BoringSSL/OpenSSL:</strong> Implementaciones experimentales de algoritmos post-cuánticos en bibliotecas SSL/TLS.</li>
+                    <li><strong>PQClean:</strong> Colección de implementaciones "limpias" de algoritmos post-cuánticos.</li>
+                    <li><strong>SUPERCOP:</strong> Sistema para medir el rendimiento y la corrección de implementaciones criptográficas.</li>
+                </ul>
+                
+                <h4>Consideraciones de Implementación</h4>
+                <ul>
+                    <li><strong>Generación de Números Aleatorios:</strong> Crucial para la seguridad, requiere fuentes de entropía de alta calidad.</li>
+                    <li><strong>Gestión de Memoria:</strong> Algunos algoritmos post-cuánticos requieren más memoria que los algoritmos clásicos.</li>
+                    <li><strong>Precisión Numérica:</strong> Implementaciones de punto fijo vs. punto flotante para operaciones matemáticas.</li>
+                    <li><strong>Portabilidad:</strong> Consideraciones para diferentes arquitecturas y sistemas operativos.</li>
+                    <li><strong>Interoperabilidad:</strong> Formatos de codificación y serialización para claves y firmas.</li>
+                </ul>
+                
+                <h4>Optimizaciones</h4>
+                <ul>
+                    <li><strong>Optimizaciones a Nivel de Algoritmo:</strong>
+                        <ul>
+                            <li>Transformada Número-Teórica (NTT) rápida para operaciones polinomiales.</li>
+                            <li>Técnicas de rechazo eficiente para muestreo de distribuciones.</li>
+                            <li>Representaciones compactas para claves y firmas.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Optimizaciones a Nivel de Software:</strong>
+                        <ul>
+                            <li>Vectorización usando instrucciones SIMD (AVX2, NEON).</li>
+                            <li>Paralelización para operaciones independientes.</li>
+                            <li>Técnicas de programación específicas para reducir sobrecarga.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Optimizaciones a Nivel de Hardware:</strong>
+                        <ul>
+                            <li>Aceleradores hardware para operaciones específicas (NTT, hash).</li>
+                            <li>Implementaciones FPGA para mayor rendimiento y menor consumo de energía.</li>
+                            <li>Diseños ASIC para aplicaciones de alto rendimiento.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Implementaciones en Dispositivos Restringidos</h4>
+                <p>Los dispositivos con recursos limitados presentan desafíos especiales para la implementación de algoritmos post-cuánticos:</p>
+                <ul>
+                    <li><strong>Microcontroladores:</strong> Implementaciones optimizadas para memoria y CPU limitadas.</li>
+                    <li><strong>Tarjetas Inteligentes:</strong> Adaptaciones para entornos con restricciones severas de recursos.</li>
+                    <li><strong>Dispositivos IoT:</strong> Equilibrio entre seguridad y eficiencia energética.</li>
+                    <li><strong>Técnicas de Optimización:</strong>
+                        <ul>
+                            <li>Cálculo en tiempo de compilación cuando sea posible.</li>
+                            <li>Reutilización de memoria para diferentes etapas del algoritmo.</li>
+                            <li>Implementaciones específicas para plataformas particulares.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>5.2 Rendimiento y Comparativas</h3>
+                <p>El rendimiento de los algoritmos post-cuánticos varía significativamente según el tipo de algoritmo, la implementación y la plataforma de ejecución.</p>
+                
+                <h4>Métricas de Rendimiento</h4>
+                <ul>
+                    <li><strong>Tiempo de Ejecución:</strong> Tiempo necesario para operaciones clave (generación de claves, cifrado/firma, descifrado/verificación).</li>
+                    <li><strong>Uso de Memoria:</strong> Requisitos de memoria RAM durante la ejecución.</li>
+                    <li><strong>Tamaño de Código:</strong> Espacio requerido para el código ejecutable.</li>
+                    <li><strong>Consumo de Energía:</strong> Especialmente importante para dispositivos móviles e IoT.</li>
+                    <li><strong>Ancho de Banda:</strong> Impacto en la comunicación debido al mayor tamaño de claves y firmas.</li>
+                </ul>
+                
+                <h4>Comparativa de Rendimiento en CPU de Escritorio</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Algoritmo</th>
+                            <th>Generación de Claves (ms)</th>
+                            <th>Encaps/Firma (ms)</th>
+                            <th>Desencaps/Verificación (ms)</th>
+                            <th>Tamaño de Clave Pública (bytes)</th>
+                            <th>Tamaño de Clave Privada (bytes)</th>
+                            <th>Tamaño de Cifrado/Firma (bytes)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ML-KEM-768</td>
+                            <td>0.09</td>
+                            <td>0.12</td>
+                            <td>0.13</td>
+                            <td>1,184</td>
+                            <td>2,400</td>
+                            <td>1,088</td>
+                        </tr>
+                        <tr>
+                            <td>ML-DSA-65</td>
+                            <td>0.23</td>
+                            <td>0.87</td>
+                            <td>0.30</td>
+                            <td>1,952</td>
+                            <td>3,856</td>
+                            <td>3,293</td>
+                        </tr>
+                        <tr>
+                            <td>SLH-DSA-SHAKE-128s</td>
+                            <td>0.03</td>
+                            <td>13.50</td>
+                            <td>0.90</td>
+                            <td>32</td>
+                            <td>64</td>
+                            <td>7,856</td>
+                        </tr>
+                        <tr>
+                            <td>Classic McEliece-348864</td>
+                            <td>37.00</td>
+                            <td>0.07</td>
+                            <td>0.11</td>
+                            <td>261,120</td>
+                            <td>6,492</td>
+                            <td>128</td>
+                        </tr>
+                        <tr>
+                            <td>RSA-3072 (referencia)</td>
+                            <td>120.00</td>
+                            <td>0.60</td>
+                            <td>0.03</td>
+                            <td>384</td>
+                            <td>1,192</td>
+                            <td>384</td>
+                        </tr>
+                        <tr>
+                            <td>ECDSA-P256 (referencia)</td>
+                            <td>0.07</td>
+                            <td>0.09</td>
+                            <td>0.20</td>
+                            <td>32</td>
+                            <td>32</td>
+                            <td>64</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><em>Nota: Los valores son aproximados y pueden variar según la implementación y el hardware.</em></p>
+                
+                <h4>Rendimiento en Dispositivos Restringidos</h4>
+                <p>El rendimiento en dispositivos con recursos limitados muestra diferencias significativas:</p>
+                <ul>
+                    <li><strong>Microcontroladores ARM Cortex-M4:</strong> ML-KEM-768 requiere aproximadamente 1.3 millones de ciclos para encapsulamiento y 1.5 millones para desencapsulamiento.</li>
+                    <li><strong>Tarjetas Inteligentes:</strong> Implementaciones de ML-KEM pueden requerir varios segundos para operaciones completas.</li>
+                    <li><strong>Dispositivos IoT:</strong> El consumo de energía para una operación ML-DSA puede ser 2-3 veces mayor que para ECDSA.</li>
+                </ul>
+                
+                <h4>Impacto en Protocolos de Red</h4>
+                <p>El mayor tamaño de claves y firmas post-cuánticas afecta a los protocolos de red:</p>
+                <ul>
+                    <li><strong>TLS:</strong> El handshake con ML-KEM-768 aumenta aproximadamente 3 KB en comparación con ECDHE.</li>
+                    <li><strong>HTTPS:</strong> Latencia adicional de 5-15% en el establecimiento de conexiones.</li>
+                    <li><strong>IKE/IPsec:</strong> Aumento del 200-300% en el tamaño de los paquetes de negociación.</li>
+                    <li><strong>DNSSEC:</strong> Las firmas más grandes pueden causar fragmentación de paquetes DNS.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>5.3 Criptografía Híbrida y Estrategias de Migración</h3>
+                <p>La transición a la criptografía post-cuántica requiere estrategias cuidadosamente planificadas para minimizar riesgos y garantizar la compatibilidad.</p>
+                
+                <h4>Criptografía Híbrida</h4>
+                <p>La criptografía híbrida combina algoritmos clásicos y post-cuánticos para proporcionar seguridad contra ataques clásicos y cuánticos:</p>
+                <ul>
+                    <li><strong>Composición en Serie:</strong> Aplicar un algoritmo seguido de otro (por ejemplo, cifrar con AES y luego con ML-KEM).</li>
+                    <li><strong>Composición en Paralelo:</strong> Aplicar ambos algoritmos independientemente y combinar los resultados.</li>
+                    <li><strong>Enfoques de Combinación de Claves:</strong>
+                        <ul>
+                            <li><strong>XOR:</strong> Combinar claves derivadas de ambos algoritmos mediante XOR.</li>
+                            <li><strong>Concatenación + KDF:</strong> Concatenar claves y aplicar una función de derivación de claves.</li>
+                            <li><strong>Dual PRF:</strong> Utilizar ambas claves como entradas a una función pseudoaleatoria.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Ejemplos de Esquemas Híbridos</h4>
+                <ul>
+                    <li><strong>TLS Híbrido:</strong> Combina ECDHE y ML-KEM para el establecimiento de claves.</li>
+                    <li><strong>Firmas Híbridas:</strong> Utiliza tanto ECDSA/RSA como ML-DSA/SLH-DSA para firmar el mismo mensaje.</li>
+                    <li><strong>X.509 Híbrido:</strong> Certificados con múltiples claves públicas y algoritmos.</li>
+                    <li><strong>SSH Híbrido:</strong> Negociación que utiliza tanto algoritmos clásicos como post-cuánticos.</li>
+                </ul>
+                
+                <h4>Estrategias de Migración</h4>
+                <p>La migración a criptografía post-cuántica debe seguir un enfoque estructurado:</p>
+                <ol>
+                    <li><strong>Inventario y Evaluación:</strong>
+                        <ul>
+                            <li>Identificar todos los sistemas que utilizan criptografía vulnerable.</li>
+                            <li>Evaluar la sensibilidad de los datos y los requisitos de protección a largo plazo.</li>
+                            <li>Determinar las dependencias y restricciones técnicas.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Priorización:</strong>
+                        <ul>
+                            <li>Clasificar sistemas según el riesgo y la criticidad.</li>
+                            <li>Identificar "quick wins" y sistemas de alta prioridad.</li>
+                            <li>Desarrollar una línea temporal realista.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Implementación por Fases:</strong>
+                        <ul>
+                            <li><strong>Fase 1:</strong> Implementar criptografía híbrida en sistemas críticos.</li>
+                            <li><strong>Fase 2:</strong> Actualizar bibliotecas y componentes criptográficos centrales.</li>
+                            <li><strong>Fase 3:</strong> Migrar sistemas menos críticos.</li>
+                            <li><strong>Fase 4:</strong> Eliminar gradualmente algoritmos vulnerables.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Pruebas y Validación:</strong>
+                        <ul>
+                            <li>Pruebas de rendimiento y compatibilidad.</li>
+                            <li>Validación de seguridad y auditorías.</li>
+                            <li>Pruebas de interoperabilidad con sistemas externos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Despliegue y Monitorización:</strong>
+                        <ul>
+                            <li>Implementación controlada con capacidad de reversión.</li>
+                            <li>Monitorización continua del rendimiento y la seguridad.</li>
+                            <li>Actualización de documentación y procedimientos.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Crypto-Agilidad</h4>
+                <p>La crypto-agilidad es la capacidad de cambiar rápidamente entre diferentes algoritmos criptográficos sin modificaciones significativas en la infraestructura:</p>
+                <ul>
+                    <li><strong>Diseño Modular:</strong> Separación clara entre la lógica de la aplicación y los componentes criptográficos.</li>
+                    <li><strong>Abstracción:</strong> Interfaces genéricas para operaciones criptográficas.</li>
+                    <li><strong>Configuración Dinámica:</strong> Capacidad para cambiar algoritmos sin recompilación.</li>
+                    <li><strong>Metadatos:</strong> Inclusión de información sobre algoritmos utilizados en datos cifrados o firmados.</li>
+                    <li><strong>Pruebas Automatizadas:</strong> Validación continua con diferentes algoritmos.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>5.4 Seguridad de Implementación y Ataques de Canal Lateral</h3>
+                <p>Las implementaciones de algoritmos post-cuánticos pueden ser vulnerables a ataques que explotan características físicas o de implementación, en lugar de debilidades matemáticas.</p>
+                
+                <h4>Tipos de Ataques de Canal Lateral</h4>
+                <ul>
+                    <li><strong>Ataques de Tiempo:</strong> Explotan variaciones en el tiempo de ejecución que dependen de datos secretos.
+                        <ul>
+                            <li>Riesgo en ML-KEM/ML-DSA: Operaciones de rechazo y muestreo pueden tener tiempos variables.</li>
+                            <li>Mitigación: Implementaciones de tiempo constante, especialmente para operaciones que involucran secretos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques de Consumo de Energía:</strong> Analizan el consumo de energía durante operaciones criptográficas.
+                        <ul>
+                            <li>Técnicas: Análisis simple de consumo (SPA), análisis diferencial de consumo (DPA).</li>
+                            <li>Mitigación: Balanceo de consumo, enmascaramiento de datos, aleatorización.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques Electromagnéticos:</strong> Miden emisiones electromagnéticas durante el procesamiento.
+                        <ul>
+                            <li>Particularmente efectivos contra dispositivos embebidos y tarjetas inteligentes.</li>
+                            <li>Mitigación: Blindaje, aleatorización de ejecución.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques de Fallos:</strong> Inducen errores durante la ejecución para revelar información secreta.
+                        <ul>
+                            <li>Técnicas: Glitches de voltaje, pulsos electromagnéticos, variaciones de temperatura.</li>
+                            <li>Mitigación: Verificación de integridad, redundancia, detección de condiciones anormales.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques de Caché:</strong> Explotan patrones de acceso a memoria a través de la caché del procesador.
+                        <ul>
+                            <li>Técnicas: FLUSH+RELOAD, PRIME+PROBE, EVICT+TIME.</li>
+                            <li>Mitigación: Accesos a memoria independientes de datos secretos, prefetching.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Vulnerabilidades Específicas en Algoritmos Post-Cuánticos</h4>
+                <ul>
+                    <li><strong>ML-KEM/ML-DSA:</strong>
+                        <ul>
+                            <li>Vulnerabilidades en la generación de polinomios secretos.</li>
+                            <li>Fugas durante operaciones NTT.</li>
+                            <li>Ataques durante el muestreo de distribuciones de error.</li>
+                        </ul>
+                    </li>
+                    <li><strong>SLH-DSA:</strong>
+                        <ul>
+                            <li>Fugas durante la generación de semillas.</li>
+                            <li>Vulnerabilidades en la construcción de árboles de Merkle.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Classic McEliece:</strong>
+                        <ul>
+                            <li>Ataques durante la decodificación de códigos de Goppa.</li>
+                            <li>Fugas en la manipulación de matrices de gran tamaño.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Técnicas de Mitigación</h4>
+                <ul>
+                    <li><strong>Implementaciones de Tiempo Constante:</strong> Asegurar que el tiempo de ejecución no dependa de datos secretos.</li>
+                    <li><strong>Enmascaramiento:</strong> Dividir valores secretos en partes aleatorias para ocultar su procesamiento.</li>
+                    <li><strong>Aleatorización:</strong> Introducir aleatoriedad en la ejecución para dificultar la correlación.</li>
+                    <li><strong>Verificación de Integridad:</strong> Detectar y responder a manipulaciones.</li>
+                    <li><strong>Contramedidas Específicas:</strong>
+                        <ul>
+                            <li>Técnicas de muestreo resistentes a ataques de tiempo.</li>
+                            <li>Implementaciones NTT protegidas contra fugas.</li>
+                            <li>Protección de accesos a memoria en operaciones con matrices grandes.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Validación y Certificación de Seguridad</h4>
+                <ul>
+                    <li><strong>Evaluación FIPS 140-3:</strong> Estándar para módulos criptográficos seguros.</li>
+                    <li><strong>Common Criteria:</strong> Marco para evaluación de seguridad de productos IT.</li>
+                    <li><strong>Pruebas de Penetración:</strong> Evaluación activa de resistencia a ataques.</li>
+                    <li><strong>Análisis Formal:</strong> Verificación matemática de propiedades de seguridad.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>5.5 Impacto en Diferentes Sectores y Aplicaciones</h3>
+                <p>La transición a la criptografía post-cuántica afectará a diferentes sectores de manera distinta, dependiendo de sus requisitos específicos y restricciones.</p>
+                
+                <h4>Sector Financiero</h4>
+                <ul>
+                    <li><strong>Banca en Línea:</strong> Necesidad de actualizar protocolos TLS y autenticación de clientes.</li>
+                    <li><strong>Pagos Electrónicos:</strong> Impacto en infraestructuras de tarjetas de pago y sistemas de pago móvil.</li>
+                    <li><strong>Blockchain y Criptomonedas:</strong> Vulnerabilidad de esquemas de firma existentes, necesidad de nuevos algoritmos.</li>
+                    <li><strong>Consideraciones Específicas:</strong>
+                        <ul>
+                            <li>Alta sensibilidad a latencia en transacciones.</li>
+                            <li>Requisitos estrictos de cumplimiento normativo.</li>
+                            <li>Necesidad de interoperabilidad global.</li>
+                            <li>Protección a largo plazo de datos financieros.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Sector Sanitario</h4>
+                <ul>
+                    <li><strong>Registros Médicos Electrónicos:</strong> Protección a largo plazo de datos sensibles.</li>
+                    <li><strong>Telemedicina:</strong> Seguridad en comunicaciones en tiempo real.</li>
+                    <li><strong>Dispositivos Médicos:</strong> Actualización de firmware y protocolos en dispositivos con larga vida útil.</li>
+                    <li><strong>Consideraciones Específicas:</strong>
+                        <ul>
+                            <li>Requisitos de privacidad y cumplimiento (HIPAA, GDPR).</li>
+                            <li>Sistemas heredados con ciclos de actualización largos.</li>
+                            <li>Dispositivos con recursos limitados.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Infraestructuras Críticas</h4>
+                <ul>
+                    <li><strong>Energía:</strong> Protección de sistemas SCADA y redes de distribución.</li>
+                    <li><strong>Transporte:</strong> Seguridad en sistemas de control de tráfico y vehículos conectados.</li>
+                    <li><strong>Telecomunicaciones:</strong> Actualización de infraestructura de red y sistemas de gestión.</li>
+                    <li><strong>Consideraciones Específicas:</strong>
+                        <ul>
+                            <li>Sistemas con ciclos de vida muy largos (15-30 años).</li>
+                            <li>Requisitos de disponibilidad extremadamente altos.</li>
+                            <li>Entornos industriales con restricciones específicas.</li>
+                            <li>Implicaciones para la seguridad nacional.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Gobierno y Defensa</h4>
+                <ul>
+                    <li><strong>Comunicaciones Clasificadas:</strong> Necesidad de protección contra amenazas actuales y futuras.</li>
+                    <li><strong>Identidad Digital:</strong> Actualización de sistemas de identificación y autenticación.</li>
+                    <li><strong>Infraestructura de Clave Pública (PKI):</strong> Migración de CAs gubernamentales.</li>
+                    <li><strong>Consideraciones Específicas:</strong>
+                        <ul>
+                            <li>Requisitos de seguridad extremadamente altos.</li>
+                            <li>Necesidad de soluciones validadas y certificadas.</li>
+                            <li>Protección de información con clasificación de seguridad.</li>
+                            <li>Consideraciones de soberanía tecnológica.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Internet de las Cosas (IoT)</h4>
+                <ul>
+                    <li><strong>Dispositivos de Consumo:</strong> Actualización de protocolos de comunicación y autenticación.</li>
+                    <li><strong>IoT Industrial:</strong> Seguridad en sensores y actuadores en entornos industriales.</li>
+                    <li><strong>Ciudades Inteligentes:</strong> Protección de infraestructura de sensores urbanos.</li>
+                    <li><strong>Consideraciones Específicas:</strong>
+                        <ul>
+                            <li>Severas restricciones de recursos (CPU, memoria, energía).</li>
+                            <li>Ciclos de vida largos con actualizaciones limitadas.</li>
+                            <li>Necesidad de soluciones extremadamente eficientes.</li>
+                            <li>Desafíos de gestión de claves a gran escala.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>5.6 Planificación de Migración y Casos Prácticos</h3>
+                <p>La planificación efectiva de la migración a criptografía post-cuántica requiere un enfoque estructurado y adaptado a las necesidades específicas de cada organización.</p>
+                
+                <h4>Componentes de un Plan de Migración</h4>
+                <ol>
+                    <li><strong>Evaluación y Descubrimiento:</strong>
+                        <ul>
+                            <li>Inventario completo de sistemas criptográficos.</li>
+                            <li>Clasificación de datos según sensibilidad y vida útil.</li>
+                            <li>Identificación de dependencias y interfaces externas.</li>
+                            <li>Evaluación de impacto en rendimiento y operaciones.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Análisis de Riesgos:</strong>
+                        <ul>
+                            <li>Evaluación de amenazas específicas para la organización.</li>
+                            <li>Análisis de vulnerabilidades en sistemas actuales.</li>
+                            <li>Determinación de niveles de riesgo aceptables.</li>
+                            <li>Identificación de sistemas críticos para migración prioritaria.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Estrategia y Planificación:</strong>
+                        <ul>
+                            <li>Selección de algoritmos y enfoques (híbrido vs. reemplazo directo).</li>
+                            <li>Desarrollo de línea temporal realista con hitos claros.</li>
+                            <li>Asignación de recursos y responsabilidades.</li>
+                            <li>Planificación de contingencia y gestión de riesgos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Implementación:</strong>
+                        <ul>
+                            <li>Desarrollo o adquisición de soluciones.</li>
+                            <li>Pruebas en entornos controlados.</li>
+                            <li>Despliegue por fases con monitorización.</li>
+                            <li>Documentación y formación.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Validación y Mantenimiento:</strong>
+                        <ul>
+                            <li>Verificación continua de seguridad y rendimiento.</li>
+                            <li>Auditorías periódicas.</li>
+                            <li>Actualización según evolución de estándares.</li>
+                            <li>Mejora continua basada en lecciones aprendidas.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Caso Práctico 1: Institución Financiera</h4>
+                <p><strong>Escenario:</strong> Un banco internacional con múltiples sistemas críticos, incluyendo banca en línea, procesamiento de pagos y sistemas internos.</p>
+                <ul>
+                    <li><strong>Enfoque:</strong> Migración híbrida por fases con priorización basada en riesgo.</li>
+                    <li><strong>Fase 1 (0-12 meses):</strong>
+                        <ul>
+                            <li>Inventario completo y clasificación de sistemas.</li>
+                            <li>Implementación de TLS híbrido (ECDHE+ML-KEM) en servidores de banca en línea.</li>
+                            <li>Pruebas de rendimiento y compatibilidad con diferentes clientes.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Fase 2 (12-24 meses):</strong>
+                        <ul>
+                            <li>Actualización de infraestructura PKI para soportar certificados híbridos.</li>
+                            <li>Migración de sistemas de autenticación a firmas híbridas.</li>
+                            <li>Actualización de APIs y servicios web externos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Fase 3 (24-36 meses):</strong>
+                        <ul>
+                            <li>Migración de sistemas internos y aplicaciones legacy.</li>
+                            <li>Actualización de protocolos de comunicación con otras instituciones.</li>
+                            <li>Implementación de firmas post-cuánticas para documentos legales.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Fase 4 (36+ meses):</strong>
+                        <ul>
+                            <li>Evaluación para posible eliminación de algoritmos clásicos.</li>
+                            <li>Actualización a versiones mejoradas de algoritmos post-cuánticos.</li>
+                            <li>Revisión y optimización continua.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Caso Práctico 2: Fabricante de Dispositivos IoT</h4>
+                <p><strong>Escenario:</strong> Fabricante de dispositivos IoT para hogares inteligentes con ciclos de vida de producto de 5-10 años.</p>
+                <ul>
+                    <li><strong>Desafíos Específicos:</strong>
+                        <ul>
+                            <li>Dispositivos con recursos limitados (CPU de 32 bits, 256KB RAM).</li>
+                            <li>Necesidad de actualizaciones OTA (Over-The-Air).</li>
+                            <li>Compatibilidad con ecosistemas de terceros.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Enfoque:</strong> Diseño de nueva plataforma con crypto-agilidad y actualización gradual de dispositivos existentes.</li>
+                    <li><strong>Solución:</strong>
+                        <ul>
+                            <li>Desarrollo de biblioteca criptográfica optimizada para ML-KEM-512.</li>
+                            <li>Implementación de capa de abstracción para facilitar futuras actualizaciones.</li>
+                            <li>Nuevos dispositivos con soporte nativo para algoritmos post-cuánticos.</li>
+                            <li>Actualización OTA para dispositivos existentes compatibles.</li>
+                            <li>Programa de reemplazo para dispositivos no actualizables.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Resultados:</strong>
+                        <ul>
+                            <li>Aumento de 15% en uso de memoria RAM.</li>
+                            <li>Incremento de 20% en tiempo de establecimiento de conexión.</li>
+                            <li>Reducción de 5% en duración de batería.</li>
+                            <li>Seguridad mejorada contra amenazas futuras.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Lecciones Aprendidas y Mejores Prácticas</h4>
+                <ul>
+                    <li><strong>Comenzar Temprano:</strong> La migración completa puede llevar años; comenzar ahora reduce riesgos futuros.</li>
+                    <li><strong>Enfoque Incremental:</strong> Implementar soluciones híbridas como primer paso reduce riesgos de compatibilidad.</li>
+                    <li><strong>Priorizar Correctamente:</strong> Enfocarse primero en sistemas con datos de larga vida útil y alta sensibilidad.</li>
+                    <li><strong>Pruebas Exhaustivas:</strong> Probar en diversos entornos y con diferentes clientes antes del despliegue.</li>
+                    <li><strong>Formación y Concienciación:</strong> Educar a equipos técnicos y de gestión sobre la importancia de la migración.</li>
+                    <li><strong>Colaboración:</strong> Trabajar con proveedores, clientes y socios para coordinar la transición.</li>
+                    <li><strong>Documentación:</strong> Mantener registros detallados de cambios y decisiones para futuras auditorías.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="tema-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <div class="recursos-grid">
+                <div class="recurso-item">
+                    <h3>Lecturas Recomendadas</h3>
+                    <ul>
+                        <li>NIST. (2023). Migration to Post-Quantum Cryptography. NISTIR 8105 (Draft).</li>
+                        <li>Bindel, N., et al. (2021). Transitioning to a Post-Quantum World: Challenges and Opportunities. IEEE Security & Privacy, 19(4), 34-43.</li>
+                        <li>Kampanakis, P., & Sikeridis, D. (2021). Two Post-Quantum Signature Use-cases: Non-issues, Challenges and Potential Solutions. IACR Cryptology ePrint Archive, 2021/1133.</li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Recursos en Línea</h3>
+                    <ul>
+                        <li><a href="https://openquantumsafe.org/">Open Quantum Safe Project</a></li>
+                        <li><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography/migration-to-post-quantum-cryptography">NIST: Migración a Criptografía Post-Cuántica</a></li>
+                        <li><a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantentechnologien-und-Post-Quanten-Kryptographie/post-quanten-kryptographie_node.html">BSI: Recomendaciones para Criptografía Post-Cuántica</a></li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Ejemplos Prácticos</h3>
+                    <ul>
+                        <li><a href="../../ejemplos/criptografia_hibrida.html">Implementación de Criptografía Híbrida</a></li>
+                        <li><a href="../../guias/criptografia_hibrida.html">Guía de Laboratorio: Criptografía Híbrida</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="tema-navegacion-inferior">
+            <div class="nav-anterior">
+                <a href="../tema4/index.html">
+                    <span class="flecha">←</span>
+                    Anterior: Tema 4 - Estandarización de Criptografía Post-Cuántica
+                </a>
+            </div>
+            <div class="nav-siguiente">
+                <a href="../tema6/index.html">
+                    Siguiente: Tema 6 - Distribución Cuántica de Claves (QKD)
+                    <span class="flecha">→</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../programa.html">Programa</a></li>
+                    <li><a href="../tema1/index.html">Temas</a></li>
+                    <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="../../ejemplos/algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="../../ejemplos/ml_kem.html">ML-KEM</a></li>
+                    <li><a href="../../ejemplos/ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="../../ejemplos/criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="../../ejemplos/qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

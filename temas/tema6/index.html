@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tema 6: Distribución Cuántica de Claves (QKD) - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Inicio</a></li>
+                <li><a href="../../programa.html">Programa</a></li>
+                <li><a href="../tema1/index.html">Temas</a></li>
+                <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                <li><a href="../../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../../index.html">Inicio</a> &gt; <a href="../tema1/index.html">Temas</a> &gt; Tema 6: Distribución Cuántica de Claves (QKD)
+    </div>
+
+    <main>
+        <h1>Tema 6: Distribución Cuántica de Claves (QKD)</h1>
+        
+        <div class="tema-navegacion">
+            <div class="tema-nav-item">
+                <a href="../tema1/index.html">
+                    <span>Tema 1</span>
+                    <p>Fundamentos de Criptografía Moderna</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema2/index.html">
+                    <span>Tema 2</span>
+                    <p>Infraestructura de Seguridad en Internet</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema3/index.html">
+                    <span>Tema 3</span>
+                    <p>Fundamentos de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema4/index.html">
+                    <span>Tema 4</span>
+                    <p>Estandarización de Criptografía Post-Cuántica</p>
+                </a>
+            </div>
+            <div class="tema-nav-item">
+                <a href="../tema5/index.html">
+                    <span>Tema 5</span>
+                    <p>Implementaciones, Consideraciones y Desafíos</p>
+                </a>
+            </div>
+            <div class="tema-nav-item actual">
+                <span>Tema 6</span>
+                <p>Distribución Cuántica de Claves (QKD)</p>
+            </div>
+        </div>
+
+        <section class="tema-intro">
+            <h2>Introducción</h2>
+            <p>Este tema explora la Distribución Cuántica de Claves (QKD), un enfoque fundamentalmente diferente para el establecimiento seguro de claves que utiliza principios de la mecánica cuántica. A diferencia de la criptografía post-cuántica, que utiliza matemáticas clásicas resistentes a ataques cuánticos, QKD aprovecha las propiedades cuánticas para detectar cualquier intento de interceptación.</p>
+            
+            <div class="tema-info">
+                <div class="info-item">
+                    <h3>Duración</h3>
+                    <p>2 horas</p>
+                </div>
+                <div class="info-item">
+                    <h3>Objetivos</h3>
+                    <ul>
+                        <li>Comprender los principios físicos fundamentales de la distribución cuántica de claves</li>
+                        <li>Analizar los principales protocolos QKD y sus características</li>
+                        <li>Examinar las implementaciones prácticas y limitaciones actuales</li>
+                        <li>Comparar QKD con enfoques de criptografía post-cuántica</li>
+                        <li>Explorar aplicaciones y casos de uso apropiados para QKD</li>
+                        <li>Evaluar el futuro de QKD y su papel en la seguridad cuántica</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="tema-contenido">
+            <h2>Contenido del Tema</h2>
+            
+            <div class="subtema">
+                <h3>6.1 Fundamentos de Mecánica Cuántica para QKD</h3>
+                <p>La distribución cuántica de claves se basa en principios fundamentales de la mecánica cuántica que proporcionan garantías de seguridad basadas en las leyes de la física.</p>
+                
+                <h4>Principios Cuánticos Clave</h4>
+                <ul>
+                    <li><strong>Superposición Cuántica:</strong> Un sistema cuántico puede existir simultáneamente en múltiples estados hasta que se realiza una medición.</li>
+                    <li><strong>Principio de Incertidumbre de Heisenberg:</strong> No es posible medir simultáneamente con precisión arbitraria ciertas parejas de propiedades físicas complementarias.</li>
+                    <li><strong>Teorema de No-Clonación:</strong> Es imposible crear una copia exacta de un estado cuántico desconocido. Este principio es fundamental para la seguridad de QKD.</li>
+                    <li><strong>Entrelazamiento Cuántico:</strong> Dos o más partículas pueden estar correlacionadas de tal manera que el estado de una no puede describirse independientemente del estado de las otras.</li>
+                </ul>
+                
+                <h4>Qubits: Unidades Básicas de Información Cuántica</h4>
+                <ul>
+                    <li><strong>Definición:</strong> Un qubit es la unidad básica de información cuántica, análoga al bit clásico pero con capacidad de existir en superposición.</li>
+                    <li><strong>Representación:</strong> Un qubit puede representarse como |ψ⟩ = α|0⟩ + β|1⟩, donde α y β son números complejos que satisfacen |α|² + |β|² = 1.</li>
+                    <li><strong>Implementaciones Físicas:</strong> Los qubits pueden implementarse utilizando:
+                        <ul>
+                            <li>Polarización de fotones (horizontal/vertical, diagonal/antidiagonal, circular derecha/izquierda)</li>
+                            <li>Espín de electrones o núcleos atómicos</li>
+                            <li>Niveles de energía en átomos o iones atrapados</li>
+                            <li>Circuitos superconductores</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Bases de Medición</h4>
+                <p>En QKD, las mediciones se realizan en diferentes bases, que son conjuntos de estados ortogonales:</p>
+                <ul>
+                    <li><strong>Base Rectilinear (Z):</strong> Estados de polarización horizontal (|0⟩) y vertical (|1⟩).</li>
+                    <li><strong>Base Diagonal (X):</strong> Estados de polarización a 45° (|+⟩) y 135° (|-⟩).</li>
+                    <li><strong>Base Circular (Y):</strong> Estados de polarización circular derecha (|R⟩) y circular izquierda (|L⟩).</li>
+                </ul>
+                <p>Medir un qubit en una base diferente a la de su preparación produce resultados aleatorios y destruye la información original.</p>
+                
+                <h4>Detección de Espionaje</h4>
+                <p>La capacidad de detectar espionaje en QKD se basa en dos principios fundamentales:</p>
+                <ul>
+                    <li><strong>Teorema de No-Clonación:</strong> Un espía no puede copiar qubits desconocidos para analizarlos sin perturbarlos.</li>
+                    <li><strong>Colapso de la Función de Onda:</strong> Cualquier medición perturba el estado cuántico, introduciendo errores detectables.</li>
+                </ul>
+                <p>Estos principios garantizan que cualquier intento de interceptar la comunicación cuántica será detectable a través de un aumento en la tasa de error.</p>
+            </div>
+            
+            <div class="subtema">
+                <h3>6.2 Protocolos de Distribución Cuántica de Claves</h3>
+                <p>Existen varios protocolos para implementar QKD, cada uno con características y ventajas específicas.</p>
+                
+                <h4>Protocolo BB84</h4>
+                <p>Desarrollado por Charles Bennett y Gilles Brassard en 1984, BB84 fue el primer protocolo QKD:</p>
+                <ol>
+                    <li><strong>Preparación:</strong> Alice genera bits aleatorios y los codifica en qubits utilizando aleatoriamente la base rectilinear o diagonal.</li>
+                    <li><strong>Transmisión:</strong> Alice envía los qubits a Bob a través de un canal cuántico.</li>
+                    <li><strong>Medición:</strong> Bob mide cada qubit utilizando aleatoriamente la base rectilinear o diagonal.</li>
+                    <li><strong>Reconciliación de Bases:</strong> Alice y Bob revelan públicamente qué bases utilizaron para cada qubit (pero no los resultados).</li>
+                    <li><strong>Filtrado:</strong> Descartan los bits donde utilizaron bases diferentes, conservando solo aquellos donde coincidieron las bases.</li>
+                    <li><strong>Estimación de Error:</strong> Revelan una muestra aleatoria de sus bits para estimar la tasa de error.</li>
+                    <li><strong>Corrección de Errores:</strong> Aplican protocolos de corrección de errores para corregir discrepancias.</li>
+                    <li><strong>Amplificación de Privacidad:</strong> Aplican funciones hash para reducir la información que un espía podría haber obtenido.</li>
+                </ol>
+                <p>La seguridad de BB84 se basa en que cualquier intento de medición por parte de un espía introducirá errores detectables, ya que el espía no conoce las bases utilizadas por Alice.</p>
+                
+                <h4>Protocolo E91</h4>
+                <p>Propuesto por Artur Ekert en 1991, E91 utiliza pares de partículas entrelazadas:</p>
+                <ol>
+                    <li><strong>Generación:</strong> Una fuente genera pares de fotones entrelazados, enviando uno a Alice y otro a Bob.</li>
+                    <li><strong>Medición:</strong> Alice y Bob miden sus fotones en bases elegidas aleatoriamente de entre tres opciones.</li>
+                    <li><strong>Reconciliación:</strong> Revelan públicamente sus bases de medición (pero no los resultados).</li>
+                    <li><strong>Correlación:</strong> Para ciertas combinaciones de bases, utilizan los resultados para generar bits de clave.</li>
+                    <li><strong>Prueba de Bell:</strong> Para otras combinaciones de bases, utilizan los resultados para verificar el entrelazamiento mediante desigualdades de Bell.</li>
+                </ol>
+                <p>La seguridad de E91 se basa en que cualquier interferencia con el entrelazamiento será detectable mediante las desigualdades de Bell.</p>
+                
+                <h4>Protocolo BBM92</h4>
+                <p>Desarrollado por Bennett, Brassard y Mermin en 1992, BBM92 combina elementos de BB84 y E91:</p>
+                <ul>
+                    <li>Utiliza pares entrelazados como E91, pero solo dos bases de medición como BB84.</li>
+                    <li>Simplifica la implementación mientras mantiene las ventajas del entrelazamiento.</li>
+                    <li>No requiere pruebas de Bell, lo que facilita su implementación práctica.</li>
+                </ul>
+                
+                <h4>Protocolo B92</h4>
+                <p>Una versión simplificada de BB84 propuesta por Bennett en 1992:</p>
+                <ul>
+                    <li>Utiliza solo dos estados cuánticos no ortogonales en lugar de cuatro.</li>
+                    <li>Más simple pero generalmente menos eficiente que BB84.</li>
+                    <li>Potencialmente más vulnerable a ciertos tipos de ataques.</li>
+                </ul>
+                
+                <h4>Protocolos de Variables Continuas (CV-QKD)</h4>
+                <p>A diferencia de los protocolos basados en variables discretas (como BB84), los protocolos CV-QKD utilizan estados cuánticos con variables continuas:</p>
+                <ul>
+                    <li>Utilizan la modulación de amplitud y fase de estados coherentes de luz.</li>
+                    <li>Pueden implementarse con tecnología de telecomunicaciones estándar (detección homodina o heterodina).</li>
+                    <li>Potencialmente más adecuados para integración con infraestructura de fibra óptica existente.</li>
+                    <li>Ejemplos incluyen el protocolo GG02 (Grosshans-Grangier 2002).</li>
+                </ul>
+                
+                <h4>Protocolos de Referencia de Fase Distribuida (DPR-QKD)</h4>
+                <p>Estos protocolos utilizan la interferencia entre pulsos de luz para codificar información:</p>
+                <ul>
+                    <li>No requieren una referencia de fase externa, lo que simplifica la implementación.</li>
+                    <li>Más robustos frente a fluctuaciones en el canal de transmisión.</li>
+                    <li>Ejemplos incluyen el protocolo COW (Coherent One-Way) y el protocolo DPS (Differential Phase Shift).</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>6.3 Implementaciones Prácticas y Limitaciones</h3>
+                <p>La implementación práctica de QKD enfrenta diversos desafíos técnicos y limitaciones.</p>
+                
+                <h4>Componentes Físicos</h4>
+                <ul>
+                    <li><strong>Fuentes de Fotones:</strong>
+                        <ul>
+                            <li>Fuentes de fotones individuales (átomos, iones, centros de color)</li>
+                            <li>Fuentes de fotones atenuados (láseres pulsados atenuados)</li>
+                            <li>Fuentes de pares entrelazados (conversión paramétrica espontánea)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Canales Cuánticos:</strong>
+                        <ul>
+                            <li>Fibra óptica (telecomunicaciones, 1310 nm o 1550 nm)</li>
+                            <li>Espacio libre (enlaces terrestres o satelitales)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Detectores:</strong>
+                        <ul>
+                            <li>Fotodiodos de avalancha de fotón único (SPADs)</li>
+                            <li>Detectores superconductores de nanohilos (SNSPDs)</li>
+                            <li>Detectores homodinos/heterodinos (para CV-QKD)</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Limitaciones Prácticas</h4>
+                <ul>
+                    <li><strong>Pérdidas en el Canal:</strong> La atenuación en fibra óptica limita la distancia a típicamente 100-200 km sin repetidores.</li>
+                    <li><strong>Tasas de Generación de Claves:</strong> Generalmente mucho más bajas que en criptografía clásica (kbps vs. Gbps).</li>
+                    <li><strong>Fuentes de Fotones Imperfectas:</strong> Las fuentes prácticas pueden emitir múltiples fotones, creando vulnerabilidades.</li>
+                    <li><strong>Detectores Imperfectos:</strong> Eficiencia limitada, cuentas oscuras, y vulnerabilidades específicas.</li>
+                    <li><strong>Sensibilidad Ambiental:</strong> Cambios de temperatura, vibraciones y otros factores pueden afectar la estabilidad.</li>
+                    <li><strong>Necesidad de Autenticación Clásica:</strong> QKD requiere un canal clásico autenticado, generalmente mediante criptografía clásica.</li>
+                </ul>
+                
+                <h4>Ataques y Contramedidas</h4>
+                <ul>
+                    <li><strong>Ataque de División de Número de Fotones:</strong> Explota pulsos que contienen múltiples fotones.
+                        <ul>
+                            <li>Contramedida: Protocolo de estados señuelo (decoy state).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques a Detectores:</strong> Explotan imperfecciones en los detectores.
+                        <ul>
+                            <li>Contramedida: QKD independiente de dispositivos (device-independent QKD).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques de Canal Lateral:</strong> Explotan implementaciones físicas específicas.
+                        <ul>
+                            <li>Contramedida: Diseño cuidadoso y aislamiento de componentes críticos.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ataques de Hombre en el Medio en el Canal Clásico:</strong> Intentan manipular la comunicación clásica.
+                        <ul>
+                            <li>Contramedida: Autenticación fuerte del canal clásico.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Sistemas QKD Comerciales</h4>
+                <p>Varios sistemas QKD comerciales están disponibles o en desarrollo:</p>
+                <ul>
+                    <li><strong>ID Quantique (Suiza):</strong> Sistemas Cerberis y Clavis basados en BB84 y COW.</li>
+                    <li><strong>Toshiba (Japón):</strong> Sistemas basados en BB84 con estados señuelo.</li>
+                    <li><strong>QuantumCTek (China):</strong> Diversos sistemas QKD para diferentes aplicaciones.</li>
+                    <li><strong>MagiQ Technologies (EE.UU.):</strong> Sistemas QPN para aplicaciones gubernamentales y financieras.</li>
+                </ul>
+                <p>Estos sistemas típicamente alcanzan distancias de 50-100 km y tasas de generación de claves de 1-10 kbps en condiciones óptimas.</p>
+            </div>
+            
+            <div class="subtema">
+                <h3>6.4 Redes QKD y Repetidores Cuánticos</h3>
+                <p>Para superar las limitaciones de distancia de QKD punto a punto, se están desarrollando redes QKD y tecnologías de repetidores cuánticos.</p>
+                
+                <h4>Arquitecturas de Redes QKD</h4>
+                <ul>
+                    <li><strong>Redes de Confianza (Trusted-Node Networks):</strong>
+                        <ul>
+                            <li>Utilizan nodos intermedios de confianza para extender la distancia.</li>
+                            <li>Cada enlace QKD es independiente, con claves descifradas y recifradas en cada nodo.</li>
+                            <li>Limitación: Los nodos intermedios deben ser completamente confiables.</li>
+                            <li>Ejemplo: Red de Backbone Cuántico de China (2,000+ km).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Redes Conmutadas:</strong>
+                        <ul>
+                            <li>Permiten establecer conexiones QKD entre diferentes pares de usuarios según sea necesario.</li>
+                            <li>Utilizan conmutadores ópticos para reconfigurar la topología de la red.</li>
+                            <li>Ejemplo: Red de Tokio (UQCC-Tokyo).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Redes Basadas en Satélites:</strong>
+                        <ul>
+                            <li>Utilizan satélites como repetidores o fuentes de entrelazamiento.</li>
+                            <li>Permiten distribución de claves a escala global.</li>
+                            <li>Ejemplo: Satélite Micius (China), que ha demostrado QKD intercontinental.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Repetidores Cuánticos</h4>
+                <p>Los repetidores cuánticos permitirían extender la distancia de QKD sin nodos de confianza:</p>
+                <ul>
+                    <li><strong>Basados en Entrelazamiento:</strong>
+                        <ul>
+                            <li>Utilizan el intercambio de entrelazamiento (entanglement swapping) para crear correlaciones a larga distancia.</li>
+                            <li>Requieren memorias cuánticas para almacenar estados cuánticos.</li>
+                            <li>Estado actual: Demostrados en laboratorio a pequeña escala.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Repetidores de Código Cuántico:</strong>
+                        <ul>
+                            <li>Utilizan códigos de corrección de errores cuánticos para proteger la información.</li>
+                            <li>Potencialmente más robustos pero requieren computación cuántica.</li>
+                            <li>Estado actual: Principalmente teóricos, con algunas demostraciones de principio.</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Proyectos de Redes QKD</h4>
+                <ul>
+                    <li><strong>Red Nacional de China:</strong> La red QKD más grande del mundo, conectando Beijing, Shanghai y otras ciudades.</li>
+                    <li><strong>OpenQKD (UE):</strong> Proyecto para desarrollar una infraestructura QKD europea.</li>
+                    <li><strong>UK Quantum Network:</strong> Red que conecta Cambridge, Bristol y otras localidades en Reino Unido.</li>
+                    <li><strong>Quantum Xchange (EE.UU.):</strong> Red comercial en el corredor Boston-Washington.</li>
+                    <li><strong>Red de Tokio (Japón):</strong> Red metropolitana que conecta múltiples ubicaciones en Tokio.</li>
+                </ul>
+                
+                <h4>Integración con Redes Clásicas</h4>
+                <p>La integración de QKD con infraestructura de red existente presenta varios desafíos:</p>
+                <ul>
+                    <li><strong>Multiplexación por División de Longitud de Onda (WDM):</strong> Permite que señales cuánticas y clásicas compartan la misma fibra.</li>
+                    <li><strong>Gestión de Claves:</strong> Sistemas para distribuir, almacenar y gestionar claves cuánticas.</li>
+                    <li><strong>Interfaces con Aplicaciones:</strong> APIs para que aplicaciones de seguridad utilicen claves cuánticas.</li>
+                    <li><strong>Estándares:</strong> ETSI, ITU-T y otros organismos están desarrollando estándares para QKD.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>6.5 Comparación entre QKD y Criptografía Post-Cuántica</h3>
+                <p>QKD y criptografía post-cuántica representan enfoques fundamentalmente diferentes para la seguridad en la era cuántica.</p>
+                
+                <h4>Diferencias Fundamentales</h4>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>Distribución Cuántica de Claves (QKD)</th>
+                            <th>Criptografía Post-Cuántica (PQC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Base de Seguridad</td>
+                            <td>Leyes de la física cuántica</td>
+                            <td>Problemas matemáticos computacionalmente difíciles</td>
+                        </tr>
+                        <tr>
+                            <td>Tipo de Seguridad</td>
+                            <td>Seguridad incondicional (teóricamente)</td>
+                            <td>Seguridad computacional</td>
+                        </tr>
+                        <tr>
+                            <td>Infraestructura</td>
+                            <td>Requiere hardware especializado</td>
+                            <td>Compatible con infraestructura existente</td>
+                        </tr>
+                        <tr>
+                            <td>Distancia</td>
+                            <td>Limitada (típicamente <200 km sin repetidores)</td>
+                            <td>Global (Internet)</td>
+                        </tr>
+                        <tr>
+                            <td>Tasa de Datos</td>
+                            <td>Baja (kbps)</td>
+                            <td>Alta (Mbps-Gbps)</td>
+                        </tr>
+                        <tr>
+                            <td>Funcionalidad</td>
+                            <td>Solo distribución de claves</td>
+                            <td>Cifrado, firmas, intercambio de claves</td>
+                        </tr>
+                        <tr>
+                            <td>Madurez</td>
+                            <td>Comercial pero especializada</td>
+                            <td>En proceso de estandarización</td>
+                        </tr>
+                        <tr>
+                            <td>Costo</td>
+                            <td>Alto</td>
+                            <td>Bajo</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h4>Ventajas de QKD</h4>
+                <ul>
+                    <li><strong>Seguridad Basada en Física:</strong> No depende de suposiciones computacionales que podrían ser invalidadas.</li>
+                    <li><strong>Detección de Espionaje:</strong> Puede detectar intentos de interceptación en tiempo real.</li>
+                    <li><strong>Seguridad a Largo Plazo:</strong> Las claves generadas hoy no pueden ser descifradas en el futuro con tecnología más avanzada.</li>
+                    <li><strong>Resistencia a Todos los Ataques Cuánticos:</strong> No solo a algoritmos conocidos como Shor o Grover.</li>
+                </ul>
+                
+                <h4>Ventajas de PQC</h4>
+                <ul>
+                    <li><strong>Compatibilidad:</strong> Funciona con infraestructura de red existente sin hardware especializado.</li>
+                    <li><strong>Escalabilidad:</strong> No tiene limitaciones de distancia inherentes.</li>
+                    <li><strong>Funcionalidad Completa:</strong> Proporciona cifrado, firmas digitales y otras primitivas criptográficas.</li>
+                    <li><strong>Costo:</strong> Significativamente más económico de implementar y mantener.</li>
+                    <li><strong>Rendimiento:</strong> Tasas de datos mucho más altas.</li>
+                </ul>
+                
+                <h4>Enfoques Complementarios</h4>
+                <p>QKD y PQC pueden considerarse tecnologías complementarias más que competidoras:</p>
+                <ul>
+                    <li><strong>Uso Híbrido:</strong> QKD para establecer claves en enlaces críticos, PQC para comunicaciones generales.</li>
+                    <li><strong>Autenticación Mutua:</strong> PQC puede proporcionar autenticación para el canal clásico en QKD.</li>
+                    <li><strong>Defensa en Profundidad:</strong> Utilizar ambas tecnologías proporciona múltiples capas de seguridad.</li>
+                    <li><strong>Casos de Uso Diferenciados:</strong> QKD para comunicaciones de alta seguridad en distancias limitadas, PQC para comunicaciones globales.</li>
+                </ul>
+            </div>
+            
+            <div class="subtema">
+                <h3>6.6 Aplicaciones y Futuro de QKD</h3>
+                <p>A pesar de sus limitaciones, QKD tiene aplicaciones específicas donde sus características únicas son valiosas.</p>
+                
+                <h4>Aplicaciones Actuales</h4>
+                <ul>
+                    <li><strong>Protección de Infraestructuras Críticas:</strong>
+                        <ul>
+                            <li>Redes eléctricas y de energía</li>
+                            <li>Sistemas de control industrial</li>
+                            <li>Instalaciones gubernamentales y militares</li>
+                        </ul>
+                    </li>
+                    <li><strong>Sector Financiero:</strong>
+                        <ul>
+                            <li>Comunicaciones entre centros de datos bancarios</li>
+                            <li>Protección de transacciones de alto valor</li>
+                            <li>Respaldo de claves maestras</li>
+                        </ul>
+                    </li>
+                    <li><strong>Comunicaciones Gubernamentales:</strong>
+                        <ul>
+                            <li>Protección de información clasificada</li>
+                            <li>Comunicaciones diplomáticas</li>
+                            <li>Elecciones y sistemas de votación</li>
+                        </ul>
+                    </li>
+                    <li><strong>Sector Sanitario:</strong>
+                        <ul>
+                            <li>Protección de datos médicos sensibles</li>
+                            <li>Comunicaciones entre hospitales y centros de investigación</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Casos de Uso Implementados</h4>
+                <ul>
+                    <li><strong>Elecciones en Suiza (2007):</strong> ID Quantique proporcionó seguridad basada en QKD para la transmisión de resultados electorales en Ginebra.</li>
+                    <li><strong>SECOQC (UE, 2008):</strong> Demostración de una red QKD de seis nodos en Viena.</li>
+                    <li><strong>Red Financiera de Tokio (2010):</strong> Conexión segura entre centros de datos financieros.</li>
+                    <li><strong>Red de Backbone Cuántico de China (2017-):</strong> Red a escala nacional que conecta múltiples ciudades.</li>
+                    <li><strong>Comunicación Intercontinental Micius (2017):</strong> Distribución de claves entre China y Austria vía satélite.</li>
+                </ul>
+                
+                <h4>Tendencias y Desarrollos Futuros</h4>
+                <ul>
+                    <li><strong>Miniaturización:</strong>
+                        <ul>
+                            <li>Sistemas QKD en chips fotónicos integrados</li>
+                            <li>Reducción de tamaño, costo y consumo de energía</li>
+                            <li>Potencial integración en dispositivos de consumo</li>
+                        </ul>
+                    </li>
+                    <li><strong>Repetidores Cuánticos:</strong>
+                        <ul>
+                            <li>Desarrollo de memorias cuánticas prácticas</li>
+                            <li>Implementación de protocolos de intercambio de entrelazamiento</li>
+                            <li>Redes QKD de larga distancia sin nodos de confianza</li>
+                        </ul>
+                    </li>
+                    <li><strong>Redes Basadas en Satélites:</strong>
+                        <ul>
+                            <li>Constelaciones de satélites para cobertura global</li>
+                            <li>Miniaturización de tecnología QKD para CubeSats</li>
+                            <li>Integración con redes terrestres</li>
+                        </ul>
+                    </li>
+                    <li><strong>Estandarización:</strong>
+                        <ul>
+                            <li>Estándares ETSI, ITU-T, ISO/IEC para interoperabilidad</li>
+                            <li>Certificación y validación de seguridad</li>
+                            <li>Integración con marcos regulatorios</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Desafíos Pendientes</h4>
+                <ul>
+                    <li><strong>Técnicos:</strong>
+                        <ul>
+                            <li>Aumento de tasas de generación de claves</li>
+                            <li>Extensión de distancias sin nodos de confianza</li>
+                            <li>Reducción de costos y complejidad</li>
+                        </ul>
+                    </li>
+                    <li><strong>Prácticos:</strong>
+                        <ul>
+                            <li>Integración con infraestructura existente</li>
+                            <li>Desarrollo de interfaces de usuario amigables</li>
+                            <li>Formación de personal técnico</li>
+                        </ul>
+                    </li>
+                    <li><strong>Regulatorios:</strong>
+                        <ul>
+                            <li>Certificación de seguridad</li>
+                            <li>Cumplimiento normativo</li>
+                            <li>Restricciones de exportación</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>Visión a Largo Plazo: El Internet Cuántico</h4>
+                <p>El concepto de "Internet Cuántico" va más allá de QKD, contemplando una red que pueda distribuir entrelazamiento y transmitir estados cuánticos:</p>
+                <ul>
+                    <li><strong>Distribución de Entrelazamiento:</strong> Creación y distribución de pares entrelazados a escala global.</li>
+                    <li><strong>Teletransporte Cuántico:</strong> Transferencia de estados cuánticos entre nodos distantes.</li>
+                    <li><strong>Computación Cuántica Distribuida:</strong> Conexión de procesadores cuánticos en diferentes ubicaciones.</li>
+                    <li><strong>Aplicaciones:</strong> Metrología cuántica distribuida, sensores cuánticos en red, computación cuántica en la nube.</li>
+                </ul>
+                <p>Aunque el Internet Cuántico completo está aún en fase conceptual, QKD representa el primer paso hacia esta visión.</p>
+            </div>
+        </section>
+
+        <section class="tema-recursos">
+            <h2>Recursos Adicionales</h2>
+            
+            <div class="recursos-grid">
+                <div class="recurso-item">
+                    <h3>Lecturas Recomendadas</h3>
+                    <ul>
+                        <li>Bennett, C. H., & Brassard, G. (2014). Quantum cryptography: Public key distribution and coin tossing. Theoretical Computer Science, 560, 7-11. (Reimpresión del artículo original de 1984)</li>
+                        <li>Gisin, N., Ribordy, G., Tittel, W., & Zbinden, H. (2002). Quantum cryptography. Reviews of Modern Physics, 74(1), 145.</li>
+                        <li>Diamanti, E., Lo, H. K., Qi, B., & Yuan, Z. (2016). Practical challenges in quantum key distribution. npj Quantum Information, 2(1), 1-12.</li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Recursos en Línea</h3>
+                    <ul>
+                        <li><a href="https://www.idquantique.com/quantum-safe-security/overview/">ID Quantique: Quantum-Safe Security</a></li>
+                        <li><a href="https://www.etsi.org/technologies/quantum-safe-cryptography">ETSI: Quantum-Safe Cryptography</a></li>
+                        <li><a href="https://www.quantumxc.com/quantum-key-distribution-explained/">Quantum Xchange: QKD Explained</a></li>
+                    </ul>
+                </div>
+                
+                <div class="recurso-item">
+                    <h3>Ejemplos Prácticos</h3>
+                    <ul>
+                        <li><a href="../../ejemplos/qkd_bb84.html">Simulación del Protocolo BB84</a></li>
+                        <li><a href="../../guias/qkd.html">Guía de Laboratorio: Protocolo BB84</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="tema-navegacion-inferior">
+            <div class="nav-anterior">
+                <a href="../tema5/index.html">
+                    <span class="flecha">←</span>
+                    Anterior: Tema 5 - Implementaciones, Consideraciones y Desafíos
+                </a>
+            </div>
+            <div class="nav-siguiente">
+                <!-- No hay tema siguiente -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../programa.html">Programa</a></li>
+                    <li><a href="../tema1/index.html">Temas</a></li>
+                    <li><a href="../../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="../../guias/index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Ejemplos</h3>
+                <ul>
+                    <li><a href="../../ejemplos/algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="../../ejemplos/ml_kem.html">ML-KEM</a></li>
+                    <li><a href="../../ejemplos/ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="../../ejemplos/criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="../../ejemplos/qkd_bb84.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../../js/script.js"></script>
+</body>
+</html>

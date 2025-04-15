@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guías de Laboratorio - Curso de Criptografía Post-Cuántica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Guías de Laboratorio</h1>
+
+        <p>Esta sección proporciona guías detalladas para realizar prácticas de laboratorio relacionadas con los conceptos estudiados en el curso. Cada guía incluye objetivos, requisitos, procedimientos paso a paso y preguntas de reflexión.</p>
+
+        <div class="lab-grid">
+            <div class="lab-card">
+                <h2>Simulación del Algoritmo de Shor</h2>
+                <p>Explora cómo el algoritmo cuántico de Shor puede factorizar números grandes y comprometer la seguridad de RSA.</p>
+                <p><strong>Duración estimada:</strong> 2 horas</p>
+                <p><strong>Dificultad:</strong> Media</p>
+                <a href="algoritmo_shor.html" class="btn">Ver guía</a>
+            </div>
+
+            <div class="lab-card">
+                <h2>Implementación de ML-KEM</h2>
+                <p>Implementa y analiza el funcionamiento del mecanismo de encapsulamiento de claves basado en retículos (FIPS 203).</p>
+                <p><strong>Duración estimada:</strong> 3 horas</p>
+                <p><strong>Dificultad:</strong> Alta</p>
+                <a href="ml_kem.html" class="btn">Ver guía</a>
+            </div>
+
+            <div class="lab-card">
+                <h2>Implementación de ML-DSA</h2>
+                <p>Implementa y analiza el funcionamiento del algoritmo de firma digital basado en retículos (FIPS 204).</p>
+                <p><strong>Duración estimada:</strong> 3 horas</p>
+                <p><strong>Dificultad:</strong> Alta</p>
+                <a href="ml_dsa.html" class="btn">Ver guía</a>
+            </div>
+
+            <div class="lab-card">
+                <h2>Configuración de Criptografía Híbrida</h2>
+                <p>Configura y evalúa un sistema que combina algoritmos clásicos y post-cuánticos para una transición segura.</p>
+                <p><strong>Duración estimada:</strong> 2 horas</p>
+                <p><strong>Dificultad:</strong> Media</p>
+                <a href="criptografia_hibrida.html" class="btn">Ver guía</a>
+            </div>
+
+            <div class="lab-card">
+                <h2>Simulación de QKD (BB84)</h2>
+                <p>Simula el protocolo BB84 para distribución cuántica de claves y analiza su seguridad frente a ataques.</p>
+                <p><strong>Duración estimada:</strong> 2 horas</p>
+                <p><strong>Dificultad:</strong> Media-Alta</p>
+                <a href="qkd.html" class="btn">Ver guía</a>
+            </div>
+        </div>
+
+        <section>
+            <h2>Preparación para las Prácticas</h2>
+            <p>Antes de comenzar cualquier práctica de laboratorio, asegúrate de:</p>
+            <ul>
+                <li>Revisar el material teórico relacionado en la sección de Temas</li>
+                <li>Tener instalado Python 3.8 o superior</li>
+                <li>Instalar las bibliotecas necesarias según se indique en cada guía</li>
+                <li>Descargar los archivos de código base proporcionados en cada guía</li>
+            </ul>
+            
+            <div class="alert alert-info">
+                <p><strong>Nota:</strong> Las implementaciones realizadas en estas prácticas son simplificadas con fines educativos y no deben utilizarse en entornos de producción.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Evaluación</h2>
+            <p>Cada práctica de laboratorio incluye preguntas de reflexión y ejercicios adicionales que pueden ser utilizados para la evaluación del aprendizaje. Se recomienda:</p>
+            <ul>
+                <li>Documentar el proceso seguido durante la práctica</li>
+                <li>Responder a todas las preguntas de reflexión</li>
+                <li>Realizar los ejercicios adicionales propuestos</li>
+                <li>Analizar críticamente los resultados obtenidos</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Guías Disponibles</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+</html>

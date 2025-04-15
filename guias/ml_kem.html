@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML-KEM - Guía de Laboratorio</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Curso de Criptografía Post-Cuántica</h1>
+        <p>Un enfoque introductorio a la seguridad en la era cuántica</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar en el curso...">
+            <button onclick="search()">🔍</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Inicio</a></li>
+                <li><a href="../programa.html">Programa</a></li>
+                <li><a href="../temas/tema1/index.html">Temas</a></li>
+                <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                <li><a href="index.html">Guías de Laboratorio</a></li>
+                <li><a href="../recursos/index.html">Recursos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="../index.html">Inicio</a> &gt; <a href="index.html">Guías de Laboratorio</a> &gt; ML-KEM
+    </div>
+
+    <main>
+        <h1>Guía de Laboratorio: Implementación de ML-KEM</h1>
+
+        <section class="lab-section">
+            <h2>Objetivos de Aprendizaje</h2>
+            <ul>
+                <li>Comprender los fundamentos teóricos de ML-KEM (anteriormente Kyber)</li>
+                <li>Implementar una versión simplificada del mecanismo de encapsulamiento de claves</li>
+                <li>Analizar las propiedades de seguridad y eficiencia de ML-KEM</li>
+                <li>Comparar ML-KEM con mecanismos de intercambio de claves tradicionales</li>
+            </ul>
+        </section>
+
+        <section class="lab-section">
+            <h2>Requisitos Previos</h2>
+            <ul>
+                <li>Conocimientos básicos de criptografía de clave pública</li>
+                <li>Familiaridad con conceptos matemáticos: álgebra lineal, retículos, distribuciones estadísticas</li>
+                <li>Python 3.8 o superior instalado</li>
+                <li>Bibliotecas requeridas: numpy, scipy, matplotlib</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <p><strong>Nota:</strong> Esta práctica implementa una versión simplificada de ML-KEM con fines educativos. No debe utilizarse en entornos de producción.</p>
+            </div>
+        </section>
+
+        <section class="lab-section">
+            <h2>Introducción Teórica</h2>
+            <p>ML-KEM (Module-Lattice-Based Key Encapsulation Mechanism), anteriormente conocido como Kyber, es un mecanismo de encapsulamiento de claves basado en retículos modulares. Fue seleccionado por el NIST como el estándar para encapsulamiento de claves post-cuántico (FIPS 203).</p>
+            
+            <p>ML-KEM basa su seguridad en la dificultad del problema de Learning With Errors (LWE) en su variante modular. Este problema es considerado resistente a ataques cuánticos, incluyendo el algoritmo de Shor.</p>
+            
+            <p>El esquema consta de tres algoritmos principales:</p>
+            <ol>
+                <li><strong>KeyGen</strong>: Genera un par de claves pública/privada.</li>
+                <li><strong>Encaps</strong>: Utiliza la clave pública para encapsular (cifrar) una clave simétrica compartida.</li>
+                <li><strong>Decaps</strong>: Utiliza la clave privada para desencapsular (descifrar) la clave simétrica compartida.</li>
+            </ol>
+
+            <p>ML-KEM viene en tres variantes con diferentes niveles de seguridad:</p>
+            <ul>
+                <li><strong>ML-KEM-512</strong>: Seguridad aproximadamente equivalente a AES-128</li>
+                <li><strong>ML-KEM-768</strong>: Seguridad aproximadamente equivalente a AES-192</li>
+                <li><strong>ML-KEM-1024</strong>: Seguridad aproximadamente equivalente a AES-256</li>
+            </ul>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 1: Implementación Simplificada de ML-KEM</h2>
+            
+            <h3>1.1 Configuración del Entorno</h3>
+            <p>Crea un nuevo archivo Python llamado <code>ml_kem_simplified.py</code> e importa las bibliotecas necesarias:</p>
+            <pre><code class="language-python">import numpy as np
+import hashlib
+import os
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+</code></pre>
+
+            <h3>1.2 Implementación de Funciones Auxiliares</h3>
+            <p>Primero, implementaremos algunas funciones auxiliares necesarias:</p>
+            <pre><code class="language-python"># Parámetros para ML-KEM-512 simplificado
+PARAMS = {
+    'n': 256,       # Dimensión del polinomio
+    'k': 2,         # Dimensión del módulo
+    'q': 3329,      # Módulo
+    'eta1': 3,      # Parámetro de ruido para la clave secreta
+    'eta2': 2,      # Parámetro de ruido para el error
+    'du': 10,       # Bits para comprimir u
+    'dv': 4,        # Bits para comprimir v
+}
+
+# Función para generar una distribución centrada binomial
+def centered_binomial_distribution(eta, size):
+    """
+    Genera muestras de una distribución centrada binomial con parámetro eta.
+    Esta es una aproximación a la distribución normal discreta utilizada en ML-KEM.
+    """
+    a = np.random.randint(0, 2, size=(size, eta))
+    b = np.random.randint(0, 2, size=(size, eta))
+    return np.sum(a, axis=1) - np.sum(b, axis=1)
+
+# Función para generar una matriz A uniforme aleatoria
+def gen_matrix_A(k, n, q, seed=None):
+    """
+    Genera una matriz A uniforme aleatoria de dimensiones (k, k, n) con coeficientes en Z_q.
+    En la implementación real, esto se haría usando XOF (función de expansión de salida extendida).
+    """
+    if seed is not None:
+        np.random.seed(seed)
+    return np.random.randint(0, q, size=(k, k, n))
+
+# Función para comprimir un polinomio
+def compress(x, d, q):
+    """
+    Comprime un polinomio x módulo q a d bits por coeficiente.
+    """
+    factor = 2**d / q
+    return np.round(factor * x).astype(int) % (2**d)
+
+# Función para descomprimir un polinomio
+def decompress(x, d, q):
+    """
+    Descomprime un polinomio x de d bits por coeficiente a módulo q.
+    """
+    factor = q / (2**d)
+    return np.round(factor * x).astype(int) % q
+
+# Función para multiplicar polinomios en el anillo R_q
+def poly_mul(a, b, q):
+    """
+    Multiplica dos polinomios en el anillo R_q = Z_q[X]/(X^n + 1).
+    Esta es una implementación simplificada que no utiliza NTT para eficiencia.
+    """
+    n = len(a)
+    c = np.zeros(n, dtype=int)
+    
+    for i in range(n):
+        for j in range(n):
+            idx = (i + j) % n
+            if i + j >= n:
+                c[idx] = (c[idx] - a[i] * b[j]) % q
+            else:
+                c[idx] = (c[idx] + a[i] * b[j]) % q
+    
+    return c
+
+# Función para multiplicar matrices de polinomios
+def matrix_poly_mul(A, s, q):
+    """
+    Multiplica una matriz de polinomios A por un vector de polinomios s.
+    """
+    k = A.shape[0]
+    n = A.shape[2]
+    result = np.zeros((k, n), dtype=int)
+    
+    for i in range(k):
+        for j in range(k):
+            result[i] = (result[i] + poly_mul(A[i, j], s[j], q)) % q
+    
+    return result
+
+# Función para añadir vectores de polinomios
+def poly_add(a, b, q):
+    """
+    Suma dos vectores de polinomios módulo q.
+    """
+    return (a + b) % q
+
+# Función para generar un hash
+def hash_function(data):
+    """
+    Función de hash utilizada en ML-KEM.
+    En la implementación real, se utilizarían funciones específicas como SHA3.
+    """
+    return hashlib.sha256(data).digest()
+</code></pre>
+
+            <h3>1.3 Implementación de los Algoritmos Principales</h3>
+            <p>Ahora implementaremos los tres algoritmos principales de ML-KEM:</p>
+            <pre><code class="language-python"># Algoritmo KeyGen
+def keygen(params=PARAMS):
+    """
+    Genera un par de claves pública/privada para ML-KEM.
+    """
+    n = params['n']
+    k = params['k']
+    q = params['q']
+    eta1 = params['eta1']
+    
+    # Generar matriz A aleatoria
+    A = gen_matrix_A(k, n, q)
+    
+    # Generar vector secreto s con ruido
+    s = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        s[i] = centered_binomial_distribution(eta1, n)
+    
+    # Generar vector de error e con ruido
+    e = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        e[i] = centered_binomial_distribution(eta1, n)
+    
+    # Calcular t = A·s + e
+    t = poly_add(matrix_poly_mul(A, s, q), e, q)
+    
+    # Clave pública: (t, A)
+    # Clave privada: s
+    return {'public': (t, A), 'private': s}
+
+# Algoritmo Encaps
+def encaps(public_key, params=PARAMS):
+    """
+    Encapsula una clave simétrica compartida utilizando la clave pública.
+    """
+    t, A = public_key
+    n = params['n']
+    k = params['k']
+    q = params['q']
+    eta1 = params['eta1']
+    eta2 = params['eta2']
+    du = params['du']
+    dv = params['dv']
+    
+    # Generar vector r con ruido
+    r = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        r[i] = centered_binomial_distribution(eta1, n)
+    
+    # Generar vector de error e1 con ruido
+    e1 = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        e1[i] = centered_binomial_distribution(eta2, n)
+    
+    # Generar error e2 con ruido
+    e2 = centered_binomial_distribution(eta2, n)
+    
+    # Calcular u = A^T·r + e1
+    u = poly_add(matrix_poly_mul(np.transpose(A, (1, 0, 2)), r, q), e1, q)
+    
+    # Calcular v = t^T·r + e2 + ⌈q/2⌋·m
+    m = np.random.randint(0, 2, size=n)  # Mensaje aleatorio binario
+    v_temp = np.zeros(n, dtype=int)
+    for i in range(k):
+        v_temp = (v_temp + poly_mul(t[i], r[i], q)) % q
+    v = (v_temp + e2 + ((q // 2) * m)) % q
+    
+    # Comprimir u y v
+    u_compressed = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        u_compressed[i] = compress(u[i], du, q)
+    v_compressed = compress(v, dv, q)
+    
+    # Calcular la clave compartida
+    shared_key = hash_function(np.concatenate([u_compressed.flatten(), v_compressed]).tobytes())
+    
+    # Cifrado: (u_compressed, v_compressed)
+    ciphertext = (u_compressed, v_compressed)
+    
+    return ciphertext, shared_key
+
+# Algoritmo Decaps
+def decaps(ciphertext, private_key, public_key, params=PARAMS):
+    """
+    Desencapsula la clave simétrica compartida utilizando la clave privada.
+    """
+    u_compressed, v_compressed = ciphertext
+    s = private_key
+    n = params['n']
+    k = params['k']
+    q = params['q']
+    du = params['du']
+    dv = params['dv']
+    
+    # Descomprimir u y v
+    u = np.zeros((k, n), dtype=int)
+    for i in range(k):
+        u[i] = decompress(u_compressed[i], du, q)
+    v = decompress(v_compressed, dv, q)
+    
+    # Calcular v' = u^T·s
+    v_prime = np.zeros(n, dtype=int)
+    for i in range(k):
+        v_prime = (v_prime + poly_mul(u[i], s[i], q)) % q
+    
+    # Recuperar m
+    m_prime = np.zeros(n, dtype=int)
+    for i in range(n):
+        # Comparar v[i] con v_prime[i] para determinar si el bit es 0 o 1
+        diff = (v[i] - v_prime[i]) % q
+        if diff > q // 4 and diff < 3 * q // 4:
+            m_prime[i] = 1
+    
+    # Calcular la clave compartida
+    shared_key = hash_function(np.concatenate([u_compressed.flatten(), v_compressed]).tobytes())
+    
+    return shared_key
+</code></pre>
+
+            <h3>1.4 Función Principal y Visualización</h3>
+            <p>Finalmente, implementaremos la función principal y algunas visualizaciones:</p>
+            <pre><code class="language-python">def main():
+    print("Implementación simplificada de ML-KEM (anteriormente Kyber)")
+    print("Parámetros utilizados:", PARAMS)
+    
+    # Generar claves
+    print("\nGenerando par de claves...")
+    keys = keygen()
+    public_key = keys['public']
+    private_key = keys['private']
+    print("Claves generadas.")
+    
+    # Encapsular clave compartida
+    print("\nEncapsulando clave compartida...")
+    ciphertext, shared_key_sender = encaps(public_key)
+    print("Clave encapsulada.")
+    print("Longitud de la clave compartida:", len(shared_key_sender), "bytes")
+    print("Primeros bytes de la clave compartida:", shared_key_sender[:8].hex())
+    
+    # Desencapsular clave compartida
+    print("\nDesencapsulando clave compartida...")
+    shared_key_receiver = decaps(ciphertext, private_key, public_key)
+    print("Clave desencapsulada.")
+    print("Primeros bytes de la clave desencapsulada:", shared_key_receiver[:8].hex())
+    
+    # Verificar que ambas partes tienen la misma clave
+    if shared_key_sender == shared_key_receiver:
+        print("\n¡Éxito! Ambas partes han establecido la misma clave compartida.")
+    else:
+        print("\n¡Error! Las claves compartidas no coinciden.")
+    
+    # Visualizaciones
+    plt.figure(figsize=(15, 10))
+    
+    # Distribución de la clave privada
+    plt.subplot(2, 2, 1)
+    s_flat = private_key.flatten()
+    plt.hist(s_flat, bins=range(min(s_flat)-1, max(s_flat)+2), alpha=0.7, rwidth=0.85)
+    plt.title('Distribución de la clave privada')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución de la clave pública
+    plt.subplot(2, 2, 2)
+    t_flat = public_key[0].flatten()
+    plt.hist(t_flat, bins=30, alpha=0.7, rwidth=0.85)
+    plt.title('Distribución de la clave pública (t)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución del cifrado (u)
+    plt.subplot(2, 2, 3)
+    u_flat = ciphertext[0].flatten()
+    plt.hist(u_flat, bins=range(min(u_flat)-1, max(u_flat)+2), alpha=0.7, rwidth=0.85)
+    plt.title('Distribución del cifrado (u comprimido)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    # Distribución del cifrado (v)
+    plt.subplot(2, 2, 4)
+    v_flat = ciphertext[1]
+    plt.hist(v_flat, bins=range(min(v_flat)-1, max(v_flat)+2), alpha=0.7, rwidth=0.85)
+    plt.title('Distribución del cifrado (v comprimido)')
+    plt.xlabel('Valor')
+    plt.ylabel('Frecuencia')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('ml_kem_visualization.png')
+    plt.show()
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 2: Análisis de Seguridad y Rendimiento</h2>
+            
+            <h3>2.1 Comparación con ECDH</h3>
+            <p>Implementaremos una versión simplificada de ECDH (Elliptic Curve Diffie-Hellman) para comparar con ML-KEM:</p>
+            <pre><code class="language-python"># Crear un nuevo archivo ecdh_comparison.py
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+# Importar nuestra implementación de ML-KEM
+from ml_kem_simplified import keygen, encaps, decaps, PARAMS
+
+def ecdh_keygen():
+    """
+    Genera un par de claves para ECDH.
+    """
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def ecdh_shared_key(private_key, peer_public_key):
+    """
+    Calcula la clave compartida ECDH.
+    """
+    shared_key = private_key.exchange(ec.ECDH(), peer_public_key)
+    # Derivar una clave simétrica usando HKDF
+    derived_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b'handshake data',
+    ).derive(shared_key)
+    return derived_key
+
+def compare_performance(num_trials=10):
+    """
+    Compara el rendimiento de ML-KEM y ECDH.
+    """
+    # Tiempos para ML-KEM
+    ml_kem_keygen_times = []
+    ml_kem_encaps_times = []
+    ml_kem_decaps_times = []
+    
+    # Tiempos para ECDH
+    ecdh_keygen_times = []
+    ecdh_shared_key_times = []
+    
+    for _ in range(num_trials):
+        # ML-KEM
+        start_time = time.time()
+        keys = keygen()
+        ml_kem_keygen_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        ciphertext, shared_key_sender = encaps(keys['public'])
+        ml_kem_encaps_times.append(time.time() - start_time)
+        
+        start_time = time.time()
+        shared_key_receiver = decaps(ciphertext, keys['private'], keys['public'])
+        ml_kem_decaps_times.append(time.time() - start_time)
+        
+        # ECDH
+        start_time = time.time()
+        alice_private, alice_public = ecdh_keygen()
+        ecdh_keygen_times.append(time.time() - start_time)
+        
+        bob_private, bob_public = ecdh_keygen()
+        
+        start_time = time.time()
+        alice_shared = ecdh_shared_key(alice_private, bob_public)
+        ecdh_shared_key_times.append(time.time() - start_time)
+        
+        bob_shared = ecdh_shared_key(bob_private, alice_public)
+        
+        # Verificar que ambas partes tienen la misma clave
+        assert alice_shared == bob_shared
+        assert shared_key_sender == shared_key_receiver
+    
+    # Calcular promedios
+    ml_kem_keygen_avg = np.mean(ml_kem_keygen_times)
+    ml_kem_encaps_avg = np.mean(ml_kem_encaps_times)
+    ml_kem_decaps_avg = np.mean(ml_kem_decaps_times)
+    
+    ecdh_keygen_avg = np.mean(ecdh_keygen_times)
+    ecdh_shared_key_avg = np.mean(ecdh_shared_key_times)
+    
+    # Visualizar resultados
+    plt.figure(figsize=(12, 6))
+    
+    # Tiempos de generación de claves
+    plt.subplot(1, 2, 1)
+    plt.bar(['ML-KEM', 'ECDH'], [ml_kem_keygen_avg, ecdh_keygen_avg])
+    plt.title('Tiempo de Generación de Claves')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    # Tiempos de establecimiento de clave compartida
+    plt.subplot(1, 2, 2)
+    plt.bar(['ML-KEM (Encaps+Decaps)', 'ECDH (2×SharedKey)'], 
+            [ml_kem_encaps_avg + ml_kem_decaps_avg, 2 * ecdh_shared_key_avg])
+    plt.title('Tiempo de Establecimiento de Clave')
+    plt.ylabel('Tiempo (segundos)')
+    plt.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('ml_kem_vs_ecdh.png')
+    plt.show()
+    
+    # Imprimir resultados
+    print("\nComparación de Rendimiento (promedio de", num_trials, "pruebas):")
+    print("\nML-KEM:")
+    print("  Generación de claves:", ml_kem_keygen_avg, "segundos")
+    print("  Encapsulamiento:", ml_kem_encaps_avg, "segundos")
+    print("  Desencapsulamiento:", ml_kem_decaps_avg, "segundos")
+    print("  Total:", ml_kem_keygen_avg + ml_kem_encaps_avg + ml_kem_decaps_avg, "segundos")
+    
+    print("\nECDH:")
+    print("  Generación de claves:", ecdh_keygen_avg, "segundos")
+    print("  Cálculo de clave compartida:", ecdh_shared_key_avg, "segundos")
+    print("  Total (2 partes):", 2 * ecdh_keygen_avg + 2 * ecdh_shared_key_avg, "segundos")
+    
+    # Comparar tamaños
+    alice_private_serialized = alice_private.private_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    
+    alice_public_serialized = alice_public.public_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    
+    # Tamaños aproximados para ML-KEM-512
+    ml_kem_public_size = PARAMS['k'] * PARAMS['k'] * PARAMS['n'] * np.log2(PARAMS['q']) / 8
+    ml_kem_private_size = PARAMS['k'] * PARAMS['n'] * np.log2(2 * PARAMS['eta1'] + 1) / 8
+    ml_kem_ciphertext_size = (PARAMS['k'] * PARAMS['n'] * PARAMS['du'] + PARAMS['n'] * PARAMS['dv']) / 8
+    
+    print("\nTamaños (bytes):")
+    print("  ECDH clave privada:", len(alice_private_serialized))
+    print("  ECDH clave pública:", len(alice_public_serialized))
+    print("  ML-KEM clave privada (aprox.):", int(ml_kem_private_size))
+    print("  ML-KEM clave pública (aprox.):", int(ml_kem_public_size))
+    print("  ML-KEM cifrado (aprox.):", int(ml_kem_ciphertext_size))
+
+if __name__ == "__main__":
+    compare_performance()
+</code></pre>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 3: Ejercicios y Preguntas de Reflexión</h2>
+            
+            <h3>3.1 Ejercicios</h3>
+            <ol>
+                <li>Modifica el código para implementar ML-KEM-768 ajustando los parámetros adecuadamente.</li>
+                <li>Implementa una función para medir el tiempo de ejecución de cada operación en ML-KEM y compara los resultados con diferentes tamaños de parámetros.</li>
+                <li>Modifica el código para simular un ataque de "clave relacionada" y analiza su efectividad.</li>
+                <li>Implementa una versión híbrida que combine ML-KEM con ECDH para una transición segura.</li>
+            </ol>
+            
+            <h3>3.2 Preguntas de Reflexión</h3>
+            <ol>
+                <li>¿Cuáles son las ventajas y desventajas de ML-KEM en comparación con ECDH?</li>
+                <li>¿Por qué ML-KEM utiliza una distribución centrada binomial en lugar de una distribución normal?</li>
+                <li>¿Cómo afecta el tamaño de los parámetros (n, k, q) a la seguridad y eficiencia de ML-KEM?</li>
+                <li>¿Qué estrategias de implementación podrían mejorar el rendimiento de ML-KEM en dispositivos con recursos limitados?</li>
+                <li>¿Cuáles son los desafíos para la adopción generalizada de ML-KEM en sistemas existentes?</li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Parte 4: Extensión (Opcional) - Implementación en Hardware</h2>
+            <p>Si tienes experiencia con programación de hardware (FPGA o microcontroladores), puedes intentar implementar una versión optimizada de ML-KEM:</p>
+            <ul>
+                <li>Utilizar la transformada número-teórica (NTT) para multiplicación eficiente de polinomios</li>
+                <li>Implementar optimizaciones específicas para la plataforma objetivo</li>
+                <li>Medir el rendimiento y consumo de energía</li>
+                <li>Comparar con implementaciones de referencia</li>
+            </ul>
+            <p>Esta extensión es avanzada y requiere conocimientos adicionales de programación de hardware.</p>
+        </section>
+
+        <section class="lab-section">
+            <h2>Entregables</h2>
+            <p>Al finalizar esta práctica, deberás entregar:</p>
+            <ol>
+                <li>Código fuente de las implementaciones (<code>ml_kem_simplified.py</code> y <code>ecdh_comparison.py</code>)</li>
+                <li>Capturas de pantalla o gráficos generados durante la ejecución</li>
+                <li>Un informe breve (máximo 3 páginas) que incluya:
+                    <ul>
+                        <li>Resultados obtenidos en las pruebas de rendimiento</li>
+                        <li>Análisis comparativo entre ML-KEM y ECDH</li>
+                        <li>Respuestas a las preguntas de reflexión</li>
+                        <li>Conclusiones sobre la viabilidad de ML-KEM para aplicaciones prácticas</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section class="lab-section">
+            <h2>Recursos Adicionales</h2>
+            <ul>
+                <li><a href="https://csrc.nist.gov/pubs/fips/203/ipd" target="_blank">FIPS 203: Module-Lattice-Based Key-Encapsulation Mechanism Standard</a></li>
+                <li><a href="https://pq-crystals.org/kyber/" target="_blank">Sitio oficial de CRYSTALS-Kyber (ahora ML-KEM)</a></li>
+                <li><a href="https://eprint.iacr.org/2017/634" target="_blank">Artículo original: CRYSTALS-Kyber: A CCA-Secure Module-Lattice-Based KEM</a></li>
+                <li><a href="https://github.com/pq-crystals/kyber" target="_blank">Implementación de referencia de Kyber</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Learning_with_errors" target="_blank">Wikipedia: Learning With Errors</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mapa del Sitio</h3>
+                <ul>
+                    <li><a href="../index.html">Inicio</a></li>
+                    <li><a href="../programa.html">Programa</a></li>
+                    <li><a href="../temas/tema1/index.html">Temas</a></li>
+                    <li><a href="../ejemplos/index.html">Ejemplos Prácticos</a></li>
+                    <li><a href="index.html">Guías de Laboratorio</a></li>
+                    <li><a href="../recursos/index.html">Recursos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Guías Disponibles</h3>
+                <ul>
+                    <li><a href="algoritmo_shor.html">Algoritmo de Shor</a></li>
+                    <li><a href="ml_kem.html">ML-KEM</a></li>
+                    <li><a href="ml_dsa.html">ML-DSA</a></li>
+                    <li><a href="criptografia_hibrida.html">Criptografía Híbrida</a></li>
+                    <li><a href="qkd.html">QKD (BB84)</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Para consultas sobre el curso, contacte al profesor.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Curso de Criptografía Post-Cuántica</p>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+</html>
